@@ -1,4 +1,4 @@
 # chess
-This should be the repository for the first cs240 assignment
+This is the main folder of the chess project.
 
-This is an update that I'm making here on my local machine, to see if I can push stuff or not.
+This project has been very poorly managed and taught so far. I am worried for the future.
