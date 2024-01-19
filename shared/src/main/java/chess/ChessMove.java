@@ -9,18 +9,13 @@ package chess;
 public class ChessMove {
     private final ChessPosition startPos;
     private final ChessPosition endPos;
+    private final ChessPiece.PieceType promo;
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition, ChessPiece.PieceType promotionPiece) {
         startPos = startPosition;
         endPos = endPosition;
-
-//        int startrow = startPos.getRow();
-//        int startcol = startPos.getColumn();
-//
-//        int endrow = endPos.getRow();
-//        int endcol = endPos.getColumn();
+        promo = promotionPiece;
     }
-
 
     @Override
     public String toString() {
@@ -48,6 +43,6 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        throw new RuntimeException("Not implemented");
+        return promo;
     }
 }

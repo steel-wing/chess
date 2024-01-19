@@ -69,6 +69,8 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 7), new ChessPiece(BLACK, KNIGHT));
         addPiece(new ChessPosition(8, 8), new ChessPiece(BLACK, ROOK));
     }
+
+    // stole this from the TestFactory so I could make some nice toString() outputs
     final static Map <ChessPiece.PieceType, Character> TypetocharMap = Map.of(
             ChessPiece.PieceType.PAWN, 'p',
             ChessPiece.PieceType.KNIGHT, 'n',
@@ -82,6 +84,7 @@ public class ChessBoard {
     // override of string method to make nice box for debugging
     public String toString() {
         StringBuilder output = new StringBuilder();
+        // iterate across the board and add all pieces while delimiting with "|"
         for (int col = 8; col >= 1; col--){
             output.append("|");
             for (int row = 1; row <= 8; row++) {
@@ -90,6 +93,7 @@ public class ChessBoard {
                     output.append(" |");
                     continue;
                 }
+                // white pieces go uppercase
                 Character type = TypetocharMap.get(piece.getPieceType());
                 type = piece.getTeamColor() == WHITE ? Character.toUpperCase(type) : type;
                 output.append(type);
@@ -97,7 +101,6 @@ public class ChessBoard {
             }
             output.append("\n");
         }
-
         return output.toString();
     }
 
