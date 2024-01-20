@@ -5,18 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 
 public class PieceMovesCalculator {
-    public PieceMovesCalculator() {
-    }
-
-    final static Map<ChessPiece.PieceType, Character> TypetocharMap = Map.of(
-            ChessPiece.PieceType.PAWN, 'p',
-            ChessPiece.PieceType.KNIGHT, 'n',
-            ChessPiece.PieceType.ROOK, 'r',
-            ChessPiece.PieceType.QUEEN, 'q',
-            ChessPiece.PieceType.KING, 'k',
-            ChessPiece.PieceType.BISHOP, 'b'
-    );
-
     /**
      * Delegates calculations of all the positions a specific chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -25,9 +13,20 @@ public class PieceMovesCalculator {
      * @return Collection of valid moves
      */
     public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition, ChessPiece.PieceType type){
-
-        return new ArrayList<>();
+        if (type == ChessPiece.PieceType.PAWN){
+            return PawnMovesCalculator.pieceMoves(board, myPosition);
+        } else if (type == ChessPiece.PieceType.KNIGHT){
+            return KnightMovesCalculator.pieceMoves(board, myPosition);
+        } else if (type == ChessPiece.PieceType.BISHOP){
+            return BishopMovesCalculator.pieceMoves(board, myPosition);
+        } else if (type == ChessPiece.PieceType.ROOK){
+            return RookMovesCalculator.pieceMoves(board, myPosition);
+        } else if (type == ChessPiece.PieceType.QUEEN){
+            return QueenMovesCalculator.pieceMoves(board, myPosition);
+        } else if (type == ChessPiece.PieceType.KING){
+            return KingMovesCalculator.pieceMoves(board, myPosition);
+        }
+        // this is just here since Java yells at me if it isn't here
+        return null;
     }
-
-
 }
