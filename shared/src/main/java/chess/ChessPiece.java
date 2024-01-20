@@ -17,6 +17,8 @@ public class ChessPiece {
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.color = pieceColor;
         this.type = type;
+        // pawns can get captured by other pawns the turn after they do the double-step, if they do
+        boolean enpessantable = false;
     }
 
     /**
