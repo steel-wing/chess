@@ -49,16 +49,17 @@ public class PieceMovesCalculator {
             // if we hit an empty space, add it it to the available moves
             if (target == null) {
                 moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
+
+                // iterate onwards in the direction indicated by dir and bias (forwards/backwards, and right/left)
+                targetrow += dir;
+                targetcol += bias;
             } else {
-                // if we hit a piece, check to see if its an enemy. If so, we can hit it, but no further
+                // if we hit a piece we go no further. Check to see if its an enemy: if so, we can hit it
                 if (target.getTeamColor() != team) {
                     moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
                 }
                 break;
             }
-            // iterate onwards in the direction indicated by dir and bias (forwards/backwards, and right/left)
-            targetrow += dir;
-            targetcol += bias;
         }
         return moves;
     }
