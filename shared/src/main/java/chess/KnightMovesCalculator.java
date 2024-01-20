@@ -10,8 +10,8 @@ public class KnightMovesCalculator {
         // identify as many of the eight vertices that we can and could jump to
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
-        int targetrow = row;
-        int targetcol = col;
+        int targetrow;
+        int targetcol;
 
         if (row + 2 <= 8) {
             targetrow = row + 2;
