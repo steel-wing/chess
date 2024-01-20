@@ -2,11 +2,10 @@ package chess;
 
 import java.util.Arrays;
 import java.util.Map;
-import java.lang.StringBuilder;
-import java.lang.Character;
 
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
-import static chess.ChessGame.TeamColor.*;
 
 
 /**
@@ -88,7 +87,7 @@ public class ChessBoard {
         for (int col = 8; col >= 1; col--){
             output.append("|");
             for (int row = 1; row <= 8; row++) {
-                var piece = getPiece(new ChessPosition(row, col));
+                ChessPiece piece = getPiece(new ChessPosition(row, col));
                 if (piece == null){
                     output.append(" |");
                     continue;
@@ -103,5 +102,15 @@ public class ChessBoard {
         }
         return output.toString();
     }
-
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Arrays.deepEquals(board, that.board);
+    }
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(board);
+    }
 }

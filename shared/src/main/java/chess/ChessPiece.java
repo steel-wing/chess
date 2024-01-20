@@ -1,7 +1,7 @@
 package chess;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 
 /**
@@ -55,5 +55,21 @@ public class ChessPiece {
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         // this can't be static, because you can't move something that doesn't exist
         return PieceMovesCalculator.pieceMoves(board, myPosition, this.type);
+    }
+
+    @Override
+    public String toString() {
+        return color + " " + type;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return color == that.color && type == that.type;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(color, type);
     }
 }
