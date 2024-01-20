@@ -13,6 +13,13 @@ public class KnightMovesCalculator {
         int targetrow;
         int targetcol;
 
+//        // move to all eight spots
+//        for (int dir = 1; dir >= -1; dir -= 1) {                 // dir is forwards/backwards
+//            for (int bias = 1; bias >= -1; bias -= 1) {          // bias is right/left
+//
+//        int targetrow = row + dir;
+//        int targetcol = col + bias;
+
         if (row + 2 <= 8) {
             targetrow = row + 2;
             if (col + 1 <= 8) {
