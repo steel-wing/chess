@@ -49,8 +49,8 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 1), new ChessPiece(BLACK, ROOK));
         addPiece(new ChessPosition(8, 2), new ChessPiece(BLACK, KNIGHT));
         addPiece(new ChessPosition(8, 3), new ChessPiece(BLACK, BISHOP));
-        addPiece(new ChessPosition(8, 4), new ChessPiece(BLACK, KING));
-        addPiece(new ChessPosition(8, 5), new ChessPiece(BLACK, QUEEN));
+        addPiece(new ChessPosition(8, 4), new ChessPiece(BLACK, QUEEN));
+        addPiece(new ChessPosition(8, 5), new ChessPiece(BLACK, KING));
         addPiece(new ChessPosition(8, 6), new ChessPiece(BLACK, BISHOP));
         addPiece(new ChessPosition(8, 7), new ChessPiece(BLACK, KNIGHT));
         addPiece(new ChessPosition(8, 8), new ChessPiece(BLACK, ROOK));
