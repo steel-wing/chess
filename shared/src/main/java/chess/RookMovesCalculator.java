@@ -13,7 +13,7 @@ public class RookMovesCalculator {
 
         ArrayList<ChessMove> moves = new ArrayList<>();
 
-        // I hate repeating code, so we're iterating through all four possible directions
+        // God-tier iteration technique for all four diagonal directions
         for (int dir = 1; dir >= -1; dir -= 1) {                 // dir is forwards/backwards
             for (int bias = 1; bias >= -1; bias -= 1) {          // bias is right/left
                 // forbidden skipping technique to minimize necessary code revisions don't @ me

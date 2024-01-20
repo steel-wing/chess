@@ -13,7 +13,7 @@ public class BishopMovesCalculator {
 
         ArrayList<ChessMove> moves = new ArrayList<>();
 
-        // I hate repeating code, so we're iterating through all four possible directions
+        // God-tier iteration technique for all four diagonal directions
         for (int dir = 1; dir >= -1; dir -= 2) {                 // dir is forwards/backwards
             for (int bias = 1; bias >= -1; bias -= 2) {          // bias is right/left
                 targetrow = row + dir;
