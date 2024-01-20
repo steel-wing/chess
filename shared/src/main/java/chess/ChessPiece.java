@@ -54,9 +54,9 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
         // this can't be static, because you can't move something that doesn't exist
-        return PieceMovesCalculator.pieceMoves(board, myPosition, this.type);
+        return PieceMovesCalculator.pieceMoves(board, pos, this.type);
     }
 
     @Override

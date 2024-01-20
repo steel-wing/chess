@@ -4,28 +4,30 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PawnMovesCalculator {
-    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        ChessGame.TeamColor team = board.getPiece(myPosition).getTeamColor();
-        int row = myPosition.getRow();
-        int col = myPosition.getColumn();
+    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
+        ArrayList<ChessMove> moves = new ArrayList<>();
+        ChessGame.TeamColor team = board.getPiece(pos).getTeamColor();
+
+        int row = pos.getRow();
+        int col = pos.getColumn();
+
         int targetrow = row;
         int targetcol = col;
-        int dir = team == ChessGame.TeamColor.WHITE ? 1 : -1; // white pawn goes up, black goes down
 
-        ArrayList<ChessMove> moves = new ArrayList<>();
+        int dir = team == ChessGame.TeamColor.WHITE ? 1 : -1; // white pawn goes up, black goes down
 
         // while in the middle 6 rows
         if (row >= 2 && row <= 7) {
             targetrow += dir;
             // check square directly in front: only move if it's empty
             if (board.getPiece(new ChessPosition(targetrow, targetcol)) == null) {
-                moves.addAll(pawnMotion(myPosition, board, dir, targetrow, targetcol));
+                moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
 
                 // check square two in front if we're in our home row
                 if (row == (4.5 - 2.5 * dir)) {     // clever lil math to see if we're on our own front lines
                     targetrow += dir;
                     if (board.getPiece(new ChessPosition(targetrow, targetcol)) == null) {
-                        moves.addAll(pawnMotion(myPosition, board, dir, targetrow, targetcol));
+                        moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
                         // back back out
                         targetrow -= dir;
                     }
@@ -37,7 +39,7 @@ public class PawnMovesCalculator {
                 targetcol = col + 1;
                 ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
                 if (target != null && target.getTeamColor() != team) {
-                    moves.addAll(pawnMotion(myPosition, board, dir, targetrow, targetcol));
+                    moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
                 }
             }
 
@@ -46,7 +48,7 @@ public class PawnMovesCalculator {
                 targetcol = col - 1;
                 ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
                 if (target != null && target.getTeamColor() != team) {
-                    moves.addAll(pawnMotion(myPosition, board, dir, targetrow, targetcol));
+                    moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
                 }
             }
         }

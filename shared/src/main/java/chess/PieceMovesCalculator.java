@@ -11,19 +11,19 @@ public class PieceMovesCalculator {
      *
      * @return Collection of valid moves
      */
-    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition, ChessPiece.PieceType type){
+    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos, ChessPiece.PieceType type){
         if (type == ChessPiece.PieceType.PAWN){
-            return PawnMovesCalculator.pieceMoves(board, myPosition);
+            return PawnMovesCalculator.pieceMoves(board, pos);
         } else if (type == ChessPiece.PieceType.KNIGHT){
-            return KnightMovesCalculator.pieceMoves(board, myPosition);
+            return KnightMovesCalculator.pieceMoves(board, pos);
         } else if (type == ChessPiece.PieceType.BISHOP){
-            return BishopMovesCalculator.pieceMoves(board, myPosition);
+            return BishopMovesCalculator.pieceMoves(board, pos);
         } else if (type == ChessPiece.PieceType.ROOK){
-            return RookMovesCalculator.pieceMoves(board, myPosition);
+            return RookMovesCalculator.pieceMoves(board, pos);
         } else if (type == ChessPiece.PieceType.QUEEN){
-            return QueenMovesCalculator.pieceMoves(board, myPosition);
+            return QueenMovesCalculator.pieceMoves(board, pos);
         } else if (type == ChessPiece.PieceType.KING){
-            return KingMovesCalculator.pieceMoves(board, myPosition);
+            return KingMovesCalculator.pieceMoves(board, pos);
         }
         // this is just here since Java yells at me if it isn't here
         return null;
@@ -31,6 +31,7 @@ public class PieceMovesCalculator {
 
     // God-tier iteration technique for all eight linear directions
     public static ArrayList<ChessMove> linearMotion(ChessPosition pos, int dir, int bias, ChessBoard board) {
+        ArrayList<ChessMove> moves = new ArrayList<>();
         ChessGame.TeamColor team = board.getPiece(pos).getTeamColor();
 
         int row = pos.getRow();
@@ -38,8 +39,6 @@ public class PieceMovesCalculator {
 
         int targetrow = row + dir;
         int targetcol = col + bias;
-
-        ArrayList<ChessMove> moves = new ArrayList<>();
 
         // while in the bounds of the board
         while (targetrow >= 1 && targetrow <= 8 && targetcol >= 1 && targetcol <= 8) {
@@ -57,6 +56,7 @@ public class PieceMovesCalculator {
                 }
                 break;
             }
+            // iterate onwards in the direction indicated by dir and bias (forwards/backwards, and right/left)
             targetrow += dir;
             targetcol += bias;
         }
