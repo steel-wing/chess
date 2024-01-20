@@ -6,107 +6,43 @@ import java.util.Collection;
 public class KnightMovesCalculator {
     public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         ArrayList<ChessMove> moves = new ArrayList<>();
+        ChessGame.TeamColor team = board.getPiece(myPosition).getTeamColor();
 
-        // identify as many of the eight vertices that we can and could jump to
         int row = myPosition.getRow();
         int col = myPosition.getColumn();
         int targetrow;
         int targetcol;
 
-//        // move to all eight spots
-//        for (int dir = 1; dir >= -1; dir -= 1) {                 // dir is forwards/backwards
-//            for (int bias = 1; bias >= -1; bias -= 1) {          // bias is right/left
-//
-//        int targetrow = row + dir;
-//        int targetcol = col + bias;
+        // identify as many of the eight vertices that we can jump to
+        for (int dir = 2; dir >= -2; dir -= 1) {                 // dir is forwards/backwards
+            for (int bias = 2; bias >= -2; bias -= 1) {          // bias is right/left
+                // forbidden skipping technique to minimize necessary code revisions don't @ me
+                if (Math.abs(dir) + Math.abs(bias) != 3) {
+                    continue;
+                }
 
-        if (row + 2 <= 8) {
-            targetrow = row + 2;
-            if (col + 1 <= 8) {
-                targetcol = col + 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
+                // identify landing spot and skip those that are out of bounds
+                targetrow = row + dir;
+                targetcol = col + bias;
+                if (targetrow < 1 || targetrow > 8 || targetcol < 1 || targetcol > 8) {
+                    continue;
                 }
-            }
-            if (col - 1 >= 1) {
-                targetcol = col - 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
-                }
-            }
-        }
-        if (col + 2 <= 8) {
-            targetcol = col + 2;
-            if (row + 1 <= 8) {
-                targetrow = row + 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
-                }
-            }
-            if (row - 1 >= 1) {
-                targetrow = row - 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
-                }
-            }
-        }
-        if (row - 2 >= 1) {
-            targetrow = row - 2;
-            if (col + 1 <= 8) {
-                targetcol = col + 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
-                }
-            }
-            if (col - 1 >= 1) {
-                targetcol = col - 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
-                }
-            }
-        }
-        if (col - 2 >= 1) {
-            targetcol = col - 2;
-            if (row + 1 <= 8) {
-                targetrow = row + 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
-                }
-            }
-            if (row - 1 >= 1) {
-                targetrow = row - 1;
-                ChessMove move = knightLanding(board, targetrow, targetcol, myPosition);
-                if (move != null){
-                    moves.add(move);
+
+                // identify the target square
+                ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
+
+                // if we hit an empty space, add it it to the available moves
+                if (target == null) {
+                    moves.add(new chess.ChessMove(myPosition, new ChessPosition(targetrow, targetcol), null));
+                } else {
+                    // if we hit a piece, check to see if its an enemy. If so, we can hit it
+                    if (target.getTeamColor() != team) {
+                        moves.add(new chess.ChessMove(myPosition, new ChessPosition(targetrow, targetcol), null));
+                    }
                 }
             }
         }
         return moves;
-    }
-
-    // check to see if we can actually land there
-    private static ChessMove knightLanding(ChessBoard board, int targetrow, int targetcol, ChessPosition pos) {
-        ChessGame.TeamColor team = board.getPiece(pos).getTeamColor();
-
-        // identify the target square
-        ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
-
-        // if we hit an empty space, add it it to the available moves
-        if (target == null) {
-            return new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null);
-        } else {
-            if (target.getTeamColor() != team) {
-                return new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null);
-            }
-        }
-        return null;
     }
 }
 
