@@ -54,11 +54,11 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 6), new ChessPiece(BLACK, BISHOP));
         addPiece(new ChessPosition(8, 7), new ChessPiece(BLACK, KNIGHT));
         addPiece(new ChessPosition(8, 8), new ChessPiece(BLACK, ROOK));
-        for (int i = 1; i < 8; i++) {
+        for (int i = 1; i <= 8; i++) {
             addPiece(new ChessPosition(7, i), new ChessPiece(BLACK, PAWN));
         }
         // white pieces down at the "bottom" of the board, facing (8)
-        for (int i = 1; i < 8; i++) {
+        for (int i = 1; i <= 8; i++) {
             addPiece(new ChessPosition(2, i), new ChessPiece(WHITE, PAWN));
         }
         addPiece(new ChessPosition(1, 1), new ChessPiece(WHITE, ROOK));
