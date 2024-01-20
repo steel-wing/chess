@@ -19,9 +19,8 @@ public class BishopMovesCalculator {
                 targetrow = row + dir;
                 targetcol = col + bias;
 
-                // iterate until you hit a wall
-                while (targetrow >= 1 && targetrow <= 8
-                        && targetcol >= 1 && targetcol <= 8) {
+                // while in the bounds of the board
+                while (targetrow >= 1 && targetrow <= 8 && targetcol >= 1 && targetcol <= 8) {
 
                     // identify the target square
                     ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
