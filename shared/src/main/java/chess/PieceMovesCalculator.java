@@ -30,7 +30,7 @@ public class PieceMovesCalculator {
     }
 
     // God-tier iteration technique for all eight linear directions
-    public static ArrayList<ChessMove> linearMotion(ChessPosition pos, int dir, int bias, ChessBoard board) {
+    public static ArrayList<ChessMove> linearMotion(ChessPosition pos, int dir, int bias, int steps, ChessBoard board) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         ChessGame.TeamColor team = board.getPiece(pos).getTeamColor();
 
@@ -41,7 +41,7 @@ public class PieceMovesCalculator {
         int targetcol = col + bias;
 
         // while in the bounds of the board
-        while (targetrow >= 1 && targetrow <= 8 && targetcol >= 1 && targetcol <= 8) {
+        while (targetrow >= 1 && targetrow <= 8 && targetcol >= 1 && targetcol <= 8 && steps != 0) {
 
             // identify the target square
             ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
@@ -53,6 +53,7 @@ public class PieceMovesCalculator {
                 // iterate onwards in the direction indicated by dir and bias (forwards/backwards, and right/left)
                 targetrow += dir;
                 targetcol += bias;
+                steps--;
             } else {
                 // if we hit a piece we go no further. Check to see if its an enemy: if so, we can hit it
                 if (target.getTeamColor() != team) {
