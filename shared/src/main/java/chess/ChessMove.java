@@ -45,7 +45,11 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return getEndPosition().toString();
+        if (getPromotionPiece() == null) {
+            return getEndPosition().toString();
+        } else {
+            return getEndPosition().toString() + " " + getPromotionPiece().toString();
+        }
     }
     @Override
     public boolean equals(Object o) {

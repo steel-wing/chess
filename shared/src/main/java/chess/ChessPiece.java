@@ -13,12 +13,13 @@ import java.util.Objects;
 public class ChessPiece {
     private final ChessGame.TeamColor color;
     private final PieceType type;
+    public int hasMoved;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.color = pieceColor;
         this.type = type;
         // pawns can get captured by other pawns the turn after they do the double-step, if they do
-        boolean enpessantable = false;
+        hasMoved = 0;
     }
 
     /**
