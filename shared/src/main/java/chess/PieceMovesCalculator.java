@@ -46,7 +46,7 @@ public class PieceMovesCalculator {
             // identify the target square
             ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
 
-            // if we hit an empty space, add it it to the available moves
+            // if we hit an empty space, add it to the available moves
             if (target == null) {
                 moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
 
