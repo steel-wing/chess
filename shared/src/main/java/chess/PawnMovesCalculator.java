@@ -21,13 +21,13 @@ public class PawnMovesCalculator {
             targetrow += dir;
             // check square directly in front: only move if it's empty
             if (board.getPiece(new ChessPosition(targetrow, targetcol)) == null) {
-                moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
+                moves.addAll(pawnMotion(pos, targetrow, targetcol));
 
                 // check square two in front if we're in our home row
                 if (row == (4.5 - 2.5 * dir)) {     // clever lil math to see if we're on our own front lines
                     targetrow += dir;
                     if (board.getPiece(new ChessPosition(targetrow, targetcol)) == null) {
-                        moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
+                        moves.addAll(pawnMotion(pos, targetrow, targetcol));
                         // back back out
                         targetrow -= dir;
                     }
@@ -39,7 +39,7 @@ public class PawnMovesCalculator {
                 targetcol = col + 1;
                 ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
                 if (target != null && target.getTeamColor() != team) {
-                    moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
+                    moves.addAll(pawnMotion(pos, targetrow, targetcol));
                 }
             }
 
@@ -48,7 +48,7 @@ public class PawnMovesCalculator {
                 targetcol = col - 1;
                 ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
                 if (target != null && target.getTeamColor() != team) {
-                    moves.addAll(pawnMotion(pos, board, dir, targetrow, targetcol));
+                    moves.addAll(pawnMotion(pos, targetrow, targetcol));
                 }
             }
         }
@@ -56,7 +56,7 @@ public class PawnMovesCalculator {
     }
 
     // helper function for handling promotion cases
-    private static Collection<ChessMove> pawnMotion(ChessPosition pos, ChessBoard board, int dir, int targetrow, int targetcol) {
+    private static Collection<ChessMove> pawnMotion(ChessPosition pos, int targetrow, int targetcol) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         // if we can promote, offer all options
         if (targetrow == 1 || targetrow == 8) {
