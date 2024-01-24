@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
 
-
 /**
  * Represents a single chess piece
  * <p>
@@ -14,13 +13,12 @@ import java.util.Objects;
 public class ChessPiece {
     private final ChessGame.TeamColor color;
     private final PieceType type;
-    private int hasMoved;
+    private int steps;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.color = pieceColor;
         this.type = type;
-        // pawns can get captured by other pawns the turn after they do the double-step, if they do
-        this.hasMoved = 0;
+        this.steps = 0;
     }
 
     /**
@@ -49,23 +47,24 @@ public class ChessPiece {
         return type;
     }
 
-    public int getHistory() {
-        return hasMoved;
+    /**
+     * @return the number of turns the piece has been moved
+     */
+    public int getSteps() {
+        return steps;
     }
 
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
      * danger
-     *
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos){
-
-        //int history = this.hasMoved;
+        // increase the step count on the piece
+        this.steps++;
 
         if (this.type == ChessPiece.PieceType.PAWN){
-            // this.hasMoved = history < 2 ? history++ : 2;
             return PawnMovesCalculator.pieceMoves(board, pos);
         } else if (this.type == ChessPiece.PieceType.KNIGHT){
             return KnightMovesCalculator.pieceMoves(board, pos);
@@ -82,7 +81,13 @@ public class ChessPiece {
         return null;
     }
 
-
+    /**
+     * @param dir Up/Down
+     * @param bias Right/Left
+     * @param steps number of hops, max = 8 for most, 1 for knight and king
+     *
+     * @return All of the potential moves in a straight line defined by dir, bias, and steps
+     */
     public static ArrayList<ChessMove> linearMotion(ChessPosition pos, int dir, int bias, int steps, ChessBoard board) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         ChessGame.TeamColor team = board.getPiece(pos).getTeamColor();
