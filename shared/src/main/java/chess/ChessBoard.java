@@ -3,8 +3,7 @@ package chess;
 import java.util.Arrays;
 import java.util.Map;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.*;
 import static chess.ChessPiece.PieceType.*;
 
 
