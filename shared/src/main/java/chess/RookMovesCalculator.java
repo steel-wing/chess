@@ -11,10 +11,11 @@ public class RookMovesCalculator {
         for (int dir = 1; dir >= -1; dir -= 1) {                // dir is forwards/backwards
             for (int bias = 1; bias >= -1; bias -= 1) {         // bias is right/left
                 if (dir == 0 ^ bias == 0){                      // skip diagonals and targeting ourselves
-                    moves.addAll(PieceMovesCalculator.linearMotion(pos, dir, bias, 8, board));
+                    moves.addAll(ChessPiece.linearMotion(pos, dir, bias, 8, board));
                 }
             }
         }
+        System.out.println(board);
         return moves;
     }
 }
