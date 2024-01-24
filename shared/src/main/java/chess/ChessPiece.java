@@ -56,8 +56,7 @@ public class ChessPiece {
 
     /**
      * Calculates all the positions a chess piece can move to
-     * Does not take into account moves that are illegal due to leaving the king in
-     * danger
+     * Does not take into account meta-moves, like en passant, castling, or moves that endanger the king
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos){
@@ -84,9 +83,10 @@ public class ChessPiece {
     /**
      * @param dir Up/Down
      * @param bias Right/Left
-     * @param steps number of hops, max = 8 for most, 1 for knight and king
-     *
-     * @return All of the potential moves in a straight line defined by dir, bias, and steps
+     * @param steps number of hops, max = 8
+     * Calculates a list of moves in the taxicab direction indicated by dir and bias.
+     * Goes until hitting an enemy, a wall, or running out of steps.
+     * @return A list of moves in the line
      */
     public static ArrayList<ChessMove> linearMotion(ChessPosition pos, int dir, int bias, int steps, ChessBoard board) {
         ArrayList<ChessMove> moves = new ArrayList<>();
