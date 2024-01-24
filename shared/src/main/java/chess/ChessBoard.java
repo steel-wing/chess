@@ -87,9 +87,9 @@ public class ChessBoard {
     public String toString() {
         StringBuilder output = new StringBuilder();
         // iterate across the board and add all pieces while delimiting with "|"
-        for (int col = 8; col >= 1; col--){
+        for (int row = 8; row >= 1; row--){
             output.append("|");
-            for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
                 ChessPiece piece = getPiece(new ChessPosition(row, col));
                 if (piece == null){
                     output.append(" |");
