@@ -55,7 +55,10 @@ public class PawnMovesCalculator {
         return moves;
     }
 
-    // helper function for handling promotion cases
+    /**
+     * Helper function for handling pawn promotion cases
+     * Assumes that all other placement checks have been made prior
+     */
     private static Collection<ChessMove> pawnMotion(ChessPosition pos, int targetrow, int targetcol) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         // if we can promote, offer all options
