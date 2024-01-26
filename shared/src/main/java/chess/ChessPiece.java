@@ -61,19 +61,19 @@ public class ChessPiece {
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos){
         // increase the step count on the piece
-        this.steps++;
+        steps++;
 
-        if (this.type == ChessPiece.PieceType.PAWN){
+        if (type == ChessPiece.PieceType.PAWN){
             return PawnMovesCalculator.pieceMoves(board, pos);
-        } else if (this.type == ChessPiece.PieceType.KNIGHT){
+        } else if (type == ChessPiece.PieceType.KNIGHT){
             return KnightMovesCalculator.pieceMoves(board, pos);
-        } else if (this.type == ChessPiece.PieceType.BISHOP){
+        } else if (type == ChessPiece.PieceType.BISHOP){
             return BishopMovesCalculator.pieceMoves(board, pos);
-        } else if (this.type == ChessPiece.PieceType.ROOK){
+        } else if (type == ChessPiece.PieceType.ROOK){
             return RookMovesCalculator.pieceMoves(board, pos);
-        } else if (this.type == ChessPiece.PieceType.QUEEN){
+        } else if (type == ChessPiece.PieceType.QUEEN){
             return QueenMovesCalculator.pieceMoves(board, pos);
-        } else if (this.type == ChessPiece.PieceType.KING){
+        } else if (type == ChessPiece.PieceType.KING){
             return KingMovesCalculator.pieceMoves(board, pos);
         }
         // this is just here since Java yells at me if it isn't here
