@@ -16,6 +16,7 @@ import static chess.ChessPiece.PieceType.*;
 public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[8][8];
     public ChessBoard() {
+
     }
 
     /**
@@ -44,7 +45,6 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        // black pieces up at the "top" of the board, facing (1)
         addPiece(new ChessPosition(8, 1), new ChessPiece(BLACK, ROOK));
         addPiece(new ChessPosition(8, 2), new ChessPiece(BLACK, KNIGHT));
         addPiece(new ChessPosition(8, 3), new ChessPiece(BLACK, BISHOP));
@@ -55,9 +55,6 @@ public class ChessBoard {
         addPiece(new ChessPosition(8, 8), new ChessPiece(BLACK, ROOK));
         for (int i = 1; i <= 8; i++) {
             addPiece(new ChessPosition(7, i), new ChessPiece(BLACK, PAWN));
-        }
-        // white pieces down at the "bottom" of the board, facing (8)
-        for (int i = 1; i <= 8; i++) {
             addPiece(new ChessPosition(2, i), new ChessPiece(WHITE, PAWN));
         }
         addPiece(new ChessPosition(1, 1), new ChessPiece(WHITE, ROOK));
