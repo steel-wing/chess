@@ -2,6 +2,8 @@ package chess;
 
 import java.util.Collection;
 
+import static chess.ChessGame.TeamColor.WHITE;
+
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
@@ -9,16 +11,18 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
+    private TeamColor turn;
+    private ChessBoard board;
 
     public ChessGame() {
-
+        this.turn = TeamColor.WHITE;
     }
 
     /**
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
+        return turn;
     }
 
     /**
@@ -27,7 +31,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        this.turn = team;
     }
 
     /**
@@ -56,7 +60,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+
+        String correctionString = "";
+        throw new InvalidMoveException(correctionString);
     }
 
     /**
@@ -96,7 +102,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        this.board = board;
     }
 
     /**
@@ -105,6 +111,46 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
+    }
+
+    @Override
+    public String toString() {
+        ChessBoard board = this.board;
+
+        StringBuilder output = new StringBuilder();
+        output.append("   ");
+        for (int col = 1; col <= 8; col++) {
+            output.append((char)(col + '`'));
+            output.append(" ");
+        }
+        output.append("\n");
+
+        // iterate across the board and add all pieces while delimiting with "|"
+        for (int row = 8; row >= 1; row--){
+            output.append((char)(row + '0'));
+            output.append(" |");
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                if (piece == null){
+                    output.append(" |");
+                    continue;
+                }
+                // white pieces go uppercase
+                Character type = ChessBoard.TypetocharMap.get(piece.getPieceType());
+                type = piece.getTeamColor() == WHITE ? Character.toUpperCase(type) : type;
+                output.append(type);
+                output.append("|");
+            }
+            output.append(' ');
+            output.append((char)(row + '0'));
+            output.append("\n");
+        }
+        output.append("   ");
+        for (int col = 1; col <= 8; col++) {
+            output.append((char)(col + '`'));
+            output.append(" ");
+        }
+        return output.toString();
     }
 }
