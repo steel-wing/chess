@@ -17,6 +17,11 @@ public class ChessPosition {
         this.col = col;
     }
 
+    public ChessPosition(String square){
+        this.row = square.charAt(1) - '0';
+        this.col = square.charAt(0) - '`';
+    }
+
     /**
      * @return which row this position is in
      * 1 codes for the bottom row
@@ -35,7 +40,9 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "{" + row + ", " + col + '}';
+        char r = (char)(row + '0');
+        char c = (char)(col + '`');
+        return String.valueOf(r) + c;
     }
     @Override
     public boolean equals(Object o) {
