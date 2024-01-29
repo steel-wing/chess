@@ -8,10 +8,10 @@ public class PawnMovesCalculator {
         ArrayList<ChessMove> moves = new ArrayList<>();
         ChessGame.TeamColor team = board.getPiece(pos).getTeamColor();
 
+        int dir = team == ChessGame.TeamColor.WHITE ? 1 : -1; // white pawn goes up, black goes down
+
         int row = pos.getRow();
         int col = pos.getColumn();
-
-        int dir = team == ChessGame.TeamColor.WHITE ? 1 : -1; // white pawn goes up, black goes down
 
         int targetrow = row + dir;
         int targetcol = col;
