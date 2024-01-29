@@ -11,47 +11,47 @@ public class PawnMovesCalculator {
         int row = pos.getRow();
         int col = pos.getColumn();
 
-        int targetrow = row;
-        int targetcol = col;
-
         int dir = team == ChessGame.TeamColor.WHITE ? 1 : -1; // white pawn goes up, black goes down
 
-        // while in the middle 6 rows
-        if (row >= 2 && row <= 7) {
-            targetrow += dir;
-            // check square directly in front: only move if it's empty
-            if (board.getPiece(new ChessPosition(targetrow, targetcol)) == null) {
-                moves.addAll(pawnMotion(pos, targetrow, targetcol));
+        int targetrow = row + dir;
+        int targetcol = col;
 
-                // check square two in front if we're in our home row
-                if (row == (4.5 - 2.5 * dir)) {     // clever lil math to see if we're on our own front lines
-                    targetrow += dir;
-                    if (board.getPiece(new ChessPosition(targetrow, targetcol)) == null) {
-                        moves.addAll(pawnMotion(pos, targetrow, targetcol));
-                        // back back out
-                        targetrow -= dir;
-                    }
-                }
-            }
+        ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
 
-            // check the right flank
-            if (col + 1 <= 8) {
-                targetcol = col + 1;
-                ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
-                if (target != null && target.getTeamColor() != team) {
+        // check if the square in front of us is clear
+        if (target == null) {
+            moves.addAll(pawnMotion(pos, targetrow, targetcol));
+
+            // check if we're in the front row to do the double skip
+            if (row == 4.5 - 2.5 * dir) {
+                targetrow += dir;
+                target = board.getPiece(new ChessPosition(targetrow, targetcol));
+                if (target == null) {
                     moves.addAll(pawnMotion(pos, targetrow, targetcol));
                 }
-            }
-
-            // check the left flank
-            if (col - 1 >= 1) {
-                targetcol = col - 1;
-                ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
-                if (target != null && target.getTeamColor() != team) {
-                    moves.addAll(pawnMotion(pos, targetrow, targetcol));
-                }
+                targetrow -= dir;
             }
         }
+
+        // check the right flank
+        if (col <= 7) {
+            targetcol += 1;
+            target = board.getPiece(new ChessPosition(targetrow, targetcol));
+            if (target != null && team != target.getTeamColor()) {
+                moves.addAll(pawnMotion(pos, targetrow, targetcol));
+            }
+            targetcol -= 1;     // step back down
+        }
+
+        // check the left flank
+        if (col >= 2) {
+            targetcol -= 1;
+            target = board.getPiece(new ChessPosition(targetrow, targetcol));
+            if (target != null && team != target.getTeamColor()) {
+                moves.addAll(pawnMotion(pos, targetrow, targetcol));
+            }
+        }
+
         return moves;
     }
 
