@@ -2,7 +2,8 @@ package chess;
 
 import java.util.ArrayList;
 
-import static chess.ChessGame.TeamColor.*;
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -58,6 +59,8 @@ public class ChessGame {
 
         // find all possible moves the piece could physically make
         ArrayList<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+
+        // save info about hypothetical motion
         ChessPosition lastPosition = startPosition;
         ChessPiece lastTarget = null;
 
@@ -194,17 +197,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        // make a copy of our current board
-        // obtain king position by looking
-        // find all possible moves the king could physically make
-        // for each move, and for his current position:
-        //   put the king into that new position
-        //   if the king is not in check
-        //     return false
-        // return true
-        // restore the original copy of the board
-
-        throw new RuntimeException("Not implemented");
+        return kingChecker(teamColor, true);
     }
 
     /**
@@ -215,19 +208,60 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        // if isInCheck
-        //   return false
-        // make a copy of our current board
-        // obtain king position by looking
-        // find all possible moves the king could physically make
-        // for each move:
-        //   put the king into that new position
-        //   if the king is not in check
-        //     return false
-        // return true
-        // restore the original copy of the board
+        return kingChecker(teamColor, false);
+    }
 
-        throw new RuntimeException("Not implemented");
+    /**
+     * Determines if the given team is in checkmate or stalemate, while complying
+     * with the awful standards provided
+     *
+     * @param teamColor self-explanatory
+     * @param checkmate determines whether we're looking for checkmate or stalemate
+     */
+    private boolean kingChecker(TeamColor teamColor, boolean checkmate) {
+        ChessBoard boardcopy = new ChessBoard(this.board);
+
+        // locate the king
+        ChessPosition kingPosition = teamPieces(teamColor, ChessPiece.PieceType.KING).getFirst();
+        ChessPiece King = board.getPiece(kingPosition);
+
+        // find all options available to the king (including staying where he is, if checkmate)
+        ArrayList<ChessMove> kingOptions = King.pieceMoves(board, kingPosition);
+        if (checkmate) {
+            kingOptions.add(new ChessMove(kingPosition, kingPosition, null));
+        }
+
+        // save info about king's hypothetical movement
+        ChessPosition lastPosition = kingPosition;
+        ChessPiece lastTarget = null;
+
+        // for all moves, move the piece there
+        for (ChessMove option : kingOptions){
+            ChessPosition targetPosition = option.getEndPosition();
+            ChessPiece targetPiece = board.getPiece(targetPosition);
+
+            // move the piece to its new location
+            board.removePiece(lastPosition);
+            board.addPiece(targetPosition, King);
+
+            // replace the taken material, if there was any
+            if (lastTarget != null) {
+                board.addPiece(lastPosition, lastTarget);
+            }
+
+            // if we aren't in check now, the move is valid
+            if(!isInCheck(teamColor)){
+                return false;
+            }
+
+            // update the last place the king was
+            lastPosition = targetPosition;
+            lastTarget = targetPiece;
+        }
+
+        // restore the board to the way it was and return
+        this.board = boardcopy;
+        return true;
     }
 
     /**
