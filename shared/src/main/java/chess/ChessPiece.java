@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Objects;
 
 /**
@@ -59,7 +58,7 @@ public class ChessPiece {
      * Does not take into account meta-moves, like en passant, castling, or moves that endanger the king
      * @return Collection of valid moves
      */
-    public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos){
+    public ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos){
         // increase the step count on the piece
         steps++;
 
@@ -99,7 +98,7 @@ public class ChessPiece {
         int targetcol = col + bias;
 
         // while in the bounds of the board, and not overstepping
-        while (targetrow >= 1 && targetrow <= 8 && targetcol >= 1 && targetcol <= 8 && steps > 0) {
+        while ((1 <= targetrow) && (targetrow <= 8) && (1 <= targetcol) && (targetcol <= 8) && (steps > 0)) {
 
             // identify the target square
             ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));

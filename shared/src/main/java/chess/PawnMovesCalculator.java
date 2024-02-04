@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class PawnMovesCalculator {
-    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
+    public static ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
         ArrayList<ChessMove> moves = new ArrayList<>();
         ChessGame.TeamColor team = board.getPiece(pos).getTeamColor();
 

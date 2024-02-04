@@ -1,10 +1,9 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class KnightMovesCalculator {
-    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
+    public static ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
         ArrayList<ChessMove> moves = new ArrayList<>();
 
         // identify as many of the eight vertices that we can jump to

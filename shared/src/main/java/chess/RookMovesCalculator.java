@@ -1,10 +1,9 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class RookMovesCalculator {
-    public static Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
+    public static ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
         ArrayList<ChessMove> moves = new ArrayList<>();
 
         // only move up, down, left, and right
