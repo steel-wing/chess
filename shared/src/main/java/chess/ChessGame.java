@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessPiece.PieceType.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
@@ -16,7 +17,7 @@ public class ChessGame {
     private ChessBoard board;
 
     public ChessGame() {
-        this.turn = TeamColor.WHITE;
+        this.turn = WHITE;
     }
 
     /**
@@ -51,14 +52,27 @@ public class ChessGame {
      * startPosition
      */
     public ArrayList<ChessMove> validMoves(ChessPosition startPosition) {
+        // quick escape condition in case this has been called on nothing
         ArrayList<ChessMove> validMoves = new ArrayList<>();
-        ChessBoard boardcopy = new ChessBoard(this.board);
+        if (board.getPiece(startPosition) == null) {
+            return validMoves;
+        }
 
+        // copy everything down
+        ChessBoard boardcopy = new ChessBoard(this.board);
         ChessPiece piece = board.getPiece(startPosition);
         TeamColor team = piece.getTeamColor();
 
         // find all possible moves the piece could physically make
         ArrayList<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+
+        // include enPassant and castling, if relevant
+        if (piece.getPieceType() == PAWN) {
+            possibleMoves.addAll(enPassant(startPosition));
+        }
+        if (piece.getPieceType() == KING) {
+            possibleMoves.addAll(castling(startPosition));
+        }
 
         // save info about hypothetical motion
         ChessPosition lastPosition = startPosition;
@@ -90,6 +104,10 @@ public class ChessGame {
 
         // restore the board to the way it was and return
         this.board = boardcopy;
+
+        System.out.println(piece + " at " + startPosition + " with " + piece.getSteps() + " step(s)");
+        System.out.println("can move to " + validMoves);
+
         return validMoves;
     }
 
@@ -117,6 +135,7 @@ public class ChessGame {
                 // we're valid, so make the change, paying attention to pawn promotion
                 board.removePiece(start);
                 if (type == null) {
+                    removePassant(move);
                     // add the piece where it lands
                     board.addPiece(end, piece);
                 } else {
@@ -124,8 +143,13 @@ public class ChessGame {
                     board.addPiece(end, new ChessPiece(turn, type));
                 }
 
-                // and update whose turn it is
+                // update whose turn it is, and steps (also any unkilled pawns)
                 turn = turn == WHITE ? BLACK : WHITE;
+                piece.stepIncrement();
+                pawnStepIncrement();
+
+                System.out.println(piece + " moved to " + end + " with " + piece.getSteps() + " step(s)");
+
                 return;
             }
         }
@@ -141,7 +165,7 @@ public class ChessGame {
      * @param pieceType what kind of piece we're looking at (null means we don't care)
      * @return ArrayList of *ChessPositions*
      */
-    public ArrayList<ChessPosition> teamPieces(TeamColor teamColor, ChessPiece.PieceType pieceType) {
+    private ArrayList<ChessPosition> teamPieces(TeamColor teamColor, ChessPiece.PieceType pieceType) {
         ArrayList<ChessPosition> places = new ArrayList<>();
 
         for (int row = 1; row <= 8; row++) {
@@ -212,8 +236,8 @@ public class ChessGame {
     }
 
     /**
-     * Determines if the given team is in checkmate or stalemate, while complying
-     * with the awful standards provided
+     * Helper function to determine if the given team is in checkmate or stalemate,
+     * while complying with the method standards provided
      *
      * @param teamColor self-explanatory
      * @param checkmate determines whether we're looking for checkmate or stalemate
@@ -222,7 +246,7 @@ public class ChessGame {
         ChessBoard boardcopy = new ChessBoard(this.board);
 
         // locate the king
-        ChessPosition kingPosition = teamPieces(teamColor, ChessPiece.PieceType.KING).getFirst();
+        ChessPosition kingPosition = teamPieces(teamColor, KING).getFirst();
         ChessPiece King = board.getPiece(kingPosition);
 
         // find all options available to the king (including staying where he is, if checkmate)
@@ -280,6 +304,95 @@ public class ChessGame {
      */
     public ChessBoard getBoard() {
         return this.board;
+    }
+
+
+    /**
+     *  increments the steps of all pawns who enPassanted last turn
+     */
+    private void pawnStepIncrement() {
+        int passantRow = turn == WHITE ? 4 : 5;
+
+        ArrayList<ChessPosition> pawnPositions = teamPieces(turn, ChessPiece.PieceType.PAWN);
+        for (ChessPosition pawnPosition : pawnPositions) {
+            if (pawnPosition.getRow() == passantRow &&
+                    board.getPiece(pawnPosition).getSteps() == 1) {
+                board.getPiece(pawnPosition).stepIncrement();
+            }
+        }
+    }
+
+    /**
+     * removes the piece that was killed in an en passant attack
+     */
+    private void removePassant(ChessMove move) {
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece piece = board.getPiece(start);
+
+        // handle the en passant case for deletion
+        if (piece.getPieceType() == PAWN &&
+                start.getRow() != end.getRow() &&
+                start.getColumn() != end.getColumn() &&
+                board.getPiece(end) == null) {
+            int dir = turn == WHITE ? 1 : -1;
+            System.out.println("removing piece at position " + new ChessPosition(end.getRow() - dir, end.getColumn()));
+            board.removePiece(new ChessPosition(end.getRow() - dir, end.getColumn()));
+        }
+    }
+
+
+    /**
+     * figures out if an en passant move can happen, and returns the options
+     * @return possible enPassant attacks, empty list if none
+     */
+    private ArrayList<ChessMove> enPassant(ChessPosition startPosition) {
+        ArrayList<ChessMove> attacks = new ArrayList<>();
+        ChessPiece piece = board.getPiece(startPosition);
+        TeamColor team = piece.getTeamColor();
+
+        int row = startPosition.getRow();
+        int col = startPosition.getColumn();
+
+        // check to see if we're in the enPassant-able row for our color
+        int attackRow = team == WHITE ? 5 : 4;
+        if (row != attackRow) {
+            return attacks;
+        }
+
+        int dir = team == WHITE ? 1 : -1;
+
+        // check to see if the pawn to our right has only moved once
+        if (col < 8) {
+            ChessPiece target = board.getPiece(new ChessPosition(row, col + 1));
+            if (target != null &&
+                target.getTeamColor() != team &&
+                target.getPieceType() == PAWN &&
+                target.getSteps() == 1) {
+                attacks.add(new ChessMove(startPosition, new ChessPosition(row + dir, col + 1), null));
+            }
+        }
+
+        // check to see if the pawn to our left has only moved once
+        if (col > 1) {
+            ChessPiece target = board.getPiece(new ChessPosition(row, col - 1));
+            if (target != null &&
+                target.getTeamColor() != team &&
+                target.getPieceType() == PAWN &&
+                target.getSteps() == 1) {
+                attacks.add(new ChessMove(startPosition, new ChessPosition(row + dir, col - 1), null));
+            }
+        }
+        return attacks;
+    }
+
+
+    private ArrayList<ChessMove> castling(ChessPosition startPosition) {
+        ArrayList<ChessMove> strafes = new ArrayList<>();
+        ChessPiece piece = board.getPiece(startPosition);
+        TeamColor team = piece.getTeamColor();
+
+        return strafes;
     }
 
     @Override

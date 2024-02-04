@@ -29,7 +29,7 @@ public class ChessPiece {
         BISHOP,
         KNIGHT,
         ROOK,
-        PAWN
+        PAWN,
     }
 
     /**
@@ -53,15 +53,16 @@ public class ChessPiece {
         return steps;
     }
 
+    public void stepIncrement() {
+        steps++;
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account meta-moves, like en passant, castling, or moves that endanger the king
      * @return Collection of valid moves
      */
     public ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos){
-        // increase the step count on the piece
-        steps++;
-
         if (type == ChessPiece.PieceType.PAWN){
             return PawnMovesCalculator.pieceMoves(board, pos);
         } else if (type == ChessPiece.PieceType.KNIGHT){

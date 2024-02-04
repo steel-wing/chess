@@ -93,12 +93,12 @@ public class ChessBoard {
 
     // stole this from the TestFactory so I could make some nice toString() outputs
     final static Map <ChessPiece.PieceType, Character> TypetocharMap = Map.of(
-            ChessPiece.PieceType.PAWN, 'p',
-            ChessPiece.PieceType.KNIGHT, 'n',
-            ChessPiece.PieceType.ROOK, 'r',
-            ChessPiece.PieceType.QUEEN, 'q',
-            ChessPiece.PieceType.KING, 'k',
-            ChessPiece.PieceType.BISHOP, 'b'
+            PAWN, 'p',
+            KNIGHT, 'n',
+            ROOK, 'r',
+            QUEEN, 'q',
+            KING, 'k',
+            BISHOP, 'b'
     );
 
     @Override
