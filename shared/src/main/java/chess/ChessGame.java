@@ -75,7 +75,7 @@ public class ChessGame {
                 board.addPiece(lastPosition, lastTarget);
             }
 
-            // check to see if we are now in check
+            // if we aren't in check now, the move is valid
             if(!isInCheck(team)){
                 validMoves.add(move);
             }
@@ -85,9 +85,8 @@ public class ChessGame {
             lastTarget = targetPiece;
         }
 
-        // restore the board to the way it was
+        // restore the board to the way it was and return
         this.board = boardcopy;
-
         return validMoves;
     }
 
@@ -101,6 +100,7 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(start);
+        ChessPiece.PieceType type = move.getPromotionPiece();
 
         // verify that it's your turn
         if (piece.getTeamColor() != turn) {
@@ -111,9 +111,15 @@ public class ChessGame {
         // verify that the move being requested is in validMoves()
         for (ChessMove validMove : validMoves(start)) {
             if (move.equals(validMove)) {
-                // if so, make the change
+                // we're valid, so make the change, paying attention to pawn promotion
                 board.removePiece(start);
-                board.addPiece(end, piece);
+                if (type == null) {
+                    // add the piece where it lands
+                    board.addPiece(end, piece);
+                } else {
+                    // add the promoted piece where it lands
+                    board.addPiece(end, new ChessPiece(turn, type));
+                }
 
                 // and update whose turn it is
                 turn = turn == WHITE ? BLACK : WHITE;
