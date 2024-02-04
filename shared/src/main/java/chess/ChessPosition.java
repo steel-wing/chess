@@ -40,11 +40,13 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        // clever bit manipulation to give us algebraic notation
-        char r = (char)(row + '0');
-        char c = (char)(col + '`');
-        return String.valueOf(r) + c;
+        return "{" + row + ", " + col + "}";
     }
+//        char r = (char)(row + '0');
+//        char c = (char)(col + '`');
+//        return String.valueOf(r) + c;
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
