@@ -16,6 +16,9 @@ import static chess.ChessPiece.PieceType.*;
 public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[8][8];
 
+    public ChessBoard() {
+    }
+
     /**
      * Copy constructor that makes a deep copy of the board as given
      */

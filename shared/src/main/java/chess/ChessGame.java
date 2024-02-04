@@ -1,7 +1,9 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
+import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 
 /**
@@ -43,14 +45,33 @@ public class ChessGame {
     }
 
     /**
-     * Gets a valid moves for a piece at the given location
+     * Gets all valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
      * @return Set of valid moves for requested piece, or null if no piece at
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ArrayList<ChessMove> validMoves = new ArrayList<>();
+        ChessBoard boardcopy = new ChessBoard(this.board);
+
+        ChessPiece piece = board.getPiece(startPosition);
+        TeamColor team = piece.getTeamColor();
+
+        // find all possible moves the piece could physically make
+        ArrayList<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+
+        // for all moves, move the piece there
+        for (int i = 0; i < possibleMoves.size(); i++){
+
+        }
+
+        // for each of those positions:
+        //   put the piece into that new position
+        //   if (!isInCheck(team))
+        //     add that position to the move list
+        // restore the original copy of the board
+        return validMoves;
     }
 
     /**
@@ -60,9 +81,39 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        // run validmoves
+        // if the move is in validmoves
+        //   delete the piece, and put it there (set its old value to null)
+        // else throw the invalid exception
 
         String correctionString = "";
         throw new InvalidMoveException(correctionString);
+    }
+
+    /**
+     * goes through and finds all of the LOCATIONS of pieces of a type (or all if null) on a team
+     *
+     * @param teamColor which team we're looking at
+     * @param pieceType what kind of piece we're looking at (null means we don't care)
+     * @return ArrayList of *ChessPositions*
+     */
+    public ArrayList<ChessPosition> teamPieces(TeamColor teamColor, ChessPiece.PieceType pieceType) {
+        ArrayList<ChessPosition> places = new ArrayList<>();
+
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+                // skip if empty
+                if (piece == null) {
+                    continue;
+                }
+                // if we find a piece, check its team and type (accept it if we're looking for all)
+                if (piece.getTeamColor() == teamColor && (pieceType == null || piece.getPieceType() == pieceType)) {
+                    places.add(new ChessPosition(row, col));
+                }
+            }
+        }
+        return places;
     }
 
     /**
@@ -72,7 +123,27 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        // get all the positions of enemy pieces
+        TeamColor enemyColor = teamColor == WHITE ? BLACK : WHITE;
+        ArrayList<ChessPosition> enemyPositions = teamPieces(enemyColor, null);
+
+        // get all of the positions the enemy pieces are attacking
+        for (ChessPosition enemyPosition : enemyPositions) {
+            ChessPiece piece = board.getPiece(enemyPosition);
+            ArrayList<ChessMove> pieceMoves = piece.pieceMoves(board, enemyPosition);
+
+            // check and see if the king is being targeted
+            for (ChessMove pieceMove : pieceMoves) {
+                ChessPiece target = board.getPiece(pieceMove.getEndPosition());
+                // check if the square is occupied, then if its the right type, then if its the right team
+                if (target != null &&
+                        target.getPieceType() == ChessPiece.PieceType.KING &&
+                        target.getTeamColor() == teamColor) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -82,6 +153,16 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
+        // make a copy of our current board
+        // obtain king position by looking
+        // find all possible moves the king could physically make
+        // for each move, and for his current position:
+        //   put the king into that new position
+        //   if the king is not in check
+        //     return false
+        // return true
+        // restore the original copy of the board
+
         throw new RuntimeException("Not implemented");
     }
 
@@ -93,6 +174,18 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        // if isInCheck
+        //   return false
+        // make a copy of our current board
+        // obtain king position by looking
+        // find all possible moves the king could physically make
+        // for each move:
+        //   put the king into that new position
+        //   if the king is not in check
+        //     return false
+        // return true
+        // restore the original copy of the board
+
         throw new RuntimeException("Not implemented");
     }
 
