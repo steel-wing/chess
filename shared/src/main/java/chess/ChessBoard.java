@@ -15,8 +15,19 @@ import static chess.ChessPiece.PieceType.*;
  */
 public class ChessBoard {
     private final ChessPiece[][] board = new ChessPiece[8][8];
-    public ChessBoard() {
 
+    /**
+     * Copy constructor that makes a deep copy of the board as given
+     */
+    public ChessBoard(ChessBoard original) {
+        for (int row = 1; row <= 8; row++) {
+            for (int col = 1; col <= 8; col++) {
+                ChessPiece piece = original.getPiece(new ChessPosition(row, col));
+                if (piece != null) {
+                    this.addPiece(new ChessPosition(row, col), piece);
+                }
+            }
+        }
     }
 
     /**
@@ -27,6 +38,15 @@ public class ChessBoard {
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
         board[position.getRow() - 1][position.getColumn() - 1] = piece;
+    }
+
+    /**
+     * Removes a chess piece from the chessboard
+     *
+     * @param position where to remove the piece from
+     */
+    public void removePiece(ChessPosition position) {
+        board[position.getRow() - 1][position.getColumn() - 1] = null;
     }
 
     /**
