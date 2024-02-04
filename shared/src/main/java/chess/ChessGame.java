@@ -1,16 +1,14 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
-import static chess.ChessGame.TeamColor.BLACK;
-import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessGame.TeamColor.*;
 
 /**
  * For a class that can manage a chess game, making moves on a board
  * <p>
  * Note: You can add to this class, but you may not alter
- * signature of the existing methods.
+ * any signatures of the existing methods.
  */
 public class ChessGame {
     private TeamColor turn;
@@ -48,10 +46,10 @@ public class ChessGame {
      * Gets all valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
-     * @return Set of valid moves for requested piece, or null if no piece at
+     * @return ArrayList of valid moves for requested piece, or null if no piece at
      * startPosition
      */
-    public Collection<ChessMove> validMoves(ChessPosition startPosition) {
+    public ArrayList<ChessMove> validMoves(ChessPosition startPosition) {
         ArrayList<ChessMove> validMoves = new ArrayList<>();
         ChessBoard boardcopy = new ChessBoard(this.board);
 
@@ -60,17 +58,36 @@ public class ChessGame {
 
         // find all possible moves the piece could physically make
         ArrayList<ChessMove> possibleMoves = piece.pieceMoves(board, startPosition);
+        ChessPosition lastPosition = startPosition;
+        ChessPiece lastTarget = null;
 
         // for all moves, move the piece there
-        for (int i = 0; i < possibleMoves.size(); i++){
+        for (ChessMove move : possibleMoves){
+            ChessPosition targetPosition = move.getEndPosition();
+            ChessPiece targetPiece = board.getPiece(targetPosition);
 
+            // move the piece to its new location
+            board.removePiece(lastPosition);
+            board.addPiece(targetPosition, piece);
+
+            // replace the taken material, if there was any
+            if (lastTarget != null) {
+                board.addPiece(lastPosition, lastTarget);
+            }
+
+            // check to see if we are now in check
+            if(!isInCheck(team)){
+                validMoves.add(move);
+            }
+
+            // update the last place the piece was
+            lastPosition = targetPosition;
+            lastTarget = targetPiece;
         }
 
-        // for each of those positions:
-        //   put the piece into that new position
-        //   if (!isInCheck(team))
-        //     add that position to the move list
-        // restore the original copy of the board
+        // restore the board to the way it was
+        this.board = boardcopy;
+
         return validMoves;
     }
 
