@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class QueenMovesCalculator {
     public static ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos) {
