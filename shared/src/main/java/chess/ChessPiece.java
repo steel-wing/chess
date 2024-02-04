@@ -53,6 +53,9 @@ public class ChessPiece {
         return steps;
     }
 
+    /**
+     * increments the number of steps a piece has taken by 1
+     */
     public void stepIncrement() {
         steps++;
     }

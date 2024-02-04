@@ -45,6 +45,28 @@ public class ChessGame {
     }
 
     /**
+     * Sets this game's chessboard with a given board
+     *
+     * @param board the new board to use
+     */
+    public void setBoard(ChessBoard board) {
+        this.board = board;
+    }
+
+    /**
+     * Gets the current chessboard
+     *
+     * @return the chessboard
+     */
+    public ChessBoard getBoard() {
+        return this.board;
+    }
+
+    /////////////////
+    // LEGAL MOVES //
+    /////////////////
+
+    /**
      * Gets all valid moves for a piece at the given location
      *
      * @param startPosition the piece to get valid moves for
@@ -135,7 +157,9 @@ public class ChessGame {
                 // we're valid, so make the change, paying attention to pawn promotion
                 board.removePiece(start);
                 if (type == null) {
-                    removePassant(move);
+                    // handle the en passant case for deletion
+                    removePassant(start, end, piece, board);
+
                     // add the piece where it lands
                     board.addPiece(end, piece);
                 } else {
@@ -146,7 +170,7 @@ public class ChessGame {
                 // update whose turn it is, and steps (also any unkilled pawns)
                 turn = turn == WHITE ? BLACK : WHITE;
                 piece.stepIncrement();
-                pawnStepIncrement();
+                pawnStepIncrement(turn);
 
                 System.out.println(piece + " moved to " + end + " with " + piece.getSteps() + " step(s)");
 
@@ -288,32 +312,19 @@ public class ChessGame {
         return true;
     }
 
-    /**
-     * Sets this game's chessboard with a given board
-     *
-     * @param board the new board to use
-     */
-    public void setBoard(ChessBoard board) {
-        this.board = board;
-    }
+    ////////////////
+    // EN PASSANT //
+    ////////////////
 
     /**
-     * Gets the current chessboard
-     *
-     * @return the chessboard
+     *  increments the steps of all pawns who double-stepped last turn
      */
-    public ChessBoard getBoard() {
-        return this.board;
-    }
+    private void pawnStepIncrement(ChessGame.TeamColor team) {
+        int passantRow = team == WHITE ? 4 : 5;
+        // obtain the locations of all pawns
+        ArrayList<ChessPosition> pawnPositions = teamPieces(team, ChessPiece.PieceType.PAWN);
 
-
-    /**
-     *  increments the steps of all pawns who enPassanted last turn
-     */
-    private void pawnStepIncrement() {
-        int passantRow = turn == WHITE ? 4 : 5;
-
-        ArrayList<ChessPosition> pawnPositions = teamPieces(turn, ChessPiece.PieceType.PAWN);
+        // update their steps to 2 if they just double-jumped
         for (ChessPosition pawnPosition : pawnPositions) {
             if (pawnPosition.getRow() == passantRow &&
                     board.getPiece(pawnPosition).getSteps() == 1) {
@@ -323,14 +334,9 @@ public class ChessGame {
     }
 
     /**
-     * removes the piece that was killed in an en passant attack
+     * handles the removal of a piece taken by en passant
      */
-    private void removePassant(ChessMove move) {
-        ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
-        ChessPiece piece = board.getPiece(start);
-
-        // handle the en passant case for deletion
+    private void removePassant(ChessPosition start, ChessPosition end, ChessPiece piece, ChessBoard board) {
         if (piece.getPieceType() == PAWN &&
                 start.getRow() != end.getRow() &&
                 start.getColumn() != end.getColumn() &&
@@ -341,9 +347,8 @@ public class ChessGame {
         }
     }
 
-
     /**
-     * figures out if an en passant move can happen, and returns the options
+     * Produces possible en passant moves if any are available
      * @return possible enPassant attacks, empty list if none
      */
     private ArrayList<ChessMove> enPassant(ChessPosition startPosition) {
@@ -386,6 +391,9 @@ public class ChessGame {
         return attacks;
     }
 
+    //////////////
+    // CASTLING //
+    //////////////
 
     private ArrayList<ChessMove> castling(ChessPosition startPosition) {
         ArrayList<ChessMove> strafes = new ArrayList<>();
@@ -394,6 +402,10 @@ public class ChessGame {
 
         return strafes;
     }
+
+    ///////////////
+    // OVERRIDES //
+    ///////////////
 
     @Override
     public String toString() {
