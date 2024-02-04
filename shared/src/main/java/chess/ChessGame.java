@@ -98,12 +98,30 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        // run validmoves
-        // if the move is in validmoves
-        //   delete the piece, and put it there (set its old value to null)
-        // else throw the invalid exception
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece piece = board.getPiece(start);
 
-        String correctionString = "";
+        // verify that it's your turn
+        if (piece.getTeamColor() != turn) {
+            String correctionString = "Not your turn";
+            throw new InvalidMoveException(correctionString);
+        }
+
+        // verify that the move being requested is in validMoves()
+        for (ChessMove validMove : validMoves(start)) {
+            if (move.equals(validMove)) {
+                // if so, make the change
+                board.removePiece(start);
+                board.addPiece(end, piece);
+
+                // and update whose turn it is
+                turn = turn == WHITE ? BLACK : WHITE;
+                return;
+            }
+        }
+        // if all failed, throw an exception
+        String correctionString = "Invalid move requested";
         throw new InvalidMoveException(correctionString);
     }
 
