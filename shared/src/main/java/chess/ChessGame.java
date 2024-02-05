@@ -139,7 +139,8 @@ public class ChessGame {
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(start);
-        ChessPiece.PieceType type = move.getPromotionPiece();
+        ChessPiece.PieceType type = board.getPiece(start).getPieceType();
+        ChessPiece.PieceType promo = move.getPromotionPiece();
 
         // verify that it's your turn
         if (piece.getTeamColor() != turn) {
@@ -156,18 +157,23 @@ public class ChessGame {
 
             // we're valid, so make the change, paying attention to meta game rules
             board.removePiece(start);
-            if (type == null) {
+
+            if (promo == null) {
                 // handle the pawn deletion for en passant
-                removePawn(start, end, piece, board);
+                if (type == PAWN) {
+                    removePawn(start, end, board);
+                }
 
                 // handle the rook teleportation for castling
-                teleportCastle(start, end, piece);
+                if (type == KING) {
+                    teleportCastle(start, end);
+                }
 
                 // add the piece where it lands
                 board.addPiece(end, piece);
             } else {
                 // add the promoted piece where it lands
-                board.addPiece(end, new ChessPiece(turn, type));
+                board.addPiece(end, new ChessPiece(turn, promo));
             }
 
             // update whose turn it is, and steps (also any unkilled pawns)
@@ -279,7 +285,7 @@ public class ChessGame {
             kingOptions.add(new ChessMove(kingPosition, kingPosition, null));
         }
 
-        // neat little removal system to check the flanks for castling
+        // neat little removal system to check only the flanks for castling
         if (castling) {
             kingOptions.removeIf(move -> move.getEndPosition().getRow() != kingPosition.getRow());
         }
@@ -346,10 +352,9 @@ public class ChessGame {
     /**
      * handles the removal of a pawn capture by en passant
      */
-    private void removePawn(ChessPosition start, ChessPosition end, ChessPiece piece, ChessBoard board) {
+    private void removePawn(ChessPosition start, ChessPosition end, ChessBoard board) {
         // verify a pawn has performed en passant
-        if (piece.getPieceType() == PAWN &&
-                start.getRow() != end.getRow() &&
+        if (start.getRow() != end.getRow() &&
                 start.getColumn() != end.getColumn() &&
                 board.getPiece(end) == null) {
             int dir = turn == WHITE ? 1 : -1;
@@ -407,11 +412,7 @@ public class ChessGame {
     /**
      * handles the movement of rooks during castling, if applicable
      */
-    private void teleportCastle (ChessPosition start, ChessPosition end, ChessPiece piece) {
-        // if not a king, get rid of it
-        if (piece.getPieceType() != KING) {
-            return;
-        }
+    private void teleportCastle (ChessPosition start, ChessPosition end) {
         int row = start.getRow();
         // check to see if the king just moved two spaces right
         if (end.getColumn() - start.getColumn() == 2) {
