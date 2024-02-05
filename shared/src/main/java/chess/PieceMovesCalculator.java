@@ -3,6 +3,10 @@ package chess;
 import java.util.ArrayList;
 
 public class PieceMovesCalculator {
+    /**
+     * Delegates a request for the motion of a piece to the piece it belongs to
+     * @return Collection of valid moves
+     */
     public static ArrayList<ChessMove> pieceMoves(ChessBoard board, ChessPosition pos, ChessPiece.PieceType type){
         if (type == ChessPiece.PieceType.PAWN){
             return PawnMovesCalculator.pieceMoves(board, pos);
