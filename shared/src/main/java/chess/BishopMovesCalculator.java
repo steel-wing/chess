@@ -9,7 +9,7 @@ public class BishopMovesCalculator {
         // only move along the diagonals
         for (int dir = 1; dir >= -1; dir -= 2) {                 // dir is forwards/backwards
             for (int bias = 1; bias >= -1; bias -= 2) {          // bias is right/left
-                moves.addAll(ChessPiece.linearMotion(pos, dir, bias, 8, board));
+                moves.addAll(PieceMovesCalculator.linearMotion(pos, dir, bias, 8, board));
             }
         }
         return moves;
