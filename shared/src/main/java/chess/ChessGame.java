@@ -160,8 +160,6 @@ public class ChessGame {
             // we're valid, so move the pieces, paying special attention to meta-gamerules
             movePieces(move);
 
-            System.out.println(printValids(move.getEndPosition()));
-
             // update whose turn it is, and increment steps (including the double-jump pawns)
             turn = turn == WHITE ? BLACK : WHITE;
             piece.stepIncrement();
@@ -187,6 +185,9 @@ public class ChessGame {
         ChessPiece piece = board.getPiece(start);
         ChessPiece.PieceType type = board.getPiece(start).getPieceType();
         ChessPiece.PieceType promo = move.getPromotionPiece();
+
+        // print the options to the terminal
+        System.out.println(printValids(start));
 
         board.removePiece(start);
 
