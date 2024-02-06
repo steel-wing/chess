@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
@@ -165,6 +166,10 @@ public class ChessGame {
 
             pawnThink = new PawnMetaMotion(this);
             pawnThink.pawnStepIncrement(turn);
+
+            //printing test
+            System.out.println(this);
+
             return;
         }
         // if all failed, throw an exception
@@ -292,15 +297,78 @@ public class ChessGame {
     // but yeah go look up the unicode stuff and instead of going to caps, add the amount
     // necessary to turn the one color into the other
 
+    final static Map<ChessPiece.PieceType, Character> TypetoGlyph = Map.of(
+            PAWN, '♙',
+            KNIGHT, '♘',
+            ROOK, '♖',
+            QUEEN, '♕',
+            KING, '♔',
+            BISHOP, '♗'
+    );
+
+    public String printValids(ChessPosition position) {
+        ChessBoard board = this.board;
+        String spacer = "\u2001\u2005\u200A";
+        ArrayList<ChessMove> validmoves = validMoves(position);
+        // build array list of positions, not moves
+
+        StringBuilder output = new StringBuilder();
+        output.append(spacer);
+        output.append(spacer);
+        for (int col = 1; col <= 8; col++) {
+            output.append((char)(col + '`'));
+            output.append(spacer);
+        }
+        output.append("\n");
+
+        // iterate across the board and add all pieces while delimiting with "|"
+        for (int row = 8; row >= 1; row--){
+            output.append((char)(row + '0'));
+            output.append(" |");
+            for (int col = 1; col <= 8; col++) {
+                ChessPosition select = new ChessPosition(row, col);
+                ChessPiece piece = board.getPiece(select);
+                if (piece == null){
+                    if (true) { //valids.contains(new ChessPosition(row, col))){
+                        output.append("+");
+                    } else {
+                        output.append(spacer);
+                    }
+                    output.append("|");
+                    continue;
+                }
+                // white pieces are white
+                Character type = TypetoGlyph.get(piece.getPieceType());
+                type = piece.getTeamColor() == WHITE ? (char)(type + 6) : type;
+                output.append(type);
+                output.append("|");
+            }
+            output.append("\u2001\u2005");
+            output.append((char)(row + '0'));
+            output.append("\n");
+        }
+        output.append(spacer);
+        output.append(spacer);
+        for (int col = 1; col <= 8; col++) {
+            output.append((char)(col + '`'));
+            output.append(spacer);
+        }
+        output.append("\n");
+
+        return output.toString();
+    }
+
     @Override
     public String toString() {
         ChessBoard board = this.board;
+        String spacer = "\u2001\u2005\u200A";
 
         StringBuilder output = new StringBuilder();
-        output.append("   ");
+        output.append(spacer);
+        output.append(spacer);
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
-            output.append(" ");
+            output.append(spacer);
         }
         output.append("\n");
 
@@ -311,24 +379,28 @@ public class ChessGame {
             for (int col = 1; col <= 8; col++) {
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 if (piece == null){
-                    output.append(" |");
+                    output.append(spacer);
+                    output.append("|");
                     continue;
                 }
-                // white pieces go uppercase
-                Character type = ChessBoard.TypetocharMap.get(piece.getPieceType());
-                type = piece.getTeamColor() == WHITE ? Character.toUpperCase(type) : type;
+                // white pieces are white
+                Character type = TypetoGlyph.get(piece.getPieceType());
+                type = piece.getTeamColor() == WHITE ? (char)(type + 6) : type;
                 output.append(type);
                 output.append("|");
             }
-            output.append(' ');
+            output.append("\u2001\u2005");
             output.append((char)(row + '0'));
             output.append("\n");
         }
-        output.append("   ");
+        output.append(spacer);
+        output.append(spacer);
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
-            output.append(" ");
+            output.append(spacer);
         }
+        output.append("\n");
+
         return output.toString();
     }
 }
