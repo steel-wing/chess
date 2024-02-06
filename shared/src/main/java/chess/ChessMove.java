@@ -47,7 +47,7 @@ public class ChessMove {
         if (getPromotionPiece() == null) {
             return getEndPosition().toString();
         } else {
-            return getEndPosition().toString() + " -> " + ChessBoard.TypetocharMap.get(getPromotionPiece());
+            return getEndPosition().toString() + " -> " + ChessBoard.TypetoChar.get(getPromotionPiece());
         }
     }
     @Override

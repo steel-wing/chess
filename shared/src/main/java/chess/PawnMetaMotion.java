@@ -10,7 +10,6 @@ import static chess.ChessPiece.PieceType.*;
  * Implements en Passant
  */
 public class PawnMetaMotion {
-
     private final ChessGame game;
     private final ChessBoard board;
 
@@ -39,7 +38,7 @@ public class PawnMetaMotion {
     }
 
     /**
-     * handles the removal of a pawn capture by en passant
+     * handles the removal of a pawn captured by en passant
      *
      * @param move The move taking place
      */
@@ -53,6 +52,7 @@ public class PawnMetaMotion {
                 start.getColumn() != end.getColumn() &&
                 board.getPiece(end) == null) {
             int dir = turn == WHITE ? 1 : -1;
+            // remove the targeted pawn
             board.removePiece(new ChessPosition(end.getRow() - dir, end.getColumn()));
         }
     }
@@ -68,6 +68,7 @@ public class PawnMetaMotion {
         ChessPiece piece = board.getPiece(startPosition);
         ChessGame.TeamColor team = piece.getTeamColor();
 
+        // get location information
         int row = startPosition.getRow();
         int col = startPosition.getColumn();
         int dir = team == WHITE ? 1 : -1;

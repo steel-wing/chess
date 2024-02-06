@@ -92,7 +92,7 @@ public class ChessBoard {
     }
 
     // stole this from the TestFactory so I could make some nice toString() outputs
-    final static Map <ChessPiece.PieceType, Character> TypetocharMap = Map.of(
+    final static Map <ChessPiece.PieceType, Character> TypetoChar = Map.of(
             PAWN, 'p',
             KNIGHT, 'n',
             ROOK, 'r',
@@ -115,7 +115,7 @@ public class ChessBoard {
                     continue;
                 }
                 // white pieces go uppercase
-                Character type = TypetocharMap.get(piece.getPieceType());
+                Character type = TypetoChar.get(piece.getPieceType());
                 type = piece.getTeamColor() == WHITE ? Character.toUpperCase(type) : type;
                 output.append(type);
                 output.append("|");
@@ -124,6 +124,7 @@ public class ChessBoard {
         }
         return output.toString();
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -131,6 +132,7 @@ public class ChessBoard {
         ChessBoard that = (ChessBoard) o;
         return Arrays.deepEquals(board, that.board);
     }
+
     @Override
     public int hashCode() {
         return Arrays.deepHashCode(board);
