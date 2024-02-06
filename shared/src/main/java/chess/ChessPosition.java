@@ -40,11 +40,12 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "{" + row + ", " + col + "}";
-    }
 //        char r = (char)(row + '0');
 //        char c = (char)(col + '`');
 //        return String.valueOf(r) + c;
+        return "{" + row + ", " + col + "}";
+    }
+
 
 
     @Override
