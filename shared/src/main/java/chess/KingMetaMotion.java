@@ -121,15 +121,15 @@ public class KingMetaMotion {
         ChessPiece King = board.getPiece(startPosition);
         ChessGame.TeamColor team = King.getTeamColor();
 
-        // escape if the king has moved
-        if (King.getSteps() != 0) {
-            return strafes;
-        }
-
         // ordinals
         boolean left = true;
         boolean right = true;
         int row = team == WHITE ? 1 : 8;
+
+        // escape if the king has moved
+        if (King.getSteps() != 0 || startPosition.getColumn() != 5 || startPosition.getRow() != row) {
+            return strafes;
+        }
 
         // read the row, and see which direction, if any, we can castle
         for (int col = 1; col <= 8; col++) {
