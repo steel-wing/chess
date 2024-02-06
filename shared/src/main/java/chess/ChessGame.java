@@ -336,7 +336,6 @@ public class ChessGame {
         return output.toString();
     }
 
-
     void addSquare (ChessPosition position, StringBuilder output, int row, int col) {
         String spacer = "\u2001\u2005\u200A";
         ChessPosition select = new ChessPosition(row, col);
