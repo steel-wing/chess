@@ -15,9 +15,10 @@ import static chess.ChessPiece.PieceType.*;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
-
+    private KingMetaMotion kingThink;
+    private PawnMetaMotion pawnThink;
     public ChessGame() {
-        this.turn = WHITE;
+        turn = WHITE;
     }
 
     /**
@@ -90,10 +91,12 @@ public class ChessGame {
 
         // include enPassant and castling, if relevant
         if (piece.getPieceType() == PAWN) {
-            possibleMoves.addAll(enPassant(startPosition));
+            pawnThink = new PawnMetaMotion(this);
+            possibleMoves.addAll(pawnThink.enPassant(startPosition));
         }
         if (piece.getPieceType() == KING) {
-            possibleMoves.addAll(castling(startPosition));
+            kingThink = new KingMetaMotion(this);
+            possibleMoves.addAll(kingThink.castling(startPosition));
         }
 
         // save info about hypothetical motion
@@ -136,11 +139,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        // find relevant location and piece information
         ChessPosition start = move.getStartPosition();
-        ChessPosition end = move.getEndPosition();
         ChessPiece piece = board.getPiece(start);
-        ChessPiece.PieceType type = board.getPiece(start).getPieceType();
-        ChessPiece.PieceType promo = move.getPromotionPiece();
 
         // verify that it's your turn
         if (piece.getTeamColor() != turn) {
@@ -150,36 +151,20 @@ public class ChessGame {
 
         // verify that the move being requested is in validMoves()
         for (ChessMove validMove : validMoves(start)) {
-            // remove any invalid move
+            // skip any invalid move
             if (!move.equals(validMove)) {
                 continue;
             }
 
-            // we're valid, so make the change, paying attention to meta game rules
-            board.removePiece(start);
+            // we're valid, so move the pieces, paying special attention to meta-gamerules
+            movePieces(move);
 
-            if (promo == null) {
-                // handle the pawn deletion for en passant
-                if (type == PAWN) {
-                    removePawn(start, end, board);
-                }
-
-                // handle the rook teleportation for castling
-                if (type == KING) {
-                    teleportCastle(start, end);
-                }
-
-                // add the piece where it lands
-                board.addPiece(end, piece);
-            } else {
-                // add the promoted piece where it lands
-                board.addPiece(end, new ChessPiece(turn, promo));
-            }
-
-            // update whose turn it is, and steps (also any unkilled pawns)
+            // update whose turn it is, and increment steps (including the double-jump pawns)
             turn = turn == WHITE ? BLACK : WHITE;
             piece.stepIncrement();
-            pawnStepIncrement(turn);
+
+            pawnThink = new PawnMetaMotion(this);
+            pawnThink.pawnStepIncrement(turn);
             return;
         }
         // if all failed, throw an exception
@@ -188,13 +173,49 @@ public class ChessGame {
     }
 
     /**
+     * A lil helper function to handle the physical motions of individual pieces
+     * @param move The requested move
+     */
+    private void movePieces(ChessMove move) {
+        // find relevant location and piece information
+        ChessPosition start = move.getStartPosition();
+        ChessPosition end = move.getEndPosition();
+        ChessPiece piece = board.getPiece(start);
+        ChessPiece.PieceType type = board.getPiece(start).getPieceType();
+        ChessPiece.PieceType promo = move.getPromotionPiece();
+
+        board.removePiece(start);
+
+        if (promo == null) {
+            // handle the pawn deletion for en passant
+            if (type == PAWN) {
+                pawnThink = new PawnMetaMotion(this);
+                pawnThink.removePawn(move);
+            }
+
+            // handle the rook teleportation for castling
+            if (type == KING) {
+                kingThink = new KingMetaMotion(this);
+                kingThink.teleportCastle(move);
+            }
+
+            // add the piece where it lands
+            board.addPiece(end, piece);
+        } else {
+            // add the promoted piece where it lands
+            board.addPiece(end, new ChessPiece(turn, promo));
+        }
+    }
+
+
+    /**
      * goes through and finds all of the LOCATIONS of pieces of a type (or all if null) on a team
      *
      * @param teamColor which team we're looking at
      * @param pieceType what kind of piece we're looking at (null means we don't care)
      * @return ArrayList of *ChessPositions*
      */
-    private ArrayList<ChessPosition> teamPieces(TeamColor teamColor, ChessPiece.PieceType pieceType) {
+    public ArrayList<ChessPosition> teamPieces(TeamColor teamColor, ChessPiece.PieceType pieceType) {
         ArrayList<ChessPosition> places = new ArrayList<>();
 
         for (int row = 1; row <= 8; row++) {
@@ -250,7 +271,8 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return kingChecker(teamColor, true, false);
+        kingThink = new KingMetaMotion(this);
+        return kingThink.kingChecker(teamColor, true, false);
     }
 
     /**
@@ -261,244 +283,9 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return kingChecker(teamColor, false, false);
+        kingThink = new KingMetaMotion(this);
+        return kingThink.kingChecker(teamColor, false, false);
     }
-
-    /**
-     * Helper function to determine if the given team is in checkmate, stalemate,
-     * or can mamybe castle,
-     * while complying with the method standards provided
-     *
-     * @param teamColor self-explanatory
-     * @param checkmate determines whether we're looking for checkmate or stalemate
-     */
-    private boolean kingChecker(TeamColor teamColor, boolean checkmate, boolean castling) {
-        ChessBoard boardcopy = new ChessBoard(this.board);
-
-        // locate the king
-        ChessPosition kingPosition = teamPieces(teamColor, KING).getFirst();
-        ChessPiece King = board.getPiece(kingPosition);
-
-        // find all options available to the king (including his location, if checking for mate)
-        ArrayList<ChessMove> kingOptions = King.pieceMoves(board, kingPosition);
-        if (checkmate) {
-            kingOptions.add(new ChessMove(kingPosition, kingPosition, null));
-        }
-
-        // neat little removal system to check only the flanks for castling
-        if (castling) {
-            kingOptions.removeIf(move -> move.getEndPosition().getRow() != kingPosition.getRow());
-        }
-
-        // save info about king's hypothetical movement
-        ChessPosition lastPosition = kingPosition;
-        ChessPiece lastTarget = null;
-
-        // for all moves, move the piece there
-        for (ChessMove option : kingOptions){
-            ChessPosition targetPosition = option.getEndPosition();
-            ChessPiece targetPiece = board.getPiece(targetPosition);
-
-            // if the position is blocked, for castling, skip it
-            if (castling && targetPiece != null) {
-                continue;
-            }
-
-            // move the piece to its new location
-            board.removePiece(lastPosition);
-            board.addPiece(targetPosition, King);
-
-            // replace the taken material, if there was any
-            if (lastTarget != null) {
-                board.addPiece(lastPosition, lastTarget);
-            }
-
-            // if we aren't in check now, the move is valid
-            if(!isInCheck(teamColor)){
-                return false;
-            }
-
-            // update the last place the king was
-            lastPosition = targetPosition;
-            lastTarget = targetPiece;
-        }
-
-        // restore the board to the way it was and return
-        this.board = boardcopy;
-        return true;
-    }
-
-    ////////////////
-    // EN PASSANT //
-    ////////////////
-
-    /**
-     *  increments the steps of all pawns who double-stepped last turn
-     */
-    private void pawnStepIncrement(ChessGame.TeamColor team) {
-        int passantRow = team == WHITE ? 4 : 5;
-        // obtain the locations of all pawns
-        ArrayList<ChessPosition> pawnPositions = teamPieces(team, ChessPiece.PieceType.PAWN);
-
-        // update their steps to 2 if they just double-jumped
-        for (ChessPosition pawnPosition : pawnPositions) {
-            if (pawnPosition.getRow() == passantRow &&
-                board.getPiece(pawnPosition).getSteps() == 1) {
-                board.getPiece(pawnPosition).stepIncrement();
-            }
-        }
-    }
-
-    /**
-     * handles the removal of a pawn capture by en passant
-     */
-    private void removePawn(ChessPosition start, ChessPosition end, ChessBoard board) {
-        // verify a pawn has performed en passant
-        if (start.getRow() != end.getRow() &&
-                start.getColumn() != end.getColumn() &&
-                board.getPiece(end) == null) {
-            int dir = turn == WHITE ? 1 : -1;
-            board.removePiece(new ChessPosition(end.getRow() - dir, end.getColumn()));
-        }
-    }
-
-    /**
-     * Produces possible en passant moves if any are available
-     * @return possible enPassant attacks, empty list if none
-     */
-    private ArrayList<ChessMove> enPassant(ChessPosition startPosition) {
-        ArrayList<ChessMove> attacks = new ArrayList<>();
-        ChessPiece piece = board.getPiece(startPosition);
-        TeamColor team = piece.getTeamColor();
-
-        int row = startPosition.getRow();
-        int col = startPosition.getColumn();
-        int dir = team == WHITE ? 1 : -1;
-
-        // check to see if we're in the enPassant-able row for our color
-        int attackRow = team == WHITE ? 5 : 4;
-        if (row != attackRow) {
-            return attacks;
-        }
-
-        // check to see if the pawn to our right has only moved once
-        if (col < 8) {
-            ChessPiece target = board.getPiece(new ChessPosition(row, col + 1));
-            if (target != null &&
-                target.getTeamColor() != team &&
-                target.getPieceType() == PAWN &&
-                target.getSteps() == 1) {
-                attacks.add(new ChessMove(startPosition, new ChessPosition(row + dir, col + 1), null));
-            }
-        }
-
-        // check to see if the pawn to our left has only moved once
-        if (col > 1) {
-            ChessPiece target = board.getPiece(new ChessPosition(row, col - 1));
-            if (target != null &&
-                target.getTeamColor() != team &&
-                target.getPieceType() == PAWN &&
-                target.getSteps() == 1) {
-                attacks.add(new ChessMove(startPosition, new ChessPosition(row + dir, col - 1), null));
-            }
-        }
-        return attacks;
-    }
-
-    //////////////
-    // CASTLING //
-    //////////////
-
-    /**
-     * handles the movement of rooks during castling, if applicable
-     */
-    private void teleportCastle (ChessPosition start, ChessPosition end) {
-        int row = start.getRow();
-        // check to see if the king just moved two spaces right
-        if (end.getColumn() - start.getColumn() == 2) {
-            // delete the right rook, and put it on the other side of the king
-            board.removePiece(new ChessPosition(row, 8));
-            board.addPiece(new ChessPosition(row, 6), new ChessPiece(turn, ROOK));
-        }
-        // check to see if the king just moved two spaces left
-        if (end.getColumn() - start.getColumn() == -2) {
-            // delete the right rook, and put it on the other side of the king
-            board.removePiece(new ChessPosition(row, 1));
-            board.addPiece(new ChessPosition(row, 4), new ChessPiece(turn, ROOK));
-        }
-    }
-
-    /**
-     *  implements castling
-     * @return a list of possible castle-moves for the king
-     */
-    private ArrayList<ChessMove> castling(ChessPosition startPosition) {
-        ArrayList<ChessMove> strafes = new ArrayList<>();
-        ChessPiece King = board.getPiece(startPosition);
-        TeamColor team = King.getTeamColor();
-
-        // escape if the king has moved
-        if (King.getSteps() != 0) {
-            return strafes;
-        }
-
-        // ordinals
-        boolean left = true;
-        boolean right = true;
-        int row = team == WHITE ? 1 : 8;
-
-        // read the row, and see which direction, if any, we can castle
-        for (int col = 1; col <= 8; col++) {
-            ChessPiece select = board.getPiece(new ChessPosition(row, col));
-            if (select == null) {
-                continue;
-            }
-            // remove any direction with anything other than a rook or king in it
-            ChessPiece.PieceType target = select.getPieceType();
-            if (target != KING && target != ROOK) {
-                if (col < 5) {
-                    left = false;
-                }
-                if (col > 5) {
-                    right = false;
-                }
-            }
-        }
-
-        // leave if the king, or both of his flanks, are in check
-        if (isInCheck(team) || kingChecker(team, false, true)) {
-            return strafes;
-        }
-
-        // check right flank
-        if (right) {
-           // escape if the rook has moved
-           ChessPiece rightRook = board.getPiece(new ChessPosition(row, 8));
-           if (rightRook == null || rightRook.getSteps() != 0) {
-               return strafes;
-           }
-            // otherwise, teleport the rook
-            ChessPosition strafeRight = new ChessPosition(row, 7);
-           strafes.add(new ChessMove(startPosition, strafeRight, null));
-       }
-
-       // check left flank
-       if (left) {
-           // escape if the rook has moved
-           ChessPiece leftRook = board.getPiece(new ChessPosition(row, 1));
-           if (leftRook == null || leftRook.getSteps() != 0) {
-               return strafes;
-           }
-           // otherwise, teleport the rook
-           ChessPosition strafeLeft = new ChessPosition(row, 3);
-           strafes.add(new ChessMove(startPosition, strafeLeft, null));
-       }
-        return strafes;
-    }
-
-    ///////////////
-    // OVERRIDES //
-    ///////////////
 
     // add the cool chess pieces in here
     // remember the colors are inverted in dark mode, not sure what to do about that
