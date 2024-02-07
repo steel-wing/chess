@@ -36,6 +36,7 @@ public class PawnMetaMotion {
      * @param move The move taking place
      */
     public static void removePawn(ChessGame game, ChessMove move) {
+        // find relevant location and piece information
         ChessBoard board = game.getBoard();
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
@@ -58,6 +59,7 @@ public class PawnMetaMotion {
      * @return Possible enPassant attacks, empty list if none
      */
     public static ArrayList<ChessMove> enPassant(ChessGame game, ChessPosition startPosition) {
+        // find relevant location and piece information
         ChessBoard board = game.getBoard();
         ArrayList<ChessMove> attacks = new ArrayList<>();
         ChessPiece piece = board.getPiece(startPosition);

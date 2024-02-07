@@ -83,12 +83,13 @@ public class KingMetaMotion {
      * @param move The move taking place
      */
     public static void teleportCastle (ChessGame game, ChessMove move) {
+        // find relevant location and piece information
         ChessBoard board = game.getBoard();
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessGame.TeamColor turn = game.getTeamTurn();
-
         int row = start.getRow();
+
         // check to see if the king just moved two spaces right
         if (end.getColumn() - start.getColumn() == 2) {
             // delete the right rook, and put it on the other side of the king
@@ -108,6 +109,7 @@ public class KingMetaMotion {
      * @return a list of possible castle-moves for the king
      */
     public static ArrayList<ChessMove> castling(ChessGame game, ChessPosition startPosition) {
+        // find relevant location and piece information
         ChessBoard board = game.getBoard();
         ArrayList<ChessMove> strafes = new ArrayList<>();
         ChessPiece King = board.getPiece(startPosition);

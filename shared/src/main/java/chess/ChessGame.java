@@ -149,7 +149,7 @@ public class ChessGame {
                 continue;
             }
 
-            // we're valid, so move the pieces, paying special attention to meta-gamerules
+            // we're valid, so actually move the piece, paying special attention to meta-gamerules
             movePieces(move);
 
             // update whose turn it is, and increment steps (including the double-jump pawns)
@@ -178,9 +178,6 @@ public class ChessGame {
         ChessPiece.PieceType type = board.getPiece(start).getPieceType();
         ChessPiece.PieceType promo = move.getPromotionPiece();
 
-        // print the options to the terminal
-        System.out.println(printValids(start));
-
         board.removePiece(start);
 
         if (promo == null) {
@@ -201,7 +198,6 @@ public class ChessGame {
             board.addPiece(end, new ChessPiece(turn, promo));
         }
     }
-
 
     /**
      * Goes through and finds all of the LOCATIONS of pieces of a type (or all if null) on a team
@@ -330,7 +326,6 @@ public class ChessGame {
 
         return output.toString();
     }
-
 
     /**
      * A helper function for printValids() which builds a pretty square based on context
