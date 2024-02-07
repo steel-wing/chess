@@ -62,10 +62,6 @@ public class ChessGame {
         return this.board;
     }
 
-    /////////////////
-    // LEGAL MOVES //
-    /////////////////
-
     /**
      * Gets all valid moves for a piece at the given location
      *
