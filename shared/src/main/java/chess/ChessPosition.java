@@ -38,15 +38,16 @@ public class ChessPosition {
         return col;
     }
 
-    @Override
-    public String toString() {
-//        char r = (char)(row + '0');
-//        char c = (char)(col + '`');
-//        return String.valueOf(r) + c;
-        return "{" + row + ", " + col + "}";
+    public String toFancyString() {
+        char r = (char)(row + '0');
+        char c = (char)(col + '`');
+        return String.valueOf(r) + c;
     }
 
-
+    @Override
+    public String toString() {
+        return "{" + row + ", " + col + "}";
+    }
 
     @Override
     public boolean equals(Object o) {

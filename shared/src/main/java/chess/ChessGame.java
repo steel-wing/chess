@@ -306,8 +306,8 @@ public class ChessGame {
         String spacer = "\u2001\u2005\u200A";
 
         StringBuilder output = new StringBuilder();
-        output.append(spacer);
-        output.append(spacer);
+        output.append(position.toFancyString());
+        output.append("\u2001\u200A");
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
