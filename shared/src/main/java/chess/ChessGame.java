@@ -90,10 +90,10 @@ public class ChessGame {
 
         // include enPassant and castling, if relevant
         if (piece.getPieceType() == PAWN) {
-            possibleMoves.addAll(PawnMetaMotion.enPassant(startPosition, this));
+            possibleMoves.addAll(PawnMetaMotion.enPassant(this, startPosition));
         }
         if (piece.getPieceType() == KING) {
-            possibleMoves.addAll(KingMetaMotion.castling(startPosition, this));
+            possibleMoves.addAll(KingMetaMotion.castling(this, startPosition));
         }
 
         // save info about hypothetical motion
@@ -160,7 +160,7 @@ public class ChessGame {
             turn = turn == WHITE ? BLACK : WHITE;
             piece.stepIncrement();
 
-            PawnMetaMotion.pawnStepIncrement(turn, this);
+            PawnMetaMotion.pawnStepIncrement(this, turn);
 
             return;
         }
@@ -189,12 +189,12 @@ public class ChessGame {
         if (promo == null) {
             // handle the pawn deletion for en passant
             if (type == PAWN) {
-                PawnMetaMotion.removePawn(move, this);
+                PawnMetaMotion.removePawn(this, move);
             }
 
             // handle the rook teleportation for castling
             if (type == KING) {
-                KingMetaMotion.teleportCastle(move, this);
+                KingMetaMotion.teleportCastle(this, move);
             }
 
             // add the piece where it lands
@@ -269,7 +269,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return KingMetaMotion.kingChecker(teamColor, true, false, this);
+        return KingMetaMotion.kingChecker(this, teamColor, true, false);
     }
 
     /**
@@ -280,7 +280,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return KingMetaMotion.kingChecker(teamColor, false, false, this);
+        return KingMetaMotion.kingChecker(this, teamColor, false, false);
     }
 
     final static Map<ChessPiece.PieceType, Character> TypetoGlyph = Map.of(

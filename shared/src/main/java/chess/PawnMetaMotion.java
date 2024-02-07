@@ -15,7 +15,7 @@ public class PawnMetaMotion {
      *
      * @param team The team of the pawns that need step-incrementation
      */
-    public static void pawnStepIncrement(ChessGame.TeamColor team, ChessGame game) {
+    public static void pawnStepIncrement(ChessGame game, ChessGame.TeamColor team) {
         ChessBoard board = game.getBoard();
         int passantRow = team == WHITE ? 4 : 5;
         // obtain the locations of all pawns
@@ -35,7 +35,7 @@ public class PawnMetaMotion {
      *
      * @param move The move taking place
      */
-    public static void removePawn(ChessMove move, ChessGame game) {
+    public static void removePawn(ChessGame game, ChessMove move) {
         ChessBoard board = game.getBoard();
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
@@ -57,7 +57,7 @@ public class PawnMetaMotion {
      * @param startPosition The position of our attacking pawn, originally
      * @return Possible enPassant attacks, empty list if none
      */
-    public static ArrayList<ChessMove> enPassant(ChessPosition startPosition, ChessGame game) {
+    public static ArrayList<ChessMove> enPassant(ChessGame game, ChessPosition startPosition) {
         ChessBoard board = game.getBoard();
         ArrayList<ChessMove> attacks = new ArrayList<>();
         ChessPiece piece = board.getPiece(startPosition);

@@ -21,7 +21,7 @@ public class KingMetaMotion {
      * @param castling determines if we're checking if we can castle
      * @return True IFF the requested move CANNOT be completed
      */
-    public static boolean kingChecker(ChessGame.TeamColor teamColor, boolean checkmate, boolean castling, ChessGame game) {
+    public static boolean kingChecker(ChessGame game, ChessGame.TeamColor teamColor, boolean checkmate, boolean castling) {
         ChessBoard board = game.getBoard();
         ChessBoard boardcopy = new ChessBoard(board);
 
@@ -82,7 +82,7 @@ public class KingMetaMotion {
      * handles the movement of rooks during castling, if applicable
      * @param move The move taking place
      */
-    public static void teleportCastle (ChessMove move, ChessGame game) {
+    public static void teleportCastle (ChessGame game, ChessMove move) {
         ChessBoard board = game.getBoard();
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
@@ -107,7 +107,7 @@ public class KingMetaMotion {
      *  implements castling
      * @return a list of possible castle-moves for the king
      */
-    public static ArrayList<ChessMove> castling(ChessPosition startPosition, ChessGame game) {
+    public static ArrayList<ChessMove> castling(ChessGame game, ChessPosition startPosition) {
         ChessBoard board = game.getBoard();
         ArrayList<ChessMove> strafes = new ArrayList<>();
         ChessPiece King = board.getPiece(startPosition);
@@ -142,7 +142,7 @@ public class KingMetaMotion {
         }
 
         // leave if the king, or both of his flanks, are in check
-        if (game.isInCheck(team) || kingChecker(team, false, true, game)) {
+        if (game.isInCheck(team) || kingChecker(game, team, false, true)) {
             return strafes;
         }
 
