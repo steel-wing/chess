@@ -10,20 +10,13 @@ import static chess.ChessPiece.PieceType.*;
  * Implements en Passant
  */
 public class PawnMetaMotion {
-    private final ChessGame game;
-    private final ChessBoard board;
-
-    public PawnMetaMotion(ChessGame game) {
-        this.game = game;
-        this.board = game.getBoard();
-    }
-
     /**
      *  increments the steps of all pawns who double-stepped last turn
      *
      * @param team The team of the pawns that need step-incrementation
      */
-    public void pawnStepIncrement(ChessGame.TeamColor team) {
+    public static void pawnStepIncrement(ChessGame.TeamColor team, ChessGame game) {
+        ChessBoard board = game.getBoard();
         int passantRow = team == WHITE ? 4 : 5;
         // obtain the locations of all pawns
         ArrayList<ChessPosition> pawnPositions = game.teamPieces(team, ChessPiece.PieceType.PAWN);
@@ -42,7 +35,8 @@ public class PawnMetaMotion {
      *
      * @param move The move taking place
      */
-    public void removePawn(ChessMove move) {
+    public static void removePawn(ChessMove move, ChessGame game) {
+        ChessBoard board = game.getBoard();
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
         ChessGame.TeamColor turn = game.getTeamTurn();
@@ -63,7 +57,8 @@ public class PawnMetaMotion {
      * @param startPosition The position of our attacking pawn, originally
      * @return Possible enPassant attacks, empty list if none
      */
-    public ArrayList<ChessMove> enPassant(ChessPosition startPosition) {
+    public static ArrayList<ChessMove> enPassant(ChessPosition startPosition, ChessGame game) {
+        ChessBoard board = game.getBoard();
         ArrayList<ChessMove> attacks = new ArrayList<>();
         ChessPiece piece = board.getPiece(startPosition);
         ChessGame.TeamColor team = piece.getTeamColor();

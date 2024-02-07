@@ -16,8 +16,6 @@ import static chess.ChessPiece.PieceType.*;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
-    private KingMetaMotion kingThink;
-    private PawnMetaMotion pawnThink;
     public ChessGame() {
         turn = WHITE;
     }
@@ -92,12 +90,10 @@ public class ChessGame {
 
         // include enPassant and castling, if relevant
         if (piece.getPieceType() == PAWN) {
-            pawnThink = new PawnMetaMotion(this);
-            possibleMoves.addAll(pawnThink.enPassant(startPosition));
+            possibleMoves.addAll(PawnMetaMotion.enPassant(startPosition, this));
         }
         if (piece.getPieceType() == KING) {
-            kingThink = new KingMetaMotion(this);
-            possibleMoves.addAll(kingThink.castling(startPosition));
+            possibleMoves.addAll(KingMetaMotion.castling(startPosition, this));
         }
 
         // save info about hypothetical motion
@@ -164,8 +160,7 @@ public class ChessGame {
             turn = turn == WHITE ? BLACK : WHITE;
             piece.stepIncrement();
 
-            pawnThink = new PawnMetaMotion(this);
-            pawnThink.pawnStepIncrement(turn);
+            PawnMetaMotion.pawnStepIncrement(turn, this);
 
             return;
         }
@@ -194,14 +189,12 @@ public class ChessGame {
         if (promo == null) {
             // handle the pawn deletion for en passant
             if (type == PAWN) {
-                pawnThink = new PawnMetaMotion(this);
-                pawnThink.removePawn(move);
+                PawnMetaMotion.removePawn(move, this);
             }
 
             // handle the rook teleportation for castling
             if (type == KING) {
-                kingThink = new KingMetaMotion(this);
-                kingThink.teleportCastle(move);
+                KingMetaMotion.teleportCastle(move, this);
             }
 
             // add the piece where it lands
@@ -276,8 +269,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        kingThink = new KingMetaMotion(this);
-        return kingThink.kingChecker(teamColor, true, false);
+        return KingMetaMotion.kingChecker(teamColor, true, false, this);
     }
 
     /**
@@ -288,8 +280,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        kingThink = new KingMetaMotion(this);
-        return kingThink.kingChecker(teamColor, false, false);
+        return KingMetaMotion.kingChecker(teamColor, false, false, this);
     }
 
     final static Map<ChessPiece.PieceType, Character> TypetoGlyph = Map.of(

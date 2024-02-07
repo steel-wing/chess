@@ -11,15 +11,6 @@ import static chess.ChessPiece.PieceType.*;
  * a useful helper function for Check, Stalemate, and Checkmate
  */
 public class KingMetaMotion {
-
-    private final ChessGame game;
-    private final ChessBoard board;
-
-    public KingMetaMotion(ChessGame game) {
-        this.game = game;
-        this.board = game.getBoard();
-    }
-
     /**
      * Helper function to determine if the given team is in checkmate, stalemate,
      * or can mamybe castle,
@@ -30,7 +21,8 @@ public class KingMetaMotion {
      * @param castling determines if we're checking if we can castle
      * @return True IFF the requested move CANNOT be completed
      */
-    public boolean kingChecker(ChessGame.TeamColor teamColor, boolean checkmate, boolean castling) {
+    public static boolean kingChecker(ChessGame.TeamColor teamColor, boolean checkmate, boolean castling, ChessGame game) {
+        ChessBoard board = game.getBoard();
         ChessBoard boardcopy = new ChessBoard(board);
 
         // locate the king
@@ -90,12 +82,12 @@ public class KingMetaMotion {
      * handles the movement of rooks during castling, if applicable
      * @param move The move taking place
      */
-    public void teleportCastle (ChessMove move) {
+    public static void teleportCastle (ChessMove move, ChessGame game) {
+        ChessBoard board = game.getBoard();
         ChessPosition start = move.getStartPosition();
         ChessPosition end = move.getEndPosition();
-
-        ChessBoard board = game.getBoard();
         ChessGame.TeamColor turn = game.getTeamTurn();
+
         int row = start.getRow();
         // check to see if the king just moved two spaces right
         if (end.getColumn() - start.getColumn() == 2) {
@@ -115,7 +107,7 @@ public class KingMetaMotion {
      *  implements castling
      * @return a list of possible castle-moves for the king
      */
-    public ArrayList<ChessMove> castling(ChessPosition startPosition) {
+    public static ArrayList<ChessMove> castling(ChessPosition startPosition, ChessGame game) {
         ChessBoard board = game.getBoard();
         ArrayList<ChessMove> strafes = new ArrayList<>();
         ChessPiece King = board.getPiece(startPosition);
@@ -150,7 +142,7 @@ public class KingMetaMotion {
         }
 
         // leave if the king, or both of his flanks, are in check
-        if (game.isInCheck(team) || kingChecker(team, false, true)) {
+        if (game.isInCheck(team) || kingChecker(team, false, true, game)) {
             return strafes;
         }
 
