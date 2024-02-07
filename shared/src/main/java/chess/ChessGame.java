@@ -28,7 +28,7 @@ public class ChessGame {
     }
 
     /**
-     * Set's which teams turn it is
+     * Set's which team's turn it is
      *
      * @param team the team whose turn it is
      */
@@ -167,6 +167,7 @@ public class ChessGame {
 
     /**
      * A lil helper function to handle the physical motions of individual pieces
+     *
      * @param move The requested move
      */
     private void movePieces(ChessMove move) {
@@ -203,7 +204,7 @@ public class ChessGame {
 
 
     /**
-     * goes through and finds all of the LOCATIONS of pieces of a type (or all if null) on a team
+     * Goes through and finds all of the LOCATIONS of pieces of a type (or all if null) on a team
      *
      * @param teamColor which team we're looking at
      * @param pieceType what kind of piece we're looking at (null means we don't care)
@@ -288,6 +289,12 @@ public class ChessGame {
             BISHOP, '♗'
     );
 
+    /**
+     * Prints a chessboard nice and pretty-like, with all valid moves from a position displayed
+     *
+     * @param position The position from which to look for valid moves
+     * @return A really pretty chessboard interpretation
+     */
     public String printValids(ChessPosition position) {
         ChessBoard board = this.board;
         String spacer = "\u2001\u2005\u200A";
@@ -324,6 +331,10 @@ public class ChessGame {
         return output.toString();
     }
 
+
+    /**
+     * A helper function for printValids() which builds a pretty square based on context
+     */
     void addSquare (ChessPosition position, StringBuilder output, int row, int col) {
         String spacer = "\u2001\u2005\u200A";
         ChessPosition select = new ChessPosition(row, col);
