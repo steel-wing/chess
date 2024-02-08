@@ -39,9 +39,9 @@ public class ChessPosition {
     }
 
     public String toFancyString() {
-        char r = (char)(row + '0');
         char c = (char)(col + '`');
-        return String.valueOf(r) + c;
+        char r = (char)(row + '0');
+        return String.valueOf(c) + r;
     }
 
     @Override
