@@ -437,6 +437,7 @@ public class ChessGame {
      * @return The string from before but rotated 180 degrees for the other player
      */
     public String gameFlip(String inputGame) {
+        //System.out.println(game.gameFlip(game.toString()));
         StringBuilder output = new StringBuilder();
         output.append(inputGame);
         output.reverse();
