@@ -155,7 +155,7 @@ public class KingMetaMotion {
             if (rightRook == null || rightRook.getSteps() != 0) {
                 return strafes;
             }
-            // otherwise, teleport the rook
+            // otherwise, we're clear for movement
             ChessPosition strafeRight = new ChessPosition(row, 7);
             strafes.add(new ChessMove(startPosition, strafeRight, null));
         }
@@ -167,7 +167,7 @@ public class KingMetaMotion {
             if (leftRook == null || leftRook.getSteps() != 0) {
                 return strafes;
             }
-            // otherwise, teleport the rook
+            // otherwise, we're clear for movement
             ChessPosition strafeLeft = new ChessPosition(row, 3);
             strafes.add(new ChessMove(startPosition, strafeLeft, null));
         }
