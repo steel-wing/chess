@@ -211,8 +211,8 @@ public class ChessGame {
     public ArrayList<ChessPosition> teamPieces(TeamColor teamColor, ChessPiece.PieceType pieceType) {
         ArrayList<ChessPosition> places = new ArrayList<>();
 
-        for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
+        for (int row = 1; row <= board.rows; row++) {
+            for (int col = 1; col <= board.cols; col++) {
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 // skip if empty
                 if (piece == null) {
@@ -303,7 +303,7 @@ public class ChessGame {
         output.append("\u2001\u200A");
 
         // display column names
-        for (int col = 1; col <= 8; col++) {
+        for (int col = 1; col <= board.cols; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
         }
@@ -316,10 +316,10 @@ public class ChessGame {
         output.append("\n");
 
         // iterate across the board and add all pieces while delimiting with "║"
-        for (int row = 8; row >= 1; row--){
+        for (int row = board.rows; row >= 1; row--){
             output.append((char)(row + '0'));
             output.append(" │");
-            for (int col = 1; col <= 8; col++) {
+            for (int col = 1; col <= board.cols; col++) {
                 // draw the next square, applying good logic
                 addSquare(position, output, row, col);
             }
@@ -339,7 +339,7 @@ public class ChessGame {
         output.append(" \u2001\u200A");
 
         // display column names
-        for (int col = 1; col <= 8; col++) {
+        for (int col = 1; col <= board.cols; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
         }
@@ -440,6 +440,7 @@ public class ChessGame {
      */
     public String gameFlip(String inputGame) {
         //System.out.println(game.gameFlip(game.toString()));
+        //System.out.println(game.gameFlip(game.printValids()));
         StringBuilder output = new StringBuilder();
         output.append(inputGame);
         output.reverse();
@@ -455,7 +456,7 @@ public class ChessGame {
         output.append(spacer);
         output.append(spacer);
         // display column names
-        for (int col = 1; col <= 8; col++) {
+        for (int col = 1; col <= board.cols; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
         }
@@ -471,10 +472,10 @@ public class ChessGame {
         output.append("\n");
 
         // iterate across the board and add all pieces while delimiting with "║"
-        for (int row = 8; row >= 1; row--){
+        for (int row = board.rows; row >= 1; row--){
             output.append((char)(row + '0'));
             output.append(" │");
-            for (int col = 1; col <= 8; col++) {
+            for (int col = 1; col <= board.cols; col++) {
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
                 if (piece == null){
                     output.append(spacer);
@@ -503,7 +504,7 @@ public class ChessGame {
         output.append(" \u2001\u200A");
 
         // display column names
-        for (int col = 1; col <= 8; col++) {
+        for (int col = 1; col <= board.cols; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
         }

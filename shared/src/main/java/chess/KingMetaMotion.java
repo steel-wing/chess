@@ -126,7 +126,7 @@ public class KingMetaMotion {
         // ordinals
         boolean left = true;
         boolean right = true;
-        int row = team == WHITE ? 1 : 8;
+        int row = team == WHITE ? 1 : board.rows;
 
         // escape if the king has moved
         if (King.getSteps() != 0 || startPosition.getColumn() != 5 || startPosition.getRow() != row) {
@@ -134,7 +134,7 @@ public class KingMetaMotion {
         }
 
         // read the row, and see which direction, if any, we can castle
-        for (int col = 1; col <= 8; col++) {
+        for (int col = 1; col <= board.cols; col++) {
             ChessPiece select = board.getPiece(new ChessPosition(row, col));
             if (select == null) {
                 continue;

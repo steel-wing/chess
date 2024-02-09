@@ -13,8 +13,13 @@ import static chess.ChessPiece.PieceType.*;
  * Note: You can add to this class, but you may not alter
  * signature of the existing methods.
  */
+
+
+
 public class ChessBoard {
-    private final ChessPiece[][] board = new ChessPiece[8][8];
+    public final int rows = 8;
+    public final int cols = 8;
+    private final ChessPiece[][] board = new ChessPiece[rows][cols];
 
     public ChessBoard() {
     }

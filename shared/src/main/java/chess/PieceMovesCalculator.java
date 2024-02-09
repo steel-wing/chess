@@ -44,7 +44,7 @@ public class PieceMovesCalculator {
         int targetcol = col + bias;
 
         // while in the bounds of the board, and not overstepping
-        while ((1 <= targetrow) && (targetrow <= 8) && (1 <= targetcol) && (targetcol <= 8) && (steps > 0)) {
+        while ((1 <= targetrow) && (targetrow <= board.rows) && (1 <= targetcol) && (targetcol <= board.cols) && (steps > 0)) {
 
             // identify the target square
             ChessPiece target = board.getPiece(new ChessPosition(targetrow, targetcol));
