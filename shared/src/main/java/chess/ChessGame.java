@@ -178,7 +178,7 @@ public class ChessGame {
         ChessPiece.PieceType type = board.getPiece(start).getPieceType();
         ChessPiece.PieceType promo = move.getPromotionPiece();
 
-        //System.out.println(printValids(start));
+        System.out.println(printValids(start));
 
         board.removePiece(start);
 
@@ -323,6 +323,8 @@ public class ChessGame {
                 // draw the next square, applying good logic
                 addSquare(position, output, row, col);
             }
+
+            // display row names
             output.append("\u2001\u2005");
             output.append((char)(row + '0'));
             output.append("\n");
@@ -485,6 +487,8 @@ public class ChessGame {
                 output.append(type);
                 output.append("│");
             }
+
+            // display row names
             output.append("\u2001\u2005");
             output.append((char)(row + '0'));
             output.append("\n");
@@ -498,7 +502,7 @@ public class ChessGame {
         }
         output.append(" \u2001\u200A");
 
-        // display columnd names
+        // display column names
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);

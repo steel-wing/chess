@@ -13,7 +13,7 @@ import static chess.ChessPiece.PieceType.*;
 public class KingMetaMotion {
     /**
      * Helper function to determine if the given team is in checkmate, stalemate,
-     * or can mamybe castle,
+     * or can maybe castle,
      * while complying with the method standards provided
      *
      * @param teamColor self-explanatory
@@ -26,53 +26,61 @@ public class KingMetaMotion {
         ChessBoard boardcopy = new ChessBoard(board);
 
         // locate the king
-        ChessPosition kingPosition = game.teamPieces(teamColor, KING).getFirst();
-        ChessPiece King = board.getPiece(kingPosition);
-
-        // find all options available to the king (including his location, if checking for mate)
-        ArrayList<ChessMove> kingOptions = King.pieceMoves(board, kingPosition);
-        if (checkmate) {
-            kingOptions.add(new ChessMove(kingPosition, kingPosition, null));
+        ArrayList<ChessPosition> kingPositions = game.teamPieces(teamColor, KING);
+        // if there is no king, he isn't in check is he?
+        if (kingPositions.isEmpty()) {
+            return false;
         }
 
-        // neat little removal system to check only the flanks for castling
-        if (castling) {
-            kingOptions.removeIf(move -> move.getEndPosition().getRow() != kingPosition.getRow());
+        // handle the absolutely insane case of their being multiple kinds
+        // if there were, a check/stalemate only on both will qualify
+        for (ChessPosition kingPosition : kingPositions) {
+            ChessPiece King = board.getPiece(kingPosition);
+
+            // find all options available to the king (including his location, if checking for mate)
+            ArrayList<ChessMove> kingOptions = King.pieceMoves(board, kingPosition);
+            if (checkmate) {
+                kingOptions.add(new ChessMove(kingPosition, kingPosition, null));
+            }
+
+            // neat little removal system to check only the flanks for castling
+            if (castling) {
+                kingOptions.removeIf(move -> move.getEndPosition().getRow() != kingPosition.getRow());
+            }
+
+            // save info about king's hypothetical movement
+            ChessPosition lastPosition = kingPosition;
+            ChessPiece lastTarget = null;
+
+            // for all moves, move the piece there
+            for (ChessMove option : kingOptions) {
+                ChessPosition targetPosition = option.getEndPosition();
+                ChessPiece targetPiece = board.getPiece(targetPosition);
+
+                // if the position is blocked, for castling, skip it
+                if (castling && targetPiece != null) {
+                    continue;
+                }
+
+                // move the piece to its new location
+                board.removePiece(lastPosition);
+                board.addPiece(targetPosition, King);
+
+                // replace the taken material, if there was any
+                if (lastTarget != null) {
+                    board.addPiece(lastPosition, lastTarget);
+                }
+
+                // if we aren't in check now, the move is valid
+                if (!game.isInCheck(teamColor)) {
+                    return false;
+                }
+
+                // update the last place the king was
+                lastPosition = targetPosition;
+                lastTarget = targetPiece;
+            }
         }
-
-        // save info about king's hypothetical movement
-        ChessPosition lastPosition = kingPosition;
-        ChessPiece lastTarget = null;
-
-        // for all moves, move the piece there
-        for (ChessMove option : kingOptions){
-            ChessPosition targetPosition = option.getEndPosition();
-            ChessPiece targetPiece = board.getPiece(targetPosition);
-
-            // if the position is blocked, for castling, skip it
-            if (castling && targetPiece != null) {
-                continue;
-            }
-
-            // move the piece to its new location
-            board.removePiece(lastPosition);
-            board.addPiece(targetPosition, King);
-
-            // replace the taken material, if there was any
-            if (lastTarget != null) {
-                board.addPiece(lastPosition, lastTarget);
-            }
-
-            // if we aren't in check now, the move is valid
-            if(!game.isInCheck(teamColor)){
-                return false;
-            }
-
-            // update the last place the king was
-            lastPosition = targetPosition;
-            lastTarget = targetPiece;
-        }
-
         // restore the board to the way it was and return
         game.setBoard(boardcopy);
         return true;
