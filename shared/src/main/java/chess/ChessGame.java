@@ -121,7 +121,7 @@ public class ChessGame {
         }
 
         // restore the board to the way it was and return
-        this.board = boardcopy;
+        setBoard(boardcopy);
         return validMoves;
     }
 
@@ -178,7 +178,7 @@ public class ChessGame {
         ChessPiece.PieceType type = board.getPiece(start).getPieceType();
         ChessPiece.PieceType promo = move.getPromotionPiece();
 
-        System.out.println(printValids(start));
+        //System.out.println(printValids(start));
 
         board.removePiece(start);
 
@@ -296,13 +296,22 @@ public class ChessGame {
     public String printValids(ChessPosition position) {
         ChessBoard board = this.board;
         String spacer = "\u2001\u2005\u200A";
-
         StringBuilder output = new StringBuilder();
+
+        // display selected position
         output.append(position.toFancyString());
         output.append("\u2001\u200A");
+
+        // display column names
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
+        }
+
+        // Black team condition
+        output.append("\u2001\u200A ");
+        if (isInCheck(BLACK)) {
+            output.setCharAt(output.length() - 1, '+');
         }
         output.append("\n");
 
@@ -318,11 +327,25 @@ public class ChessGame {
             output.append((char)(row + '0'));
             output.append("\n");
         }
-        output.append(spacer);
-        output.append(spacer);
+
+        // display who's turn it is
+        if (getTeamTurn() == WHITE) {
+            output.append('W');
+        } else {
+            output.append('B');
+        }
+        output.append(" \u2001\u200A");
+
+        // display column names
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
+        }
+
+        // WHITE team condition
+        output.append("\u2001\u200A ");
+        if (isInCheck(WHITE)) {
+            output.setCharAt(output.length() - 1, '+');
         }
         output.append("\n");
 
@@ -337,7 +360,6 @@ public class ChessGame {
         ChessPosition select = new ChessPosition(row, col);
         ChessPiece piece = board.getPiece(select);
         boolean lastflag = false;
-        boolean currentpiece = false;
 
         // build array list of positions, not moves
         ArrayList<ChessMove> validmoves = validMoves(position);
@@ -355,7 +377,6 @@ public class ChessGame {
 
         // check to see if we're on ourself
         if (position.getRow() == row && position.getColumn() == col) {
-            currentpiece = true;
             // add a piece
             if (output.charAt(output.length() - 1) == '│') {
                 output.setCharAt(output.length() - 1, '║');
@@ -364,6 +385,7 @@ public class ChessGame {
             type = piece.getTeamColor() == WHITE ? (char) (type + 6) : type;
             output.append(type);
             output.append("║");
+            return;
         }
 
         // looking at our current square
@@ -372,9 +394,7 @@ public class ChessGame {
             if (lastflag) {
                 output.setCharAt(output.length() - 1, '╬');
             } else {
-                if (output.charAt(output.length() - 1) != '║') {
-                    output.setCharAt(output.length() - 1, '╠');
-                }
+                output.setCharAt(output.length() - 1, '╠');
             }
             // finish the selector
             if (piece == null){
@@ -389,9 +409,6 @@ public class ChessGame {
                 output.append("╣");
             }
         } else {
-            if (currentpiece) {
-                return;
-            }
             if (lastflag) {
                 output.setCharAt(output.length() - 1, '╣');
             } else {
@@ -409,9 +426,21 @@ public class ChessGame {
                 type = piece.getTeamColor() == WHITE ? (char) (type + 6) : type;
                 output.append(type);
                 output.append("│");
-
             }
         }
+    }
+
+    /**
+     * A simple little function for rotating a gameboard
+     *
+     * @param inputGame an input game (from White's perspective
+     * @return The string from before but rotated 180 degrees for the other player
+     */
+    public String gameFlip(String inputGame) {
+        StringBuilder output = new StringBuilder();
+        output.append(inputGame);
+        output.reverse();
+        return output.toString();
     }
 
     @Override
@@ -422,9 +451,19 @@ public class ChessGame {
         StringBuilder output = new StringBuilder();
         output.append(spacer);
         output.append(spacer);
+        // display column names
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
+        }
+
+        // Black team condition
+        output.append("\u2001\u200A ");
+        if (isInCheck(BLACK)) {
+            output.setCharAt(output.length() - 1, '+');
+        }
+        if (isInCheckmate(BLACK)) {
+            output.setCharAt(output.length() - 1, '#');
         }
         output.append("\n");
 
@@ -449,11 +488,28 @@ public class ChessGame {
             output.append((char)(row + '0'));
             output.append("\n");
         }
-        output.append(spacer);
-        output.append(spacer);
+
+        // display who's turn it is
+        if (getTeamTurn() == WHITE) {
+            output.append('W');
+        } else {
+            output.append('B');
+        }
+        output.append(" \u2001\u200A");
+
+        // display columnd names
         for (int col = 1; col <= 8; col++) {
             output.append((char)(col + '`'));
             output.append(spacer);
+        }
+
+        // WHITE team condition
+        output.append("\u2001\u200A ");
+        if (isInCheck(WHITE)) {
+            output.setCharAt(output.length() - 1, '+');
+        }
+        if (isInCheckmate(WHITE)) {
+            output.setCharAt(output.length() - 1, '#');
         }
         output.append("\n");
 
