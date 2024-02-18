@@ -10,8 +10,8 @@ Server -> Service: register(username, password, email)
 Service -> DataAccess: getUser(username)
 DataAccess -> db:SELECT username from user
 DataAccess --> Service: null
-Service -> DataAccess: createUser(username, password)
-DataAccess -> db: INSERT username, password, email INTO user
+Service -> DataAccess:createUser(username, password, email)
+DataAccess -> db:INSERT username, password,\nemail INTO user
 Service -> DataAccess: createAuth(username)
 DataAccess -> db: INSERT username, authToken INTO auth
 Service<--DataAccess:authToken
@@ -24,12 +24,9 @@ Client -> Server: [POST] /session\n{username, password}
 Server->Service:login(username, password)
 Service->DataAccess:getUser(username)
 DataAccess->db:SELECT username from user
-Service<--DataAccess:authToken
-Service->DataAccess:verifyToken(authToken)
-DataAccess->db:SELECT authToken from auth
-Service<--DataAccess:userExists == TRUE
-Service->DataAccess:verifyPassword(password)
-DataAccess->db:SELECT password from user
+Service<--DataAccess:UserData
+Service->DataAccess:createAuth(UserData)
+DataAccess->db:INSERT username, authToken INTO auth
 Service<--DataAccess:authToken
 Server<--Service:authToken
 Client<--Server:200\n{username, authToken}
@@ -38,15 +35,12 @@ end
 group #green Logout #white
 Client -> Server: [DELETE] /session\nauthToken
 Server->Service:logout(authToken)
-Service->DataAccess:getUser(username)
-DataAccess->db:SELECT username from user
-Service<--DataAccess:authToken
-Service->DataAccess:verifyToken(authToken)
+Service->DataAccess:getToken(authToken)
 DataAccess->db:SELECT authToken from auth
-Service<--DataAccess:userExists == TRUE
-Service->DataAccess:clearSession(authToken)
-DataAccess->db:DELETE authToken from auth
-Service<--DataAccess:loggedOut == True
+Service<--DataAccess:AuthData
+Service->DataAccess:deleteAuth(authToken)
+DataAccess->db:DELETE AuthData from auth
+Service<--DataAccess:null
 Server<--Service:loggedOut == True
 Client<--Server:200
 end
@@ -54,11 +48,11 @@ end
 group #red List Games #white
 Client -> Server: [GET] /game\nauthToken
 Server->Service:getGames(authToken)
-Service->DataAccess:verifyToken(authToken)
+Service->DataAccess:getToken(authToken)
 DataAccess->db:SELECT authToken from auth
-Service<--DataAccess:userExists == TRUE
-Service->DataAccess:getGames()
-DataAccess->db:SELECT games
+Service<--DataAccess:AuthData
+Service->DataAccess:listGames()
+DataAccess->db:SELECT game
 Service<--DataAccess:games
 Server<--Service:games
 Client<--Server:200\n{games}
@@ -66,18 +60,13 @@ end
 
 group #purple Create Game #white
 Client -> Server: [POST] /game\nauthToken\n{gameName}
-Server->Service:start(gameName, authToken)
-Service->DataAccess:getUser(authToken)
-DataAccess->db:SELECT username from auth
-Service<--DataAccess:userExists == TRUE
-Service->DataAccess:getGame(gameName)
-DataAccess->db:SELECT gameName from game
-Service<--DataAccess:null
-Service->DataAccess:createGame(gameName)
+Server->Service:makeGame(gameName, authToken)
+Service->DataAccess:getToken(authToken)
+DataAccess->db:SELECT authToken from auth
+Service<--DataAccess:AuthData
 
-DataAccess->db:INSERT gameName INTO game
-Service->DataAccess:createGameID(gameName)
-DataAccess->db:INSERT gameID INTO game
+Service->DataAccess:createGame(gameName)
+DataAccess->db:INSERT whiteUsername, blackUsername, \ngameName, gameID, game INTO game
 Service<--DataAccess:gameID
 Server<--Service:gameID
 Client<--Server:200\n{authToken}
@@ -86,17 +75,14 @@ end
 group #yellow Join Game #black
 Client -> Server: [PUT] /game\nauthToken\n{ClientColor, gameID}
 Server->Service:joinGame(authToken, ClientColor, gameID)
-Service->DataAccess:getUser(username)
-DataAccess->db:SELECT username from user
-Service<--DataAccess:authToken
-Service->DataAccess:verifyToken(authToken)
+Service->DataAccess:getToken(authToken)
 DataAccess->db:SELECT authToken from auth
-Service<--DataAccess:userExists == TRUE
+Service<--DataAccess:AuthData
 Service->DataAccess:getGame(gameID)
 DataAccess->db:SELECT gameID from game
-Service->DataAccess:chooseTeam(ClientColor)
-DataAccess->db:INSERT username into ClientColor???
-Service<-DataAccess:gameJoined == TRUE
+Service<--DataAccess:GameData
+Service->DataAccess:insertTeam(teamColor)
+DataAccess->db:UPDATE Username in game
 Server<-Service:gameJoined == TRUE
 Client<-Server:200
 end
@@ -104,11 +90,15 @@ end
 group #gray Clear application #white
 Client -> Server: [DELETE] /db
 Server->Service:delete()
-Service->DataAccess:delete()
+Service->DataAccess:deleteTokens()
 DataAccess->db:DELETE sessions (authData)
+Service<--DataAccess:null
+Service->DataAccess:deleteUsers()
 DataAccess->db:DELETE users (userData)
+Service<--DataAccess:null
+Service->DataAccess:deleteGames()
 DataAccess->db:DELETE games (gameData)
-Service<--DataAccess:itsDone == TRUE
-Server<--Service:itsDone == TRUE
+Service<--DataAccess:null
+Server<--Service:null
 Client<--Server:200
 end
