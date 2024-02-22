@@ -1,12 +1,6 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
-import model.AuthData;
-import request.LoginRequest;
-import request.LogoutRequest;
-import service.LoginService;
-import service.LogoutService;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -23,8 +17,8 @@ public class Server {
         // Endpoint registration and error handling
         Spark.delete("/db", this::clear);
         Spark.post("/user", this::register);
-        Spark.post("/session", this::login);
-        Spark.delete("/session", this::logout);
+        Spark.post("/session", LoginHandler::login);
+        Spark.delete("/session", LogoutHandler::logout);
         Spark.get("/game", this::list);
         Spark.post("/game", this::create);
         Spark.put("/game", this::join);
@@ -44,37 +38,6 @@ public class Server {
         return null;
     }
 
-    /** Login endpoint handler */
-    private Object login(Request req, Response res) {
-        LoginRequest logindata = getBody(req, LoginRequest.class);
-        try {
-            AuthData authData = LoginService.login(logindata);
-        } catch (DataAccessException exception) {
-            return "Error 500";
-        }
-
-        if (logindata == null) {
-            return "Error 401";
-        }
-        return logindata;
-    }
-
-    /** Logout endpoint handler */
-    private Object logout(Request req, Response res) {
-        LogoutRequest logoutdata = getBody(req, LogoutRequest.class);
-        boolean loggedout;
-        try {
-            loggedout = LogoutService.logout(logoutdata);
-        } catch (DataAccessException exception) {
-            return "Error 500";
-        }
-
-        if (!loggedout) {
-            return "Error 401";
-        }
-        return logoutdata;
-    }
-
     /** List endpoint handler */
     private Object list(Request req, Response res) {
         return null;
@@ -88,15 +51,6 @@ public class Server {
     /** Join endpoint handler */
     private Object join(Request req, Response res) {
         return null;
-    }
-
-    /** Returns the body of a JSON as the object it represents */
-    private static <T> T getBody(Request req, Class<T> tClass) {
-        var body = new Gson().fromJson(req.body(), tClass);
-        if (body == null) {
-            throw new RuntimeException("missing required body");
-        }
-        return body;
     }
 
     /** This is an error handler provided by the class code. I'll look at it more in the future */
