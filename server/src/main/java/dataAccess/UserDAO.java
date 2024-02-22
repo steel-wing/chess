@@ -1,14 +1,14 @@
 package dataAccess;
 import model.UserData;
 
-public class UserDAO {
-    public static UserData SELECT(String username) {
-        return MemoryUserDAO.SELECT(username);
-    }
+/** Interface for handling getting UserData from a database */
+public interface UserDAO {
+    /** Gets the userdata corresponding to a username*/
+    UserData getUser(String Username) throws DataAccessException;
 
-    public static void INSERT(String username, String password, String email) {
-        UserData data = new UserData(username, password, email);
-        MemoryUserDAO.INSERT(username, data);
-    }
+    /** Creates a new user, returns null if they already exist */
+    UserData createUser(String username, UserData data) throws DataAccessException;
 
+    /** Clears the entire USER database */
+    boolean clear();
 }

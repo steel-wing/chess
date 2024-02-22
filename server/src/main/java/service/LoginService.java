@@ -1,22 +1,25 @@
 package service;
 
-import dataAccess.AuthDAO;
-import dataAccess.UserDAO;
+import dataAccess.*;
+import model.AuthData;
 import model.UserData;
+import request.LoginRequest;
 
+/** Handles logging in: returns an authtoken for a new user */
 public class LoginService {
-    public UserData getUser(String username) {
-        return UserDAO.SELECT(username);
-    }
+    public AuthData login(LoginRequest login) throws DataAccessException {
+        // initialize the DAOs
+        UserDAO USERDAO = new MemoryUserDAO();
+        AuthDAO AUTHDAO = new MemoryAuthDAO();
 
-    public void createUser(String username, String password, String email) {
-        UserDAO.INSERT(username, password, email);
-    }
+        // get login data
+        String username = login.username();
+        String password = login.password();
 
-    public String createAuth(String username) {
-        // terrible horrible needs to be replaced
-        String authToken = Integer.toString(username.hashCode() + (int)System.currentTimeMillis());
-        AuthDAO.INSERT(authToken, username);
-        return authToken;
+        // get user data (it's okay if it's null)
+        UserData user = USERDAO.getUser(username);
+
+        // this will throw the exception if it arises; to be handled at the server level
+        return AUTHDAO.createAuth(user);
     }
 }

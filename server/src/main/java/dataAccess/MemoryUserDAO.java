@@ -1,26 +1,29 @@
 package dataAccess;
-
 import model.UserData;
-
 import java.util.Map;
 
-public class MemoryUserDAO {
-    private static Map<String, UserData> users;
+public class MemoryUserDAO implements UserDAO {
+    private static Map<String, UserData> USER;
 
-    public static UserData SELECT(String username) {
-        return users.get(username);
+    public UserData getUser(String username) throws DataAccessException {
+        UserData user = USER.get(username);
+        if (user == null) {
+            throw new DataAccessException("No such User");
+        }
+        return user;
     }
 
-    public static UserData INSERT(String username, UserData data) {
-        if (users.get(username) == null) {
-            users.put(username, data);
+    public UserData createUser(String username, UserData data) throws DataAccessException{
+        if (USER.get(username) == null) {
+            USER.put(username, data);
             return data;
         }
-        return null;
+        throw new DataAccessException("User already exists");
     }
 
-    public static Map<String, UserData> DELETE() {
-        users.clear();
-        return null;
+    public boolean clear() {
+        USER.clear();
+        return true;
     }
 }
+
