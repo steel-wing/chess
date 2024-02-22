@@ -1,8 +1,7 @@
 package service;
 
 import dataAccess.*;
-import model.AuthData;
-import model.UserData;
+import model.*;
 import request.LoginRequest;
 
 /** Handles logging in: returns an authtoken for a new user */
@@ -16,7 +15,7 @@ public class LoginService {
         String username = login.username();
         String password = login.password();
 
-        // get user data (it's okay if it's null)
+        // get user data
         UserData user = USERDAO.getUser(username);
 
         // this will throw the exception if it arises; to be handled at the server level

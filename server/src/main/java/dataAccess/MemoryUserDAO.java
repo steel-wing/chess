@@ -1,23 +1,19 @@
 package dataAccess;
+
 import model.UserData;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryUserDAO implements UserDAO {
-    private static Map<String, UserData> USER;
-
-    public MemoryUserDAO() {
-        if (USER == null) {
-            USER = new HashMap<>();
-        }
-    }
+    private static final Map<String, UserData> USER = new HashMap<>();
 
     public UserData getUser(String username) throws DataAccessException {
-        if (!USER.containsKey(username)) {
+        UserData found = USER.get(username);
+        if (found == null) {
             throw new DataAccessException("No such User");
         }
-        return USER.get(username);
+        return found;
     }
 
     public UserData createUser(String username, UserData data) throws DataAccessException{
@@ -29,8 +25,9 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     public boolean clear() {
+        int before = USER.size();
         USER.clear();
-        return true;
+        return (before > 0);
     }
 }
 

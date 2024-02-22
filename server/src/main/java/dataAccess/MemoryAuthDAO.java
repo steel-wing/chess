@@ -8,12 +8,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
-    private static Map<String, AuthData> AUTH;
-    public MemoryAuthDAO() {
-        if (AUTH == null) {
-            AUTH = new HashMap<>();
-        }
-    }
+    private static final Map<String, AuthData> AUTH = new HashMap<>();
 
     public AuthData getAuth(String authToken) throws DataAccessException {
         AuthData found = AUTH.get(authToken);
@@ -32,7 +27,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public boolean deleteAuth(String authToken) throws DataAccessException{
         if (AUTH.get(authToken) == null) {
-             throw new DataAccessException("No such AuthToken");
+            throw new DataAccessException("No such AuthToken");
         }
         AUTH.remove(authToken);
         return true;
