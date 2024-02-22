@@ -14,10 +14,11 @@ public class LogoutHandler extends Handler {
         try {
             loggedout = LogoutService.logout(logoutdata);
         } catch (DataAccessException exception) {
-            return "Error 500";
+            return errorHandler(exception.getMessage(),500, req, res);
         }
 
         if (!loggedout) {
+
             return "Error 401";
         }
         return logoutdata;

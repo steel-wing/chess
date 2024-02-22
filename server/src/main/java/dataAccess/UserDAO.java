@@ -1,4 +1,5 @@
 package dataAccess;
+
 import model.UserData;
 
 /** Interface for handling getting UserData from a database */
