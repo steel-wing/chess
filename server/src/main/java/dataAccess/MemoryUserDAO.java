@@ -1,16 +1,23 @@
 package dataAccess;
 import model.UserData;
+
+import java.util.HashMap;
 import java.util.Map;
 
 public class MemoryUserDAO implements UserDAO {
     private static Map<String, UserData> USER;
 
+    public MemoryUserDAO() {
+        if (USER == null) {
+            USER = new HashMap<>();
+        }
+    }
+
     public UserData getUser(String username) throws DataAccessException {
-        UserData user = USER.get(username);
-        if (user == null) {
+        if (!USER.containsKey(username)) {
             throw new DataAccessException("No such User");
         }
-        return user;
+        return USER.get(username);
     }
 
     public UserData createUser(String username, UserData data) throws DataAccessException{

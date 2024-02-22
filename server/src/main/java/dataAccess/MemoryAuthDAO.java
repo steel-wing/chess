@@ -3,11 +3,17 @@ package dataAccess;
 import model.UserData;
 import model.AuthData;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
     private static Map<String, AuthData> AUTH;
+    public MemoryAuthDAO() {
+        if (AUTH == null) {
+            AUTH = new HashMap<>();
+        }
+    }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
         AuthData found = AUTH.get(authToken);

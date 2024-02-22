@@ -7,7 +7,7 @@ import request.LoginRequest;
 
 /** Handles logging in: returns an authtoken for a new user */
 public class LoginService {
-    public AuthData login(LoginRequest login) throws DataAccessException {
+    public static AuthData login(LoginRequest login) throws DataAccessException {
         // initialize the DAOs
         UserDAO USERDAO = new MemoryUserDAO();
         AuthDAO AUTHDAO = new MemoryAuthDAO();
