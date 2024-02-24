@@ -3,7 +3,7 @@ package server;
 import spark.Spark;
 
 public class Server {
-
+    /** Starts the server */
     public int run(int port) {
         Spark.port(port);
 

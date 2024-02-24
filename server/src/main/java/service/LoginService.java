@@ -15,10 +15,15 @@ public class LoginService {
         String username = login.username();
         String password = login.password();
 
-        // get user data
+        // get corresponding user data
         UserData user = USERDAO.getUser(username);
 
-        // this will throw the exception if it arises; to be handled at the server level
+        // return null if the password is incorrect
+        if (!user.password().equals(password)) {
+            return null;
+        }
+
+        // exceptions are handled in the LoginHandler
         return AUTHDAO.createAuth(user);
     }
 }

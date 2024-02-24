@@ -32,6 +32,15 @@ public class MemoryAuthDAO implements AuthDAO {
         return true;
     }
 
+//    public boolean hasUser(String username) {
+//        for (AuthData value : AUTH.values()) {
+//            if (value.username().equals(username)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
     public boolean clear() {
         AUTH.clear();
         return true;

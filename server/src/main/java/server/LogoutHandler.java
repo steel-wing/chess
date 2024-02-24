@@ -9,18 +9,22 @@ import spark.Response;
 public class LogoutHandler extends Handler {
     /** Logout endpoint handler */
     public static Object logout(Request req, Response res) {
-        LogoutRequest logoutdata = getBody(req, LogoutRequest.class);
+        // parse the logout request
+        LogoutRequest logoutdata = new LogoutRequest(getHeader(req));
+
+        // initializes to false
         boolean loggedout;
+
         try {
             loggedout = LogoutService.logout(logoutdata);
         } catch (DataAccessException exception) {
-            return errorHandler(exception.getMessage(),500, req, res);
+            return errorHandler(exception.getMessage(),500, res);
         }
 
         if (!loggedout) {
-
-            return "Error 401";
+            return errorHandler("unauthorized",401, res);
         }
-        return logoutdata;
+
+        return successHandler(logoutdata, res);
     }
 }
