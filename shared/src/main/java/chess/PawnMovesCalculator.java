@@ -1,5 +1,7 @@
 package chess;
 
+import chess.game.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -63,13 +65,13 @@ public class PawnMovesCalculator {
         ArrayList<ChessMove> moves = new ArrayList<>();
         // if we can promote, offer all options
         if (targetrow == 1 || targetrow == 8) {
-            moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.KNIGHT));
-            moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.BISHOP));
-            moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.ROOK));
-            moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.KNIGHT));
+            moves.add(new ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(pos, new ChessPosition(targetrow, targetcol), ChessPiece.PieceType.QUEEN));
         } else {
             // if not, just move
-            moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
+            moves.add(new ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
         }
         return moves;
     }

@@ -1,4 +1,6 @@
-package chess;
+package chess.game;
+
+import chess.PieceMovesCalculator;
 
 import java.util.ArrayList;
 import java.util.Objects;

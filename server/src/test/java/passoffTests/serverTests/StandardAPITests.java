@@ -1,6 +1,6 @@
 package passoffTests.serverTests;
 
-import chess.ChessGame;
+import chess.game.ChessGame;
 import org.junit.jupiter.api.*;
 import passoffTests.obfuscatedTestClasses.TestServerFacade;
 import passoffTests.testClasses.TestException;

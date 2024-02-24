@@ -1,5 +1,9 @@
 package chess;
 
+import chess.game.ChessBoard;
+import chess.game.ChessMove;
+import chess.game.ChessPosition;
+
 import java.util.ArrayList;
 
 public class KingMovesCalculator {

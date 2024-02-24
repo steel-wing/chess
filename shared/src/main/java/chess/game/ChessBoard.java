@@ -1,10 +1,10 @@
-package chess;
+package chess.game;
 
 import java.util.Arrays;
 import java.util.Map;
 
-import static chess.ChessGame.TeamColor.*;
-import static chess.ChessPiece.PieceType.*;
+import static chess.game.ChessGame.TeamColor.*;
+import static chess.game.ChessPiece.PieceType.*;
 
 
 /**

@@ -1,5 +1,7 @@
 package chess;
 
+import chess.game.*;
+
 import java.util.ArrayList;
 
 public class PieceMovesCalculator {
@@ -51,7 +53,7 @@ public class PieceMovesCalculator {
 
             // if we hit an empty space, add it to the available moves
             if (target == null) {
-                moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
+                moves.add(new ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
 
                 // iterate onwards in the direction indicated by dir and bias
                 targetrow += dir;
@@ -60,7 +62,7 @@ public class PieceMovesCalculator {
             } else {
                 // if we hit a piece we go no further. Check to see if it's an enemy: if so, we can hit it
                 if (target.getTeamColor() != team) {
-                    moves.add(new chess.ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
+                    moves.add(new ChessMove(pos, new ChessPosition(targetrow, targetcol), null));
                 }
                 break;
             }
