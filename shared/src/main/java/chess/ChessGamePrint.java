@@ -1,12 +1,12 @@
-package chess.game;
+package chess;
 
 import java.util.ArrayList;
 import java.util.Map;
 
-import static chess.game.ChessGame.TeamColor.BLACK;
-import static chess.game.ChessGame.TeamColor.WHITE;
-import static chess.game.ChessPiece.PieceType.*;
-import static chess.game.ChessPiece.PieceType.BISHOP;
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessPiece.PieceType.*;
+import static chess.ChessPiece.PieceType.BISHOP;
 
 public class ChessGamePrint {
     final static Map<ChessPiece.PieceType, Character> TypetoGlyph = Map.of(

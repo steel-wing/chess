@@ -1,11 +1,9 @@
 package chess;
 
-import chess.game.*;
-
 import java.util.ArrayList;
 
-import static chess.game.ChessGame.TeamColor.*;
-import static chess.game.ChessPiece.PieceType.*;
+import static chess.ChessGame.TeamColor.*;
+import static chess.ChessPiece.PieceType.*;
 
 /**
  * A class that handles the meta-game motion of pawns: <p>

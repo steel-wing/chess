@@ -1,5 +1,5 @@
-import chess.game.ChessGame;
-import chess.game.ChessPiece;
+import chess.ChessGame;
+import chess.ChessPiece;
 
 public class Main {
     public static void main(String[] args) {

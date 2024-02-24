@@ -1,6 +1,6 @@
 package passoffTests.chessTests;
 
-import chess.game.*;
+import chess.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;

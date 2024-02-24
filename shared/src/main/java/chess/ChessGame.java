@@ -1,14 +1,11 @@
-package chess.game;
-
-import chess.KingMetaMotion;
-import chess.PawnMetaMotion;
+package chess;
 
 import java.util.ArrayList;
 
-import static chess.game.ChessGame.TeamColor.BLACK;
-import static chess.game.ChessGame.TeamColor.WHITE;
-import static chess.game.ChessPiece.PieceType.KING;
-import static chess.game.ChessPiece.PieceType.PAWN;
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
+import static chess.ChessPiece.PieceType.KING;
+import static chess.ChessPiece.PieceType.PAWN;
 
 /**
  * For a class that can manage a chess game, making moves on a board

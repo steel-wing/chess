@@ -1,6 +1,6 @@
 package passoffTests;
 
-import chess.game.*;
+import chess.*;
 import org.junit.jupiter.api.Assertions;
 
 import java.util.HashSet;
