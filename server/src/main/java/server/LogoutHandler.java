@@ -25,6 +25,10 @@ public class LogoutHandler extends Handler {
             loggedout = LogoutService.logout(logoutdata);
 
         } catch (DataAccessException exception) {
+            // handle the lack of authtoken exception
+            if (exception.getMessage().equals("No such AuthToken")) {
+                return errorHandler("unauthorized", 401, res);
+            }
             return errorHandler(exception.getMessage(),500, res);
         }
 

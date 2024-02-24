@@ -28,12 +28,6 @@ public class LoginService {
             return null;
         }
 
-        // if the User is already in the database, return their data
-        AuthData found = authDao.getAuthFromUser(username);
-        if (found != null) {
-            return found;
-        }
-
         // create a new authToken for the User
         return authDao.createAuth(user);
     }

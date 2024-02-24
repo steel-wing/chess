@@ -29,6 +29,11 @@ public class LoginHandler extends Handler {
             authData = LoginService.login(loginRequest);
 
         } catch (DataAccessException exception) {
+            // handle the lack of user exception
+            if (exception.getMessage().equals("No such User")) {
+                return errorHandler("unauthorized", 401, res);
+            }
+            // handle any other exceptions
             return errorHandler(exception.getMessage(), 500, res);
         }
 
@@ -41,6 +46,6 @@ public class LoginHandler extends Handler {
 
         // send back the loginResponse
         LoginResponse loginResponse = new LoginResponse(username, authData.authToken());
-        return successHandler(loginRequest, res);
+        return successHandler(loginResponse, res);
     }
 }
