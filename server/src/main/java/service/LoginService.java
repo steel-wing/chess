@@ -4,8 +4,13 @@ import dataAccess.*;
 import model.*;
 import request.LoginRequest;
 
-/** Handles logging in: returns an authtoken for a new user */
 public class LoginService {
+    /**
+     * Handles logging in
+     * @param login
+     * @return an AuthData object
+     * @throws DataAccessException
+     */
     public static AuthData login(LoginRequest login) throws DataAccessException {
         // initialize the DAOs
         UserDAO userDao = new MemoryUserDAO();
@@ -15,7 +20,7 @@ public class LoginService {
         String username = login.username();
         String password = login.password();
 
-        // get corresponding user data
+        // get corresponding User data
         UserData user = userDao.getUser(username);
 
         // return null if the password is incorrect
@@ -23,7 +28,13 @@ public class LoginService {
             return null;
         }
 
-        // exceptions are handled in the LoginHandler
+        // if the User is already in the database, return their data
+        AuthData found = authDao.getAuthFromUser(username);
+        if (found != null) {
+            return found;
+        }
+
+        // create a new authToken for the User
         return authDao.createAuth(user);
     }
 }
