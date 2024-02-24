@@ -13,8 +13,8 @@ public class LoginService {
      */
     public static AuthData login(LoginRequest login) throws DataAccessException {
         // initialize the DAOs
-        UserDAO userDao = new MemoryUserDAO();
         AuthDAO authDao = new MemoryAuthDAO();
+        UserDAO userDao = new MemoryUserDAO();
 
         // get login data
         String username = login.username();

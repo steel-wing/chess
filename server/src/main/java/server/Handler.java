@@ -29,8 +29,10 @@ public class Handler {
     /** This is a success handler that constructs a JSON object for the HTTP */
     protected static Object successHandler (Object outgoing, Response res) {
         System.out.println("Success! [200]");
-
         var body = new Gson().toJson(outgoing);
+        if (outgoing == null) {
+            body = "{}";
+        }
         res.type("application/json");
         res.status(200);
         res.body(body);
