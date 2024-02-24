@@ -1,5 +1,8 @@
 package chess;
 
+import chess.movement.KingMetaMotion;
+import chess.movement.PawnMetaMotion;
+
 import java.util.ArrayList;
 
 import static chess.ChessGame.TeamColor.BLACK;
