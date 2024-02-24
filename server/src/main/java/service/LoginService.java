@@ -8,15 +8,15 @@ import request.LoginRequest;
 public class LoginService {
     public static AuthData login(LoginRequest login) throws DataAccessException {
         // initialize the DAOs
-        UserDAO USERDAO = new MemoryUserDAO();
-        AuthDAO AUTHDAO = new MemoryAuthDAO();
+        UserDAO UserDAO = new MemoryUserDAO();
+        AuthDAO AuthDAO = new MemoryAuthDAO();
 
         // get login data
         String username = login.username();
         String password = login.password();
 
         // get corresponding user data
-        UserData user = USERDAO.getUser(username);
+        UserData user = UserDAO.getUser(username);
 
         // return null if the password is incorrect
         if (!user.password().equals(password)) {
@@ -24,6 +24,6 @@ public class LoginService {
         }
 
         // exceptions are handled in the LoginHandler
-        return AUTHDAO.createAuth(user);
+        return AuthDAO.createAuth(user);
     }
 }

@@ -16,11 +16,6 @@ public class LoginHandler extends Handler {
             // get an authToken for this user
             AuthData authData = LoginService.login(logindata);
 
-//            // eject if the user is already logged in
-//            if (LoginService.isLoggedIn(logindata.username())) {
-//                return errorHandler("unauthorized", 401, res);
-//            }
-
             // handle an incorrect password case (the authdata was null)
             if (authData == null) {
                 return errorHandler("unauthorized", 401, res);

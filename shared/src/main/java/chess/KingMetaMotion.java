@@ -37,10 +37,10 @@ public class KingMetaMotion {
         // handle the absolutely insane case of their being multiple kinds
         // if there were, a check/stalemate only on both will qualify
         for (ChessPosition kingPosition : kingPositions) {
-            ChessPiece King = board.getPiece(kingPosition);
+            ChessPiece king = board.getPiece(kingPosition);
 
             // find all options available to the king (including his location, if checking for mate)
-            ArrayList<ChessMove> kingOptions = King.pieceMoves(board, kingPosition);
+            ArrayList<ChessMove> kingOptions = king.pieceMoves(board, kingPosition);
             if (checkmate) {
                 kingOptions.add(new ChessMove(kingPosition, kingPosition, null));
             }
@@ -66,7 +66,7 @@ public class KingMetaMotion {
 
                 // move the piece to its new location
                 board.removePiece(lastPosition);
-                board.addPiece(targetPosition, King);
+                board.addPiece(targetPosition, king);
 
                 // replace the taken material, if there was any
                 if (lastTarget != null) {
