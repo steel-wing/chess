@@ -15,12 +15,10 @@ public class Handler {
         return body;
     }
 
-    protected static String getHeader (Request req) {
-        return req.headers("authorization");
-    }
-
     /** This is an error handler that constructs a JSON body explaining the issue */
     protected static Object errorHandler (String explanation, int status, Response res) {
+        System.out.println("Error: [" + status + "], " + explanation);
+
         var body = new Gson().toJson(Map.of("message", String.format("Error: %s", explanation)));
         res.type("application/json");
         res.status(status);
@@ -30,12 +28,9 @@ public class Handler {
 
     /** This is a success handler that constructs a JSON object for the HTTP */
     protected static Object successHandler (Object outgoing, Response res) {
-        String body;
-        if (outgoing != null) {
-            body = new Gson().toJson(outgoing);
-        } else {
-            body = new Gson().toJson(null);
-        }
+        System.out.println("Success! [200]");
+
+        var body = new Gson().toJson(outgoing);
         res.type("application/json");
         res.status(200);
         res.body(body);
