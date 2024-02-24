@@ -8,9 +8,9 @@ import request.RegisterRequest;
 public class RegistrationService {
     /**
      * Handles Registration
-     * @param register
-     * @return
-     * @throws DataAccessException
+     * @param register The register() request
+     * @return An AuthData object
+     * @throws DataAccessException If things go sour
      */
     public static AuthData register (RegisterRequest register) throws DataAccessException {
         // initialize the DAOs

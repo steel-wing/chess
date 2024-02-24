@@ -7,9 +7,9 @@ import request.LoginRequest;
 public class LoginService {
     /**
      * Handles logging in
-     * @param login
+     * @param login The login() request
      * @return an AuthData object
-     * @throws DataAccessException
+     * @throws DataAccessException If things go sour
      */
     public static AuthData login(LoginRequest login) throws DataAccessException {
         // initialize the DAOs

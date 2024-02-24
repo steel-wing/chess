@@ -7,9 +7,9 @@ import request.LogoutRequest;
 public class LogoutService {
     /** Handles logging out
      *
-     * @param logout A logout request
+     * @param logout The logout() request
      * @return A success boolean
-     * @throws DataAccessException
+     * @throws DataAccessException If things go sour
      */
     public static boolean logout(LogoutRequest logout) throws DataAccessException {
         // initialize the DAO
