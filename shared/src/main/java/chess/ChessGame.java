@@ -277,4 +277,31 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         return KingMetaMotion.kingChecker(this, teamColor, false, false);
     }
+
+    /**
+     * Prints the game, according to which team it is.
+     * @param teamColor The team whose perspective we want
+     * @return A board string
+     */
+    public String toString(TeamColor teamColor) {
+        if (teamColor == BLACK) {
+            return ChessGamePrint.gameFlip(ChessGamePrint.gameString(this));
+        } else {
+            return ChessGamePrint.gameString(this);
+        }
+    }
+
+    /**
+     * Prints all moves available to the selected square.
+     * @param teamColor The team whose perspective we want
+     * @param position The position whose perspective we want
+     * @return A board string
+     */
+    public String printValids(TeamColor teamColor, ChessPosition position) {
+        if (teamColor == BLACK) {
+            return ChessGamePrint.gameFlip(ChessGamePrint.printValids(position, this));
+        } else {
+            return ChessGamePrint.printValids(position, this);
+        }
+    }
 }

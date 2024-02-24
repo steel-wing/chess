@@ -120,8 +120,8 @@ public class KingMetaMotion {
         // find relevant location and piece information
         ChessBoard board = game.getBoard();
         ArrayList<ChessMove> strafes = new ArrayList<>();
-        ChessPiece King = board.getPiece(startPosition);
-        ChessGame.TeamColor team = King.getTeamColor();
+        ChessPiece king = board.getPiece(startPosition);
+        ChessGame.TeamColor team = king.getTeamColor();
 
         // ordinals
         boolean left = true;
@@ -129,7 +129,7 @@ public class KingMetaMotion {
         int row = team == WHITE ? 1 : board.rows;
 
         // escape if the king has moved
-        if (King.getSteps() != 0 || startPosition.getColumn() != 5 || startPosition.getRow() != row) {
+        if (king.getSteps() != 0 || startPosition.getColumn() != 5 || startPosition.getRow() != row) {
             return strafes;
         }
 

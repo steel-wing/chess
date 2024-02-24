@@ -171,7 +171,7 @@ public class ChessGamePrint {
      * @param inputGame an input game (from White's perspective
      * @return The string from before but rotated 180 degrees for the other player
      */
-    public String gameFlip(String inputGame) {
+    public static String gameFlip(String inputGame) {
         //System.out.println(game.gameFlip(game.toString()));
         //System.out.println(game.gameFlip(game.printValids()));
         StringBuilder output = new StringBuilder();

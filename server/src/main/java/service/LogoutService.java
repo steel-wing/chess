@@ -8,11 +8,11 @@ import request.LogoutRequest;
 public class LogoutService {
     public static boolean logout(LogoutRequest logout) throws DataAccessException {
         // initialize the DAO
-        AuthDAO AuthDAO = new MemoryAuthDAO();
+        AuthDAO authDao = new MemoryAuthDAO();
 
         // get session token and corresponding auth data
         String authToken = logout.authToken();
-        AuthData auth = AuthDAO.getAuth(authToken);
+        AuthData auth = authDao.getAuth(authToken);
 
         // return false if the token is not in the AUTH table
         if (auth == null) {
@@ -23,6 +23,6 @@ public class LogoutService {
         // every entry of them from the database here
 
         // clear the row in the AUTH table and return success
-        return AuthDAO.deleteAuth(authToken);
+        return authDao.deleteAuth(authToken);
     }
 }
