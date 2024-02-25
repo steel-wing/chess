@@ -17,6 +17,12 @@ public class JoinHandler extends Handler {
         int gameID = joinRequest.gameID();
         boolean loggedIn;
 
+        // eject if we got a bad input
+        if (!playerColor.isEmpty() && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+            return errorHandler("bad request: only 'WHITE' or 'BLACK' accepted", 400, res);
+        }
+
+        // eject if we get an empty input
         if (authToken == null || gameID == 0) {
             return errorHandler("bad request", 400, res);
         }
@@ -33,14 +39,15 @@ public class JoinHandler extends Handler {
             if (exception.getMessage().equals("No such AuthToken")) {
                 return errorHandler("unauthorized", 401, res);
             }
+
             // handle any other exceptions
             return errorHandler(exception.getMessage(), 500, res);
         }
 
         // sort of redundant but it handles whatever cases I haven't thought of
         if (loggedIn) {
-            return true;
+            return successHandler(null, res);
         }
-        return false;
+        return  errorHandler("could not log in", 500, res);
     }
 }
