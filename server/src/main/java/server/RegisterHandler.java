@@ -27,10 +27,16 @@ public class RegisterHandler extends Handler {
             return errorHandler(exception.getMessage(), 500, res);
         }
 
-        // check the input, and if the user already existed (authData == null)
-        if (username == null || password == null || email == null || authData == null) {
+        // check the input
+        if (username == null || password == null || email == null) {
             return errorHandler("bad request", 400, res);
         }
+
+        // error if the person is already registered
+        if (authData == null) {
+            return errorHandler("forbidden", 403, res);
+        }
+
 
         System.out.println("Logged In! " + register.username() + " " + authData.authToken());
 
