@@ -35,7 +35,7 @@ end
 group #green Logout #white
 Client -> Server: [DELETE] /session\nauthToken
 Server->Service:logout(authToken)
-Service->DataAccess:getToken(authToken)
+Service->DataAccess:getAuth(authToken)
 DataAccess->db:SELECT authToken from auth
 Service<--DataAccess:AuthData
 Service->DataAccess:deleteAuth(authToken)
@@ -48,20 +48,20 @@ end
 group #red List Games #white
 Client -> Server: [GET] /game\nauthToken
 Server->Service:getGames(authToken)
-Service->DataAccess:getToken(authToken)
+Service->DataAccess:getAuth(authToken)
 DataAccess->db:SELECT authToken from auth
 Service<--DataAccess:AuthData
 Service->DataAccess:listGames()
-DataAccess->db:SELECT game
-Service<--DataAccess:games
-Server<--Service:games
+DataAccess->db:SELECT game table
+Service<--DataAccess:ArrayList<GameData>
+Server<--Service:ArrayList<GameData>
 Client<--Server:200\n{games}
 end
 
 group #purple Create Game #white
 Client -> Server: [POST] /game\nauthToken\n{gameName}
 Server->Service:makeGame(gameName, authToken)
-Service->DataAccess:getToken(authToken)
+Service->DataAccess:getAuth(authToken)
 DataAccess->db:SELECT authToken from auth
 Service<--DataAccess:AuthData
 
@@ -75,14 +75,14 @@ end
 group #yellow Join Game #black
 Client -> Server: [PUT] /game\nauthToken\n{ClientColor, gameID}
 Server->Service:joinGame(authToken, ClientColor, gameID)
-Service->DataAccess:getToken(authToken)
+Service->DataAccess:getAuth(authToken)
 DataAccess->db:SELECT authToken from auth
 Service<--DataAccess:AuthData
 Service->DataAccess:getGame(gameID)
 DataAccess->db:SELECT gameID from game
 Service<--DataAccess:GameData
-Service->DataAccess:insertTeam(teamColor)
-DataAccess->db:UPDATE Username in game
+Service->DataAccess:updateGame(GameData)
+DataAccess->db:UPDATE gameID in game
 Server<-Service:gameJoined == TRUE
 Client<-Server:200
 end
