@@ -59,8 +59,6 @@ public class JoinGameService {
 
         // update the GameData object in the GAME database
         GameData update = new GameData(gameID, newWhiteTeam, newBlackTeam, oldData.gameName(), oldData.game());
-        gameDao.updateGame(gameID, update);
-
-        return true;
+        return gameDao.updateGame(gameID, update);
     }
 }

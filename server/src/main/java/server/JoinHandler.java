@@ -11,10 +11,10 @@ public class JoinHandler extends Handler {
     public static Object join(Request req, Response res) {
         // parse the incoming request info
         JoinRequest joinRequest = getBody(req, JoinRequest.class);
-
         String authToken = req.headers("authorization");
         String playerColor = joinRequest.playerColor();
         int gameID = joinRequest.gameID();
+
         boolean loggedIn;
 
         // eject if we got a bad input
