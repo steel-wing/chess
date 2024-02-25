@@ -33,6 +33,7 @@ public class LoginHandler extends Handler {
             if (exception.getMessage().equals("No such User")) {
                 return errorHandler("unauthorized", 401, res);
             }
+
             // handle any other exceptions
             return errorHandler(exception.getMessage(), 500, res);
         }

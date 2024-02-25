@@ -29,15 +29,18 @@ public class LogoutHandler extends Handler {
             if (exception.getMessage().equals("No such AuthToken")) {
                 return errorHandler("unauthorized", 401, res);
             }
+
+            // handle any other exceptions
             return errorHandler(exception.getMessage(),500, res);
         }
 
+        // if the logout failed it's cause you ain't him
         if (!loggedout) {
             return errorHandler("unauthorized",401, res);
         }
 
         System.out.println("Logged Out! " + logoutdata.authToken());
 
-        return successHandler(logoutdata, res);
+        return successHandler(null, res);
     }
 }
