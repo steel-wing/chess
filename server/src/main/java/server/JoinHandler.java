@@ -8,7 +8,7 @@ import spark.Response;
 
 public class JoinHandler extends Handler {
     /** Join endpoint handler */
-    public static Object join(Request req, Response res) throws DataAccessException {
+    public static Object join(Request req, Response res) {
         // parse the incoming request info
         JoinRequest joinRequest = getBody(req, JoinRequest.class);
 
