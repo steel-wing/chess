@@ -9,7 +9,6 @@ public class JoinGameService {
     /**
      * Handles joining an existing game
      * @param join The join() request, containing teamColor and gameID
-     * @param authToken The authToken that was carried in the header
      * @return A boolean indicating completion
      * @throws DataAccessException If things go sour
      */
