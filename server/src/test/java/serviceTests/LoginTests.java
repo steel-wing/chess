@@ -11,9 +11,11 @@ import passoffTests.testClasses.TestException;
 import request.LoginRequest;
 import service.LoginService;
 
+import java.util.Objects;
+
 public class LoginTests {
     @AfterEach
-    public void clearify() {
+    public void clear() {
         UserDAO UDAO = new MemoryUserDAO();
         System.out.println(UDAO.clear());
     }
@@ -29,7 +31,7 @@ public class LoginTests {
         UserDAO UDAO = new MemoryUserDAO();
         UDAO.createUser(username, data);
 
-        String foundUsername = LoginService.login(userdata).username();
+        String foundUsername = Objects.requireNonNull(LoginService.login(userdata)).username();
         Assertions.assertEquals(username, foundUsername, "The found username isn't the one that was input");
 
         UDAO.clear();
