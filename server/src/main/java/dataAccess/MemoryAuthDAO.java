@@ -17,15 +17,6 @@ public class MemoryAuthDAO implements AuthDAO {
         return found;
     }
 
-    public AuthData getAuthFromUser (String username){
-        for (AuthData auth : AUTH.values()) {
-            if (username.equals(auth.username())) {
-                return new AuthData(auth.authToken(), username);
-            }
-        }
-        return null;
-    }
-
     public AuthData createAuth(UserData user) {
         String authToken = UUID.randomUUID().toString();
         AuthData data = new AuthData(authToken, user.username());
