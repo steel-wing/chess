@@ -29,14 +29,11 @@ public class JoinGameService {
         String oldWhite = oldData.whiteUsername();
 
         // initialize changing variables
-        String newWhiteTeam = null;
-        String newBlackTeam = null;
+        String newWhiteTeam = oldWhite;
+        String newBlackTeam = oldBlack;
 
-        // handle the observer case
-        if (playerColor == null) {
-            newWhiteTeam = oldWhite;
-            newBlackTeam = oldBlack;
-        } else {
+        // verify that the playerColor is good to go
+        if (playerColor != null) {
             // handle the white case
             if (playerColor.equals("WHITE")) {
                 if (oldWhite == null) {
