@@ -18,7 +18,6 @@ public class Server {
         Spark.post("/game", CreateHandler::create);
         Spark.put("/game", JoinHandler::join);
 
-
         Spark.awaitInitialization();
         return Spark.port();
     }
@@ -29,7 +28,3 @@ public class Server {
         Spark.awaitStop();
     }
 }
-
-
-
-
