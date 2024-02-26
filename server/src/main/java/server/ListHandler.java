@@ -2,7 +2,6 @@ package server;
 
 import dataAccess.DataAccessException;
 import model.GameData;
-import request.ListRequest;
 import service.ListGamesService;
 import spark.Request;
 import spark.Response;
@@ -13,17 +12,13 @@ public class ListHandler extends Handler {
     /** List endpoint handler */
     public static Object list(Request req, Response res) {
         // get the authToken from the header
-        ListRequest listRequest = new ListRequest(req.headers("authorization"));
-
-        if (listRequest.authToken() == null) {
-            return errorHandler("bad request", 400, res);
-        }
+       String authToken = req.headers("authorization");
 
         // initialize output
         ArrayList<GameData> gamesList;
 
         try {
-            gamesList = ListGamesService.list(listRequest);
+            gamesList = ListGamesService.list(authToken);
         } catch (DataAccessException exception) {
             // handle the lack of authtoken exception
             if (exception.getMessage().equals("No such AuthToken")) {
@@ -33,6 +28,8 @@ public class ListHandler extends Handler {
             // handle any other exceptions
             return errorHandler(exception.getMessage(),500, res);
         }
+
+        System.out.println("List Retrieved! " + gamesList);
 
         // an empty list of games is still valid
         if (gamesList == null) {

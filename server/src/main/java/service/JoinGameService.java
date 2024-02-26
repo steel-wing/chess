@@ -8,19 +8,19 @@ import request.JoinRequest;
 public class JoinGameService {
     /**
      * Handles joining an existing game
-     * @param join The join() request, containing teamColor and gameID
+     * @param joinRequest The join() request, containing teamColor and gameID
      * @return A boolean indicating completion
      * @throws DataAccessException If things go sour
      */
-    public static boolean join(JoinRequest join) throws DataAccessException {
+    public static boolean join(JoinRequest joinRequest) throws DataAccessException {
         AuthDAO authDao = new MemoryAuthDAO();
         UserDAO userDao = new MemoryUserDAO();
         GameDAO gameDao = new MemoryGameDAO();
 
         // get values from inputs
-        String playerColor = join.playerColor();
-        int gameID = join.gameID();
-        AuthData auth = authDao.getAuth(join.authToken());
+        String playerColor = joinRequest.playerColor();
+        int gameID = joinRequest.gameID();
+        AuthData auth = authDao.getAuth(joinRequest.authToken());
         String username = auth.username();
 
         // get old game contents

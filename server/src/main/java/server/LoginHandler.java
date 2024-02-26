@@ -13,11 +13,11 @@ public class LoginHandler extends Handler {
     public static Object login(Request req, Response res) {
         // parse the login request
         LoginRequest loginRequest = getBody(req, LoginRequest.class);
-
-        // initialize useful variables
-        AuthData authData;
         String username = loginRequest.username();
         String password = loginRequest.password();
+
+        // initialize the output
+        AuthData authData;
 
         // check the input
         if (username == null || password == null) {

@@ -8,19 +8,19 @@ import request.RegisterRequest;
 public class RegistrationService {
     /**
      * Handles Registration
-     * @param register The register() request
+     * @param registerRequest The register() request
      * @return An AuthData object
      * @throws DataAccessException If things go sour
      */
-    public static AuthData register (RegisterRequest register) throws DataAccessException {
+    public static AuthData register (RegisterRequest registerRequest) throws DataAccessException {
         // initialize the DAOs
         AuthDAO authDao = new MemoryAuthDAO();
         UserDAO userDao = new MemoryUserDAO();
 
         // take apart the request and load that data into a userdata (even though they're the same)
-        String username = register.username();
-        String password = register.password();
-        String email = register.email();
+        String username = registerRequest.username();
+        String password = registerRequest.password();
+        String email = registerRequest.email();
         UserData user = new UserData(username, password, email);
 
         // verify that the User doesn't already exist

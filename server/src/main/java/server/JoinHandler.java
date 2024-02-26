@@ -16,17 +16,18 @@ public class JoinHandler extends Handler {
         String authToken = req.headers("authorization");
         JoinRequest joinRequest = new JoinRequest(playerColor, gameID, authToken);
 
-        boolean loggedIn;
-
-        // eject if we got a bad input
-        if (!playerColor.isEmpty() && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
-            return errorHandler("bad request: only 'WHITE' or 'BLACK' accepted", 400, res);
-        }
-
-        // eject if we get an empty input
-        if (authToken == null || gameID == 0) {
+        // check the input
+        if (authToken.isEmpty() || gameID == 0) {
             return errorHandler("bad request", 400, res);
         }
+
+        // eject if we got a bad team input
+        if (!playerColor.isEmpty() && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+            return errorHandler("bad request", 400, res);
+        }
+
+        // initialize the output
+        boolean loggedIn;
 
         try {
             loggedIn = JoinGameService.join(joinRequest);
@@ -46,9 +47,12 @@ public class JoinHandler extends Handler {
         }
 
         // sort of redundant but it handles whatever cases I haven't thought of
-        if (loggedIn) {
-            return successHandler(null, res);
+        if (!loggedIn) {
+            return errorHandler("could not log in", 500, res);
         }
-        return  errorHandler("could not log in", 500, res);
+
+        System.out.println("Game Joined! ID:" + gameID);
+
+        return successHandler(null, res);
     }
 }

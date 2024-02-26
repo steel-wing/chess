@@ -9,6 +9,9 @@ public class ClearHandler extends Handler {
     public static Object clear(Request req, Response res) {
         // wipe out everything and return success
         ClearApplicationService.clear();
+
+        System.out.println("Databases Cleared!");
+
         return successHandler(null, res);
     }
 }

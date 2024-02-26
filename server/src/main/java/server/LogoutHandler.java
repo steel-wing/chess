@@ -1,7 +1,6 @@
 package server;
 
 import dataAccess.DataAccessException;
-import request.LogoutRequest;
 import service.LogoutService;
 import spark.Request;
 import spark.Response;
@@ -9,20 +8,20 @@ import spark.Response;
 public class LogoutHandler extends Handler {
     /** Logout endpoint handler */
     public static Object logout(Request req, Response res) {
-        // initializes to false
-        boolean loggedout;
-
-        // parse the logout request
-        LogoutRequest logoutdata = new LogoutRequest(req.headers("authorization"));
+        // load the logout request
+        String authToken = req.headers("authorization");
 
         // bad request if no authToken provided
-        if (logoutdata.authToken() == null) {
+        if (authToken == null) {
             return errorHandler("bad request", 400, res);
         }
 
+        // initializes to false
+        boolean loggedout;
+
         try {
             // actually try to log out, and throw error if you couldn't
-            loggedout = LogoutService.logout(logoutdata);
+            loggedout = LogoutService.logout(authToken);
 
         } catch (DataAccessException exception) {
             // handle the lack of authtoken exception
@@ -39,7 +38,7 @@ public class LogoutHandler extends Handler {
             return errorHandler("unauthorized",401, res);
         }
 
-        System.out.println("Logged Out! " + logoutdata.authToken());
+        System.out.println("Logged Out! " + authToken);
 
         return successHandler(null, res);
     }
