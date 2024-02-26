@@ -18,7 +18,7 @@ public class RegisterHandler extends Handler {
         String email = register.email();
 
         // check the input
-        if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
+        if (username == null || password == null || email == null) {
             return errorHandler("bad request", 400, res);
         }
 

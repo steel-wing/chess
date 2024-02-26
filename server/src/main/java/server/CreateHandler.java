@@ -2,6 +2,7 @@ package server;
 
 import dataAccess.DataAccessException;
 import request.CreateRequest;
+import result.CreateResponse;
 import service.CreateGameService;
 import spark.Request;
 import spark.Response;
@@ -10,12 +11,12 @@ public class CreateHandler extends Handler {
     /** Create endpoint handler */
     public static Object create(Request req, Response res) {
         // parse the incoming request info
-        String gameName = getBody(req, String.class);
+        String gameName = getBody(req, CreateRequest.class).gameName();
         String authToken = req.headers("authorization");
         CreateRequest createRequest = new CreateRequest(gameName, authToken);
 
         // check the input
-        if (gameName.isEmpty() || authToken.isEmpty()) {
+        if (gameName == null || authToken == null) {
             return errorHandler("bad request", 400, res);
         }
 
@@ -36,6 +37,6 @@ public class CreateHandler extends Handler {
 
         System.out.println("Game Created! ID:" + gameID);
 
-        return successHandler(gameID, res);
+        return successHandler(new CreateResponse(gameID), res);
     }
 }

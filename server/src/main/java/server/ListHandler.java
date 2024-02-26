@@ -2,6 +2,7 @@ package server;
 
 import dataAccess.DataAccessException;
 import model.GameData;
+import result.ListResponse;
 import service.ListGamesService;
 import spark.Request;
 import spark.Response;
@@ -31,12 +32,6 @@ public class ListHandler extends Handler {
 
         System.out.println("List Retrieved! " + gamesList);
 
-        // an empty list of games is still valid
-        if (gamesList == null) {
-            return successHandler(null, res);
-        } else {
-            // but if it isn't empty, return the whole list
-            return successHandler(gamesList, res);
-        }
+        return successHandler(new ListResponse(gamesList), res);
     }
 }

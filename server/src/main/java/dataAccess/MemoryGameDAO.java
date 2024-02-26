@@ -10,7 +10,8 @@ public class MemoryGameDAO implements GameDAO {
 
     public GameData createGame(String gameName) {
         // cronch the UUID down into an int
-        int gameID = UUID.randomUUID().hashCode();
+        int gameID = Math.abs(UUID.randomUUID().hashCode());
+
         ChessGame game = new ChessGame();
 
         // put the game and its ID into the GAME database
@@ -24,7 +25,9 @@ public class MemoryGameDAO implements GameDAO {
         return GAME.get(gameID);
     }
 
+
     public ArrayList<GameData> listGames() {
+        // forbidden type conversions to allow for sorting
         return new ArrayList<>(GAME.values());
     }
 

@@ -17,20 +17,21 @@ public class JoinHandler extends Handler {
         JoinRequest joinRequest = new JoinRequest(playerColor, gameID, authToken);
 
         // check the input
-        if (authToken.isEmpty() || gameID == 0) {
+        if (authToken == null || gameID == 0) {
             return errorHandler("bad request", 400, res);
         }
 
         // eject if we got a bad team input
-        if (!playerColor.isEmpty() && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
+        if (playerColor != null && !playerColor.isEmpty()
+            && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
             return errorHandler("bad request", 400, res);
         }
 
         // initialize the output
-        boolean loggedIn;
+        boolean joined;
 
         try {
-            loggedIn = JoinGameService.join(joinRequest);
+            joined = JoinGameService.join(joinRequest);
         } catch (DataAccessException exception) {
             // handle the "already taken" exception
             if (exception.getMessage().equals("already taken")) {
@@ -47,7 +48,7 @@ public class JoinHandler extends Handler {
         }
 
         // sort of redundant but it handles whatever cases I haven't thought of
-        if (!loggedIn) {
+        if (!joined) {
             return errorHandler("could not log in", 500, res);
         }
 

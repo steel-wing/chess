@@ -29,30 +29,30 @@ public class JoinGameService {
         String oldWhite = oldData.whiteUsername();
 
         // initialize changing variables
-        String newWhiteTeam = "";
-        String newBlackTeam = "";
+        String newWhiteTeam = null;
+        String newBlackTeam = null;
 
-        // handle the observer case (?)
-        if (playerColor.isEmpty()) {
+        // handle the observer case
+        if (playerColor == null) {
             newWhiteTeam = oldWhite;
             newBlackTeam = oldBlack;
-        }
-
-        // handle the white case
-        if (playerColor.equals("WHITE")) {
-            if (oldWhite.isEmpty()) {
-                newWhiteTeam = username;
-            } else {
-                throw new DataAccessException("already taken");
+        } else {
+            // handle the white case
+            if (playerColor.equals("WHITE")) {
+                if (oldWhite == null) {
+                    newWhiteTeam = username;
+                } else {
+                    throw new DataAccessException("already taken");
+                }
             }
-        }
 
-        // handle the black case
-        if (playerColor.equals("BLACK")) {
-            if (oldBlack.isEmpty()) {
-                newBlackTeam = username;
-            } else {
-                throw new DataAccessException("already taken");
+            // handle the black case
+            if (playerColor.equals("BLACK")) {
+                if (oldBlack == null) {
+                    newBlackTeam = username;
+                } else {
+                    throw new DataAccessException("already taken");
+                }
             }
         }
 

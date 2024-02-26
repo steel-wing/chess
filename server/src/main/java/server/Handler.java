@@ -1,9 +1,9 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import spark.Request;
 import spark.Response;
-
 import java.util.Map;
 
 public class Handler {
@@ -19,7 +19,6 @@ public class Handler {
     /** This is an error handler that constructs a JSON body explaining the issue */
     protected static Object errorHandler (String explanation, int status, Response res) {
         System.out.println("Error: [" + status + "], " + explanation);
-
         var body = new Gson().toJson(Map.of("message", String.format("Error: %s", explanation)));
         res.type("application/json");
         res.status(status);
@@ -30,7 +29,7 @@ public class Handler {
     /** This is a success handler that constructs a JSON object for the HTTP */
     protected static Object successHandler (Object outgoing, Response res) {
         System.out.println("Success! [200]");
-        var body = new Gson().toJson(outgoing);
+        var body = new GsonBuilder().serializeNulls().create().toJson(outgoing);
         if (outgoing == null) {
             body = "{}";
         }
