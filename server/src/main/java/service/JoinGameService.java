@@ -13,15 +13,15 @@ public class JoinGameService {
      * @return A boolean indicating completion
      * @throws DataAccessException If things go sour
      */
-    public static boolean join(JoinRequest join, String authToken) throws DataAccessException {
+    public static boolean join(JoinRequest join) throws DataAccessException {
         AuthDAO authDao = new MemoryAuthDAO();
         UserDAO userDao = new MemoryUserDAO();
         GameDAO gameDao = new MemoryGameDAO();
 
         // get values from inputs
-        AuthData auth = authDao.getAuth(authToken);
-        int gameID = join.gameID();
         String playerColor = join.playerColor();
+        int gameID = join.gameID();
+        AuthData auth = authDao.getAuth(join.authToken());
         String username = auth.username();
 
         // get old game contents

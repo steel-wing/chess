@@ -10,10 +10,11 @@ public class JoinHandler extends Handler {
     /** Join endpoint handler */
     public static Object join(Request req, Response res) {
         // parse the incoming request info
-        JoinRequest joinRequest = getBody(req, JoinRequest.class);
+        JoinRequest partial = getBody(req, JoinRequest.class);
+        String playerColor = partial.playerColor();
+        int gameID = partial.gameID();
         String authToken = req.headers("authorization");
-        String playerColor = joinRequest.playerColor();
-        int gameID = joinRequest.gameID();
+        JoinRequest joinRequest = new JoinRequest(playerColor, gameID, authToken);
 
         boolean loggedIn;
 
@@ -28,7 +29,7 @@ public class JoinHandler extends Handler {
         }
 
         try {
-            loggedIn = JoinGameService.join(joinRequest, authToken);
+            loggedIn = JoinGameService.join(joinRequest);
         } catch (DataAccessException exception) {
             // handle the "already taken" exception
             if (exception.getMessage().equals("already taken")) {
