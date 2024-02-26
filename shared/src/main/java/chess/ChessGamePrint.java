@@ -6,7 +6,6 @@ import java.util.Map;
 import static chess.ChessGame.TeamColor.BLACK;
 import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
-import static chess.ChessPiece.PieceType.BISHOP;
 
 public class ChessGamePrint {
     final static Map<ChessPiece.PieceType, Character> TypetoGlyph = Map.of(
@@ -46,7 +45,7 @@ public class ChessGamePrint {
         }
         output.append("\n");
 
-        // iterate across the board and add all pieces while delimiting with "║"
+        // iterate across the board and add all pieces while delimiting with "│"
         for (int row = board.rows; row >= 1; row--){
             output.append((char)(row + '0'));
             output.append(" │");
@@ -62,10 +61,10 @@ public class ChessGamePrint {
         }
 
         // display who's turn it is
-        if (game.getTeamTurn() == WHITE) {
-            output.append('W');
-        } else {
+        if (game.getTeamTurn() == BLACK) {
             output.append('B');
+        } else {
+            output.append('W');
         }
         output.append(" \u2001\u200A");
 
@@ -203,7 +202,7 @@ public class ChessGamePrint {
         }
         output.append("\n");
 
-        // iterate across the board and add all pieces while delimiting with "║"
+        // iterate across the board and add all pieces while delimiting with "│"
         for (int row = board.rows; row >= 1; row--){
             output.append((char)(row + '0'));
             output.append(" │");
