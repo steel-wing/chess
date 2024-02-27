@@ -21,6 +21,8 @@ public class ChessGame {
     private ChessBoard board;
     public ChessGame() {
         turn = WHITE;
+//        board = new ChessBoard();
+//        board.resetBoard();
     }
 
     /**

@@ -1,6 +1,7 @@
 package server;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import spark.Request;
 import spark.Response;
 
@@ -29,7 +30,7 @@ public class Handler {
     /** This is a success handler that constructs a JSON object for the HTTP */
     protected static Object successHandler (Object outgoing, Response res) {
         System.out.println("Success! [200]");
-        var body = new Gson().toJson(outgoing);
+        var body = new GsonBuilder().serializeNulls().create().toJson(outgoing);
         if (outgoing == null) {
             body = "{}";
         }
