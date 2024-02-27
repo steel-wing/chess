@@ -25,5 +25,7 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="mysql.connector.j" level="project" />
+    <orderEntry type="library" name="springframework.security.spring.core" level="project" />
   </component>
 </module>
