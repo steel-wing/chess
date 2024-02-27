@@ -21,7 +21,7 @@ public class CreateGameService {
         String authToken = gameRequest.authToken();
 
         // get auth data (and throw errors)
-        AuthData auth = authDao.getAuth(gameRequest.authToken());
+        AuthData auth = authDao.getAuth(authToken);
 
         // create a new game and return it
         GameData gameData = gameDao.createGame(gameName);

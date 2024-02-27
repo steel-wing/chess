@@ -32,8 +32,6 @@ public class MemoryAuthDAO implements AuthDAO {
         return true;
     }
 
-
-
     public boolean clear() {
         AUTH.clear();
         return true;

@@ -8,10 +8,6 @@ public class ClearApplicationService {
         UserDAO userDao = new MemoryUserDAO();
         GameDAO gameDao = new MemoryGameDAO();
 
-        authDao.clear();
-        userDao.clear();
-        gameDao.clear();
-
-        return true;
+        return authDao.clear() && userDao.clear() && gameDao.clear();
     }
 }

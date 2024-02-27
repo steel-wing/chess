@@ -53,7 +53,6 @@ public class JoinHandler extends Handler {
         }
 
         System.out.println("Game Joined! ID:" + gameID);
-
         return successHandler(null, res);
     }
 }

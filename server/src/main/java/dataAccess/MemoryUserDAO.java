@@ -24,9 +24,8 @@ public class MemoryUserDAO implements UserDAO {
     }
 
     public boolean clear() {
-        int before = USER.size();
         USER.clear();
-        return (before > 0);
+        return true;
     }
 }
 

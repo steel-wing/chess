@@ -43,10 +43,8 @@ public class LoginHandler extends Handler {
             return errorHandler("unauthorized", 401, res);
         }
 
-        System.out.println("Logged In! " + loginRequest.username() + " " + authData.authToken());
-
-        // send back the loginResponse
         LoginResponse loginResponse = new LoginResponse(username, authData.authToken());
+        System.out.println("Logged In! " + successHandler(loginResponse, res));
         return successHandler(loginResponse, res);
     }
 }

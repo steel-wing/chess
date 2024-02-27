@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public interface GameDAO {
 
     /** Creates a new game based on the data provided */
-    GameData createGame(String gameName);
+    GameData createGame(String gameName) throws DataAccessException ;
 
     /** Gets the gamedata corresponding to the gameID */
     GameData getGame(int gameID);

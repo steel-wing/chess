@@ -39,7 +39,6 @@ public class LogoutHandler extends Handler {
         }
 
         System.out.println("Logged Out! " + authToken);
-
         return successHandler(null, res);
     }
 }

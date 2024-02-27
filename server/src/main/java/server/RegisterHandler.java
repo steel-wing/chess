@@ -38,10 +38,8 @@ public class RegisterHandler extends Handler {
             return errorHandler("forbidden", 403, res);
         }
 
-
-        System.out.println("Registered and logged in! " + register.username() + " " + authData.authToken());
-
         RegisterResponse registerResponse = new RegisterResponse(username, authData.authToken());
+        System.out.println("Registered and logged in! " + successHandler(registerResponse, res));
         return successHandler(registerResponse, res);
     }
 }
