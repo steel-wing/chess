@@ -3,7 +3,7 @@ package server;
 import dataAccess.DataAccessException;
 import request.CreateRequest;
 import result.CreateResponse;
-import service.CreateGameService;
+import service.CreateService;
 import spark.Request;
 import spark.Response;
 
@@ -24,7 +24,7 @@ public class CreateHandler extends Handler {
         int gameID;
 
         try {
-            gameID = CreateGameService.create(createRequest);
+            gameID = CreateService.create(createRequest);
         } catch (DataAccessException exception) {
             // handle the lack of authtoken exception
             if (exception.getMessage().equals("No such AuthToken")) {

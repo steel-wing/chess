@@ -4,7 +4,7 @@ import dataAccess.DataAccessException;
 import model.AuthData;
 import request.RegisterRequest;
 import result.RegisterResponse;
-import service.RegistrationService;
+import service.RegisterService;
 import spark.Request;
 import spark.Response;
 
@@ -27,7 +27,7 @@ public class RegisterHandler extends Handler {
 
         try {
             // go get some authData for this User
-            authData = RegistrationService.register(register);
+            authData = RegisterService.register(register);
 
         } catch (DataAccessException exception) {
             return errorHandler(exception.getMessage(), 500, res);

@@ -7,7 +7,7 @@ import server.Server;
 
 import java.util.ArrayList;
 
-public class ListGamesService {
+public class ListService {
     /**
      *
      * @param authToken An authToken. That's it.

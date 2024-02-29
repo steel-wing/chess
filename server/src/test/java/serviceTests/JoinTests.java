@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import passoffTests.testClasses.TestException;
 import request.JoinRequest;
-import service.JoinGameService;
+import service.JoinService;
 
 public class JoinTests {
     @AfterEach
@@ -43,7 +43,7 @@ public class JoinTests {
 
         // have the user join the game as White
         JoinRequest joinRequest = new JoinRequest("WHITE", gameID, authData.authToken());
-        Assertions.assertTrue(JoinGameService.join(joinRequest));
+        Assertions.assertTrue(JoinService.join(joinRequest));
     }
 
     @Test
@@ -68,6 +68,6 @@ public class JoinTests {
 
         // have the user join the game with a bad ID
         JoinRequest joinRequest = new JoinRequest("BLACK", 12345, username);
-        Assertions.assertThrows(DataAccessException.class, () -> JoinGameService.join(joinRequest));
+        Assertions.assertThrows(DataAccessException.class, () -> JoinService.join(joinRequest));
     }
 }

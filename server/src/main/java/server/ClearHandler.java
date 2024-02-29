@@ -1,6 +1,6 @@
 package server;
 
-import service.ClearApplicationService;
+import service.ClearService;
 import spark.Request;
 import spark.Response;
 
@@ -8,7 +8,7 @@ public class ClearHandler extends Handler {
     /** Clear endpoint handler */
     public static Object clear(Request req, Response res) {
         // wipe out everything and return success
-        boolean done = ClearApplicationService.clear();
+        boolean done = ClearService.clear();
 
         // handles the (impossible) case of failure
         if (!done) {

@@ -3,7 +3,7 @@ package server;
 import dataAccess.DataAccessException;
 import model.GameData;
 import result.ListResponse;
-import service.ListGamesService;
+import service.ListService;
 import spark.Request;
 import spark.Response;
 
@@ -19,7 +19,7 @@ public class ListHandler extends Handler {
         ArrayList<GameData> gamesList;
 
         try {
-            gamesList = ListGamesService.list(authToken);
+            gamesList = ListService.list(authToken);
         } catch (DataAccessException exception) {
             // handle the lack of authtoken exception
             if (exception.getMessage().equals("No such AuthToken")) {

@@ -35,6 +35,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public boolean clear() {
         AUTH.clear();
+        System.out.println(AUTH);
         return true;
     }
 }

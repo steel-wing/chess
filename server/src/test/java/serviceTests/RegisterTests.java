@@ -6,7 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import request.RegisterRequest;
-import service.RegistrationService;
+import service.RegisterService;
 
 public class RegisterTests {
     @AfterEach
@@ -26,7 +26,7 @@ public class RegisterTests {
 
         // register User
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegistrationService.register(request);
+        RegisterService.register(request);
 
         // find User in the database
         UserDAO UDAO = new MemoryUserDAO();
@@ -45,10 +45,10 @@ public class RegisterTests {
 
         // register the User
         RegisterRequest request = new RegisterRequest(username, password, email);
-        RegistrationService.register(request);
+        RegisterService.register(request);
 
         // try to re-register the same person again
-        Assertions.assertNull(RegistrationService.register(request));
+        Assertions.assertNull(RegisterService.register(request));
     }
 
 }

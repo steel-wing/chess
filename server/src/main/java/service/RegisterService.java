@@ -6,7 +6,7 @@ import model.UserData;
 import request.RegisterRequest;
 import server.Server;
 
-public class RegistrationService {
+public class RegisterService {
     /**
      * Handles Registration
      * @param registerRequest The register() request

@@ -61,6 +61,7 @@ public class MemoryGameDAO implements GameDAO {
 
     public boolean clear() {
         GAME.clear();
+        System.out.println(GAME);
         return true;
     }
 

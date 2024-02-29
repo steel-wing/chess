@@ -6,7 +6,7 @@ import model.GameData;
 import request.CreateRequest;
 import server.Server;
 
-public class CreateGameService {
+public class CreateService {
     /**
      * @param gameRequest Contains the gameName and authToken
      * @return the new gameID of the created game

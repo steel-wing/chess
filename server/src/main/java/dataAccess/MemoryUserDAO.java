@@ -25,6 +25,7 @@ public class MemoryUserDAO implements UserDAO {
 
     public boolean clear() {
         USER.clear();
+        System.out.println(USER);
         return true;
     }
 }

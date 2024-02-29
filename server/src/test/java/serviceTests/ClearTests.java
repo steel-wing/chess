@@ -6,7 +6,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import passoffTests.testClasses.TestException;
-import service.ClearApplicationService;
+import service.ClearService;
 
 public class ClearTests {
     @AfterEach
@@ -37,7 +37,7 @@ public class ClearTests {
         GDAO.createGame("My Game Long Name");
 
         // clear the data
-        Assertions.assertTrue(ClearApplicationService.clear());
+        Assertions.assertTrue(ClearService.clear());
     }
 
 }

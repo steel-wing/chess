@@ -2,7 +2,7 @@ package server;
 
 import dataAccess.DataAccessException;
 import request.JoinRequest;
-import service.JoinGameService;
+import service.JoinService;
 import spark.Request;
 import spark.Response;
 
@@ -31,7 +31,7 @@ public class JoinHandler extends Handler {
         boolean joined;
 
         try {
-            joined = JoinGameService.join(joinRequest);
+            joined = JoinService.join(joinRequest);
         } catch (DataAccessException exception) {
             // handle the "already taken" exception
             if (exception.getMessage().equals("already taken")) {

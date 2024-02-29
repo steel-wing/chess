@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import passoffTests.testClasses.TestException;
 import request.CreateRequest;
-import service.CreateGameService;
+import service.CreateService;
 
 public class CreateTests {
     @AfterEach
@@ -37,7 +37,7 @@ public class CreateTests {
         CreateRequest request = new CreateRequest("GAME HAHA", authToken);
 
         // create a game and get its ID
-        int gameID = CreateGameService.create(request);
+        int gameID = CreateService.create(request);
         GameData game = GDAO.getGame(gameID);
 
         // verify... that the ID equals itself?
@@ -59,6 +59,6 @@ public class CreateTests {
         CreateRequest request = new CreateRequest(null, authToken);
 
         // try to make a game with no name using our User
-        Assertions.assertThrows(DataAccessException.class, () -> CreateGameService.create(request));
+        Assertions.assertThrows(DataAccessException.class, () -> CreateService.create(request));
     }
 }

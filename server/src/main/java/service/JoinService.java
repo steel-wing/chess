@@ -6,7 +6,7 @@ import model.GameData;
 import request.JoinRequest;
 import server.Server;
 
-public class JoinGameService {
+public class JoinService {
     /**
      * Handles joining an existing game
      * @param joinRequest The join() request, containing teamColor and gameID
