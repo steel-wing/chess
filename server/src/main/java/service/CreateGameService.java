@@ -1,9 +1,10 @@
 package service;
 
-import dataAccess.*;
+import dataAccess.DataAccessException;
 import model.AuthData;
 import model.GameData;
 import request.CreateRequest;
+import server.Server;
 
 public class CreateGameService {
     /**
@@ -12,19 +13,15 @@ public class CreateGameService {
      * @throws DataAccessException in the event of authentication or retrieval errors
      */
     public static int create(CreateRequest gameRequest) throws DataAccessException {
-        // initialize our DAOs
-        AuthDAO authDao = new MemoryAuthDAO();
-        GameDAO gameDao = new MemoryGameDAO();
-
         // get values from inputs
         String gameName = gameRequest.gameName();
         String authToken = gameRequest.authToken();
 
         // get auth data (and throw errors)
-        AuthData auth = authDao.getAuth(authToken);
+        AuthData auth = Server.authDAO.getAuth(authToken);
 
         // create a new game and return it
-        GameData gameData = gameDao.createGame(gameName);
+        GameData gameData = Server.gameDAO.createGame(gameName);
         return gameData.gameID();
     }
 }

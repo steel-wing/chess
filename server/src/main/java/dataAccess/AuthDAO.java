@@ -1,7 +1,7 @@
 package dataAccess;
 
-import model.UserData;
 import model.AuthData;
+import model.UserData;
 
 /** Interface for handling getting AuthData from a database */
 public interface AuthDAO {

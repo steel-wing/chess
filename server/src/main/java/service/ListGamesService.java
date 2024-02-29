@@ -3,6 +3,7 @@ package service;
 import dataAccess.*;
 import model.AuthData;
 import model.GameData;
+import server.Server;
 
 import java.util.ArrayList;
 
@@ -14,14 +15,10 @@ public class ListGamesService {
      * @throws DataAccessException In event of authToken issues
      */
     public static ArrayList<GameData> list(String authToken) throws DataAccessException {
-        // initialize our DAOs
-        AuthDAO authDao = new MemoryAuthDAO();
-        GameDAO gameDao = new MemoryGameDAO();
-
         // get auth data (and throw errors)
-        AuthData authData = authDao.getAuth(authToken);
+        AuthData authData = Server.authDAO.getAuth(authToken);
 
         // return the list from the GAME database
-        return gameDao.listGames();
+        return Server.gameDAO.listGames();
     }
 }

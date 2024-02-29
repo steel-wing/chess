@@ -4,6 +4,7 @@ import dataAccess.*;
 import model.AuthData;
 import model.GameData;
 import request.JoinRequest;
+import server.Server;
 
 public class JoinGameService {
     /**
@@ -13,18 +14,14 @@ public class JoinGameService {
      * @throws DataAccessException If things go sour
      */
     public static boolean join(JoinRequest joinRequest) throws DataAccessException {
-        AuthDAO authDao = new MemoryAuthDAO();
-        UserDAO userDao = new MemoryUserDAO();
-        GameDAO gameDao = new MemoryGameDAO();
-
         // get values from inputs
         String playerColor = joinRequest.playerColor();
         int gameID = joinRequest.gameID();
-        AuthData auth = authDao.getAuth(joinRequest.authToken());
+        AuthData auth = Server.authDAO.getAuth(joinRequest.authToken());
         String username = auth.username();
 
         // get old game contents
-        GameData oldData = gameDao.getGame(gameID);
+        GameData oldData = Server.gameDAO.getGame(gameID);
         String oldBlack = oldData.blackUsername();
         String oldWhite = oldData.whiteUsername();
 
@@ -55,6 +52,6 @@ public class JoinGameService {
 
         // update the GameData object in the GAME database
         GameData update = new GameData(gameID, newWhiteTeam, newBlackTeam, oldData.gameName(), oldData.game());
-        return gameDao.updateGame(gameID, update);
+        return Server.gameDAO.updateGame(gameID, update);
     }
 }

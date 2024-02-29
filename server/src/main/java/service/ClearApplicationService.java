@@ -1,13 +1,9 @@
 package service;
 
-import dataAccess.*;
+import server.Server;
 
 public class ClearApplicationService {
     public static boolean clear() {
-        AuthDAO authDao = new MemoryAuthDAO();
-        UserDAO userDao = new MemoryUserDAO();
-        GameDAO gameDao = new MemoryGameDAO();
-
-        return authDao.clear() && userDao.clear() && gameDao.clear();
+        return Server.authDAO.clear() && Server.gameDAO.clear() && Server.gameDAO.clear();
     }
 }

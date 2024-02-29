@@ -4,6 +4,7 @@ import dataAccess.*;
 import model.AuthData;
 import model.UserData;
 import request.RegisterRequest;
+import server.Server;
 
 public class RegistrationService {
     /**
@@ -13,10 +14,6 @@ public class RegistrationService {
      * @throws DataAccessException If things go sour
      */
     public static AuthData register (RegisterRequest registerRequest) throws DataAccessException {
-        // initialize the DAOs
-        AuthDAO authDao = new MemoryAuthDAO();
-        UserDAO userDao = new MemoryUserDAO();
-
         // take apart the request and load that data into a userdata (even though they're the same)
         String username = registerRequest.username();
         String password = registerRequest.password();
@@ -26,7 +23,7 @@ public class RegistrationService {
         // verify that the User doesn't already exist
         UserData found = null;
         try {
-            found = userDao.getUser(username);
+            found = Server.userDAO.getUser(username);
         } catch (DataAccessException ignored) {}
 
         if (found != null) {
@@ -34,9 +31,9 @@ public class RegistrationService {
         }
 
         // add the user to the USER database
-        userDao.createUser(username, user);
+        Server.userDAO.createUser(username, user);
 
         // return the new authData for this User
-        return authDao.createAuth(user);
+        return Server.authDAO.createAuth(user);
     }
 }

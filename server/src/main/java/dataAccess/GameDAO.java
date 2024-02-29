@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 /** Interface for handling getting GameData from a database */
 public interface GameDAO {
-
     /** Creates a new game based on the data provided */
     GameData createGame(String gameName) throws DataAccessException ;
 

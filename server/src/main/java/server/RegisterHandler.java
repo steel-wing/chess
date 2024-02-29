@@ -19,7 +19,7 @@ public class RegisterHandler extends Handler {
 
         // check the input
         if (username == null || password == null || email == null) {
-            return errorHandler("bad request", 400, res);
+            return errorHandler("bad register request", 400, res);
         }
 
         // initialize the output

@@ -3,6 +3,7 @@ package service;
 import dataAccess.*;
 import model.*;
 import request.LoginRequest;
+import server.Server;
 
 public class LoginService {
     /**
@@ -12,16 +13,12 @@ public class LoginService {
      * @throws DataAccessException If things go sour
      */
     public static AuthData login(LoginRequest loginRequest) throws DataAccessException {
-        // initialize the DAOs
-        AuthDAO authDao = new MemoryAuthDAO();
-        UserDAO userDao = new MemoryUserDAO();
-
         // get login data
         String username = loginRequest.username();
         String password = loginRequest.password();
 
         // get corresponding User data
-        UserData user = userDao.getUser(username);
+        UserData user = Server.userDAO.getUser(username);
 
         // return null if the password is incorrect
         if (!user.password().equals(password)) {
@@ -29,6 +26,6 @@ public class LoginService {
         }
 
         // create a new authToken for the User
-        return authDao.createAuth(user);
+        return Server.authDAO.createAuth(user);
     }
 }

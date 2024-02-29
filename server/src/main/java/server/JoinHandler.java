@@ -18,13 +18,13 @@ public class JoinHandler extends Handler {
 
         // check the input
         if (authToken == null || gameID == 0) {
-            return errorHandler("bad request", 400, res);
+            return errorHandler("bad join request", 400, res);
         }
 
         // eject if we got a bad team input
         if (playerColor != null && !playerColor.isEmpty()
             && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
-            return errorHandler("bad request", 400, res);
+            return errorHandler("bad join team request", 400, res);
         }
 
         // initialize the output

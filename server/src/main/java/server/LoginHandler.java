@@ -21,7 +21,7 @@ public class LoginHandler extends Handler {
 
         // check the input
         if (username == null || password == null) {
-            return errorHandler("bad request", 400, res);
+            return errorHandler("bad login request", 400, res);
         }
 
         try {

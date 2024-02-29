@@ -1,8 +1,13 @@
 package server;
 
+import dataAccess.*;
 import spark.Spark;
 
 public class Server {
+    public static final AuthDAO authDAO = new MemoryAuthDAO();
+    public static final GameDAO gameDAO = new MemoryGameDAO();
+    public static final UserDAO userDAO = new MemoryUserDAO();
+
     /** Starts the server */
     public int run(int port) {
         Spark.port(port);

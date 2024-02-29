@@ -2,6 +2,7 @@ package service;
 
 import dataAccess.*;
 import model.*;
+import server.Server;
 
 public class LogoutService {
     /** Handles logging out
@@ -11,13 +12,10 @@ public class LogoutService {
      * @throws DataAccessException If things go sour
      */
     public static boolean logout(String authToken) throws DataAccessException {
-        // initialize the DAO
-        AuthDAO authDao = new MemoryAuthDAO();
-
         // get auth data (and throw errors)
-        AuthData authData = authDao.getAuth(authToken);
+        AuthData authData = Server.authDAO.getAuth(authToken);
 
         // clear the row in the AUTH table and return success
-        return authDao.deleteAuth(authToken);
+        return Server.authDAO.deleteAuth(authToken);
     }
 }

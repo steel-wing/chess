@@ -17,7 +17,7 @@ public class CreateHandler extends Handler {
 
         // check the input
         if (gameName == null || authToken == null) {
-            return errorHandler("bad request", 400, res);
+            return errorHandler("bad create request", 400, res);
         }
 
         // initialize the output

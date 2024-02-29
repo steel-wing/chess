@@ -13,7 +13,7 @@ public class LogoutHandler extends Handler {
 
         // bad request if no authToken provided
         if (authToken == null) {
-            return errorHandler("bad request", 400, res);
+            return errorHandler("bad logout request", 400, res);
         }
 
         // initializes to false
