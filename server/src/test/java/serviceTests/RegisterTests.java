@@ -1,6 +1,8 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +19,7 @@ public class RegisterTests {
         UDAO.clear();
     }
     @Test
-    public void registerTest() throws DataAccessException {
+    public void registerTest() throws DataAccessException, ErrorException {
         // get User data
         String username = "user";
         String password = "name";
@@ -37,7 +39,7 @@ public class RegisterTests {
     }
 
     @Test
-    public void badRegister() throws DataAccessException {
+    public void badRegister() throws DataAccessException, ErrorException {
         // get User data
         String username = "usertwo";
         String password = "nameone";
@@ -48,7 +50,7 @@ public class RegisterTests {
         RegisterService.register(request);
 
         // try to re-register the same person again
-        Assertions.assertNull(RegisterService.register(request));
+        Assertions.assertThrows(ErrorException.class, () -> RegisterService.register(request));
     }
 
 }

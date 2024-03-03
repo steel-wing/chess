@@ -1,6 +1,9 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryGameDAO;
+import dataAccess.MemoryDAO.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
@@ -22,7 +25,7 @@ public class JoinTests {
     }
 
     @Test
-    public void testJoin() throws TestException, DataAccessException {
+    public void testJoin() throws TestException, DataAccessException, ErrorException {
         // build a new User
         String username = "The Rod";
         String password = "3141592653589793238462643383279502884197169";

@@ -1,6 +1,8 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
@@ -30,13 +32,16 @@ public class LogoutTests {
     }
 
     @Test
-    public void testLogout() throws TestException, DataAccessException {
+    public void testLogout() throws TestException, DataAccessException, ErrorException {
         // log in
         AuthData authData = login();
         String authToken = authData.authToken();
 
         // log out
-        Assertions.assertTrue(LogoutService.logout(authToken));
+        LogoutService.logout(authToken);
+
+        // definitely logged out
+        Assertions.assertThrows(DataAccessException.class, () -> LogoutService.logout(authToken));
     }
 
     @Test

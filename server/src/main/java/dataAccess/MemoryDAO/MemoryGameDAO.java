@@ -1,6 +1,8 @@
-package dataAccess;
+package dataAccess.MemoryDAO;
 
 import chess.ChessGame;
+import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
 import model.GameData;
 
 import java.util.ArrayList;
@@ -59,10 +61,8 @@ public class MemoryGameDAO implements GameDAO {
         return true;
     }
 
-    public boolean clear() {
+    public void clear() {
         GAME.clear();
-        System.out.println(GAME);
-        return true;
     }
 
 }

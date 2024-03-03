@@ -21,13 +21,8 @@ public class ListHandler extends Handler {
         try {
             gamesList = ListService.list(authToken);
         } catch (DataAccessException exception) {
-            // handle the lack of authtoken exception
-            if (exception.getMessage().equals("No such AuthToken")) {
-                return errorHandler("unauthorized", 401, res);
-            }
-
-            // handle any other exceptions
-            return errorHandler(exception.getMessage(),500, res);
+            // handle errors
+            return errorHandler(exception, res);
         }
 
         System.out.println("List Retrieved! " + successHandler(new ListResponse(gamesList), res));

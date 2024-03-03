@@ -1,12 +1,17 @@
 package serviceTests;
 
-import dataAccess.*;
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
+import dataAccess.GameDAO;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryGameDAO;
+import dataAccess.MemoryDAO.MemoryUserDAO;
+import dataAccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import passoffTests.testClasses.TestException;
-import service.ClearService;
 
 public class ClearTests {
     @AfterEach
@@ -36,8 +41,12 @@ public class ClearTests {
         UDAO.createUser(username, user);
         GDAO.createGame("My Game Long Name");
 
+        ADAO.clear();
+        GDAO.clear();
+        UDAO.clear();
+
         // clear the data
-        Assertions.assertTrue(ClearService.clear());
+        Assertions.assertTrue(GDAO.listGames().isEmpty());
     }
 
 }

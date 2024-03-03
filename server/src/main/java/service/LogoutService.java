@@ -8,14 +8,18 @@ public class LogoutService {
     /** Handles logging out
      *
      * @param authToken the incoming authToken
-     * @return A success boolean
      * @throws DataAccessException If things go sour
+     * @throws ErrorException also
      */
-    public static boolean logout(String authToken) throws DataAccessException {
+    public static void logout(String authToken) throws DataAccessException, ErrorException {
         // get auth data (and throw errors)
         AuthData authData = Server.authDAO.getAuth(authToken);
 
-        // clear the row in the AUTH table and return success
-        return Server.authDAO.deleteAuth(authToken);
+        // bad request if no authToken provided
+        if (authToken == null) {
+            throw new ErrorException("bad request");
+        }
+
+        Server.authDAO.deleteAuth(authToken);
     }
 }

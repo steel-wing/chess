@@ -19,5 +19,5 @@ public interface GameDAO {
     boolean updateGame(int gameID, GameData update);
 
     /** Clears the entire GAME database */
-    boolean clear();
+    void clear();
 }

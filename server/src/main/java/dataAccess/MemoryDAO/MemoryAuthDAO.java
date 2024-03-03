@@ -1,5 +1,7 @@
-package dataAccess;
+package dataAccess.MemoryDAO;
 
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 
@@ -25,17 +27,14 @@ public class MemoryAuthDAO implements AuthDAO {
         return data;
     }
 
-    public boolean deleteAuth(String authToken) throws DataAccessException{
+    public void deleteAuth(String authToken) throws DataAccessException{
         if (AUTH.get(authToken) == null) {
             throw new DataAccessException("No such AuthToken");
         }
         AUTH.remove(authToken);
-        return true;
     }
 
-    public boolean clear() {
+    public void clear() {
         AUTH.clear();
-        System.out.println(AUTH);
-        return true;
     }
 }

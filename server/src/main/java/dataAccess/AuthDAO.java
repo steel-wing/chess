@@ -12,8 +12,8 @@ public interface AuthDAO {
     AuthData createAuth(UserData user);
 
     /** Deletes an AuthToken/User pair, based on the AuthToken */
-    boolean deleteAuth(String authToken) throws DataAccessException;
+    void deleteAuth(String authToken) throws DataAccessException;
 
     /** Clears the entire AUTH database */
-    boolean clear();
+    void clear();
 }

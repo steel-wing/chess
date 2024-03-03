@@ -1,4 +1,4 @@
-package dataAccess;
+package dataAccess.DatabaseDAO;
 
 public class DatabaseGameDAO {
 }

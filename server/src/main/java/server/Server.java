@@ -1,6 +1,9 @@
 package server;
 
 import dataAccess.*;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryGameDAO;
+import dataAccess.MemoryDAO.MemoryUserDAO;
 import spark.Spark;
 
 public class Server {

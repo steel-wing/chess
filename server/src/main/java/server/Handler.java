@@ -18,7 +18,43 @@ public class Handler {
     }
 
     /** This is an error handler that constructs a JSON body explaining the issue */
-    protected static Object errorHandler (String explanation, int status, Response res) {
+    protected static Object errorHandler (Exception exception, Response res) {
+        // handle empty signatures
+        if (exception.getMessage().equals("null value")) {
+            return errorPrinter("bad request", 400, res);
+        }
+
+        // handle the lack of authtoken exception
+        if (exception.getMessage().equals("No such AuthToken")) {
+            return errorPrinter("unauthorized", 401, res);
+        }
+
+        // handle wrong password exception
+        if (exception.getMessage().equals("password incorrect")) {
+            return errorPrinter("unauthorized", 401, res);
+        }
+
+        // handle the lack of user exception
+        if (exception.getMessage().equals("No such User")) {
+            return errorPrinter("unauthorized", 401, res);
+        }
+
+        // handle the already registered exception
+        if (exception.getMessage().equals("User already registered")) {
+            return errorPrinter("forbidden", 403, res);
+        }
+
+        // handle the team already taken exception
+        if (exception.getMessage().equals("team already taken")) {
+            return errorPrinter("forbidden", 403, res);
+        }
+
+        // handle any other exceptions
+        return errorPrinter(exception.getMessage(),500, res);
+    }
+
+
+    private static Object errorPrinter (String explanation, int status, Response res) {
         System.out.println("Error: [" + status + "], " + explanation);
         var body = new Gson().toJson(Map.of("message", String.format("Error: %s", explanation)));
         res.type("application/json");

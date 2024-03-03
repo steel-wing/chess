@@ -1,6 +1,7 @@
 package server;
 
 import dataAccess.DataAccessException;
+import dataAccess.ErrorException;
 import request.JoinRequest;
 import service.JoinService;
 import spark.Request;
@@ -16,40 +17,19 @@ public class JoinHandler extends Handler {
         String authToken = req.headers("authorization");
         JoinRequest joinRequest = new JoinRequest(playerColor, gameID, authToken);
 
-        // check the input
-        if (authToken == null || gameID == 0) {
-            return errorHandler("bad join request", 400, res);
-        }
-
-        // eject if we got a bad team input
-        if (playerColor != null && !playerColor.isEmpty()
-            && !playerColor.equals("WHITE") && !playerColor.equals("BLACK")) {
-            return errorHandler("bad join team request", 400, res);
-        }
-
         // initialize the output
         boolean joined;
 
         try {
             joined = JoinService.join(joinRequest);
-        } catch (DataAccessException exception) {
-            // handle the "already taken" exception
-            if (exception.getMessage().equals("already taken")) {
-                return errorHandler("already taken", 403, res);
-            }
-
-            // handle the "unauthorized" exception
-            if (exception.getMessage().equals("No such AuthToken")) {
-                return errorHandler("unauthorized", 401, res);
-            }
-
+        } catch (DataAccessException | ErrorException exception) {
             // handle any other exceptions
-            return errorHandler(exception.getMessage(), 500, res);
+            return errorHandler(exception, res);
         }
 
         // sort of redundant but it handles whatever cases I haven't thought of
         if (!joined) {
-            return errorHandler("could not log in", 500, res);
+            return errorHandler(new ErrorException("unable to log in"), res);
         }
 
         System.out.println("Game Joined! ID:" + gameID);

@@ -1,6 +1,7 @@
 package server;
 
 import dataAccess.DataAccessException;
+import dataAccess.ErrorException;
 import request.CreateRequest;
 import result.CreateResponse;
 import service.CreateService;
@@ -15,24 +16,14 @@ public class CreateHandler extends Handler {
         String authToken = req.headers("authorization");
         CreateRequest createRequest = new CreateRequest(gameName, authToken);
 
-        // check the input
-        if (gameName == null || authToken == null) {
-            return errorHandler("bad create request", 400, res);
-        }
-
         // initialize the output
         int gameID;
 
         try {
             gameID = CreateService.create(createRequest);
-        } catch (DataAccessException exception) {
-            // handle the lack of authtoken exception
-            if (exception.getMessage().equals("No such AuthToken")) {
-                return errorHandler("unauthorized", 401, res);
-            }
-
-            // handle any other exceptions
-            return errorHandler(exception.getMessage(),500, res);
+        } catch (DataAccessException | ErrorException exception) {
+            // handle errors
+            return errorHandler(exception, res);
         }
 
         System.out.println("Game Created! ID:" + successHandler(new CreateResponse(gameID), res));

@@ -1,6 +1,7 @@
 package server;
 
 import dataAccess.DataAccessException;
+import dataAccess.ErrorException;
 import model.AuthData;
 import request.LoginRequest;
 import result.LoginResponse;
@@ -19,28 +20,12 @@ public class LoginHandler extends Handler {
         // initialize the output
         AuthData authData;
 
-        // check the input
-        if (username == null || password == null) {
-            return errorHandler("bad login request", 400, res);
-        }
-
         try {
             // go get some authData for this User
             authData = LoginService.login(loginRequest);
-
-        } catch (DataAccessException exception) {
-            // handle the lack of user exception
-            if (exception.getMessage().equals("No such User")) {
-                return errorHandler("unauthorized", 401, res);
-            }
-
-            // handle any other exceptions
-            return errorHandler(exception.getMessage(), 500, res);
-        }
-
-        // handle an incorrect password case (the authdata was null)
-        if (authData == null) {
-            return errorHandler("unauthorized", 401, res);
+        } catch (DataAccessException | ErrorException exception) {
+            // handle errors
+            return errorHandler(exception, res);
         }
 
         LoginResponse loginResponse = new LoginResponse(username, authData.authToken());

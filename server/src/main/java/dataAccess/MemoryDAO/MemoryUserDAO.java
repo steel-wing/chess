@@ -1,5 +1,7 @@
-package dataAccess;
+package dataAccess.MemoryDAO;
 
+import dataAccess.DataAccessException;
+import dataAccess.UserDAO;
 import model.UserData;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,10 +25,8 @@ public class MemoryUserDAO implements UserDAO {
         throw new DataAccessException("User already exists");
     }
 
-    public boolean clear() {
+    public void clear() {
         USER.clear();
-        System.out.println(USER);
-        return true;
     }
 }
 

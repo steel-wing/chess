@@ -1,6 +1,9 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryGameDAO;
+import dataAccess.MemoryDAO.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -8,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import passoffTests.testClasses.TestException;
 import request.LoginRequest;
 import service.LoginService;
-
-import java.util.Objects;
 
 public class LoginTests {
     @AfterEach
@@ -23,7 +24,7 @@ public class LoginTests {
     }
 
     @Test
-    public void testLogin() throws TestException, DataAccessException {
+    public void testLogin() throws TestException, DataAccessException, ErrorException {
         // build a new User
         String username = "The Rod";
         String password = "3141592653589793238462643383279502884197169";
@@ -36,7 +37,7 @@ public class LoginTests {
 
         // log in with the username and password
         LoginRequest userdata = new LoginRequest(username, password);
-        String foundUsername = Objects.requireNonNull(LoginService.login(userdata)).username();
+        String foundUsername = LoginService.login(userdata).username();
 
         // verify that the found username matches the original (i.e. we get him)
         Assertions.assertEquals(username, foundUsername, "The found username isn't the one that was input");

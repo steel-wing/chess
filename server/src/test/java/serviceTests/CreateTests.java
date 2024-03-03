@@ -1,6 +1,9 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryGameDAO;
+import dataAccess.MemoryDAO.MemoryUserDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -22,7 +25,7 @@ public class CreateTests {
         UDAO.clear();
     }
     @Test
-    public void testCreate() throws TestException, DataAccessException {
+    public void testCreate() throws TestException, DataAccessException, ErrorException {
         // get an authToken for a User
         String username = "Ttimm";
         String password = "848484";
@@ -59,6 +62,6 @@ public class CreateTests {
         CreateRequest request = new CreateRequest(null, authToken);
 
         // try to make a game with no name using our User
-        Assertions.assertThrows(DataAccessException.class, () -> CreateService.create(request));
+        Assertions.assertThrows(ErrorException.class, () -> CreateService.create(request));
     }
 }
