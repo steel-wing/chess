@@ -5,14 +5,20 @@ import org.junit.jupiter.api.Test;
 public class AuthTests {
 
     @Test
-    public void testGet() {}
+    public void testGetAuth() {}
+    @Test
+    public void testNotGetAuth() {}
 
     @Test
-    public void testCreate() {}
+    public void testCreateAuth() {}
+    @Test
+    public void testNotCreateAuth() {}
 
     @Test
-    public void testDelete() {}
+    public void testDeleteAuth() {}
+    @Test
+    public void testNotDeleteAuth() {}
 
     @Test
-    public void testClear() {}
+    public void testClearAuth() {}
 }
