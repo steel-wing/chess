@@ -1,7 +1,23 @@
 package dataAccess.DatabaseDAO;
 
-public class DatabaseUserDAO {
+import dataAccess.DataAccessException;
+import dataAccess.UserDAO;
+import model.UserData;
 
-    // fixed some little issues after switching computers
+public class DatabaseUserDAO implements UserDAO {
 
+    @Override
+    public UserData getUser(String username) throws DataAccessException {
+        return null;
+    }
+
+    @Override
+    public UserData createUser(String username, UserData data) throws DataAccessException {
+        return null;
+    }
+
+    @Override
+    public void clear() {
+
+    }
 }
