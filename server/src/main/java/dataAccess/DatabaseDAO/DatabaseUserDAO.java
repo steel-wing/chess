@@ -14,6 +14,10 @@ public class DatabaseUserDAO implements UserDAO {
 
         // if there is a table, retrieve the user data from it
 
+
+        UserData user = new UserData(username, password, email);
+
+        return user;
     }
 
     @Override
