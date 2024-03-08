@@ -6,5 +6,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+chess/server/src/main/java/dataAccess/DatabaseDAO/db.properties
+
 ### Mac OS ###
 .DS_Store

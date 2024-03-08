@@ -8,7 +8,12 @@ public class DatabaseUserDAO implements UserDAO {
 
     @Override
     public UserData getUser(String username) throws DataAccessException {
-        return null;
+        // if there is no database, return null
+
+        // if there is no table, return null
+
+        // if there is a table, retrieve the user data from it
+
     }
 
     @Override
