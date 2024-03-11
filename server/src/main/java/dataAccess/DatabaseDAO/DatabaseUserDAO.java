@@ -31,8 +31,13 @@ public class DatabaseUserDAO implements UserDAO {
 
         // handle errors
         } catch (SQLException | DataAccessException exception) {
-            throw new DataAccessException(String.format("Unable to get User by username: %s", exception.getMessage()));
+            throw new DataAccessException(String.format("Unable to get User from username: %s", exception.getMessage()));
         }
+        // we couldn't find him
+        if (userData == null) {
+            throw new DataAccessException("no such User");
+        }
+
         return userData;
     }
 

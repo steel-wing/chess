@@ -9,11 +9,11 @@ public interface AuthDAO {
     AuthData getAuth(String authToken) throws DataAccessException;
 
     /** Creates a unique UUID for the user, stores it, and returns the row in AUTH */
-    AuthData createAuth(UserData user);
+    AuthData createAuth(UserData user) throws DataAccessException;
 
     /** Deletes an AuthToken/User pair, based on the AuthToken */
     void deleteAuth(String authToken) throws DataAccessException;
 
     /** Clears the entire AUTH database */
-    void clear();
+    void clear() throws DataAccessException;
 }

@@ -12,7 +12,7 @@ public class MemoryUserDAO implements UserDAO {
     public UserData getUser(String username) throws DataAccessException {
         UserData found = USER.get(username);
         if (found == null) {
-            throw new DataAccessException("No such User");
+            throw new DataAccessException("no such User");
         }
         return found;
     }

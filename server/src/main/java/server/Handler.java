@@ -27,8 +27,8 @@ public class Handler {
         }
 
         // handle the lack of information exception
-        if (mes.equals("No such AuthToken") ||
-            mes.equals("No such User") ||
+        if (mes.equals("no such AuthToken") ||
+            mes.equals("no such User") ||
             mes.equals("password incorrect")) {
             return errorPrinter("unauthorized", 401, res);
         }

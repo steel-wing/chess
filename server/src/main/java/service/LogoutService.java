@@ -1,7 +1,8 @@
 package service;
 
-import dataAccess.*;
-import model.*;
+import dataAccess.DataAccessException;
+import dataAccess.ErrorException;
+import model.AuthData;
 import server.Server;
 
 public class LogoutService {
@@ -12,13 +13,13 @@ public class LogoutService {
      * @throws ErrorException also
      */
     public static void logout(String authToken) throws DataAccessException, ErrorException {
-        // get auth data (and throw errors)
-        AuthData authData = Server.authDAO.getAuth(authToken);
-
         // bad request if no authToken provided
         if (authToken == null) {
             throw new ErrorException("bad request");
         }
+
+        // get auth data (and throw errors)
+        AuthData authData = Server.authDAO.getAuth(authToken);
 
         Server.authDAO.deleteAuth(authToken);
     }

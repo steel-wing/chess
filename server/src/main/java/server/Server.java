@@ -1,20 +1,21 @@
 package server;
 
 import dataAccess.*;
+import dataAccess.DatabaseDAO.DatabaseAuthDAO;
 import dataAccess.DatabaseDAO.DatabaseUserDAO;
-import dataAccess.MemoryDAO.MemoryAuthDAO;
 import dataAccess.MemoryDAO.MemoryGameDAO;
 import spark.Spark;
 
 public class Server {
-    public static final AuthDAO authDAO = new MemoryAuthDAO();
+    public static final AuthDAO authDAO = new DatabaseAuthDAO();
     public static final GameDAO gameDAO = new MemoryGameDAO();
     public static final UserDAO userDAO = new DatabaseUserDAO();
 
     public Server() {
+        // establish SQL connection for storage
         try{
             DatabaseManager.configureDatabase();
-        }catch (DataAccessException exception){
+        } catch (DataAccessException exception){
             System.out.println("Exception on creating database manager: " + exception);
         }
     }

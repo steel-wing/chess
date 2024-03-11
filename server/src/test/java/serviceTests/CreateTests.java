@@ -48,7 +48,7 @@ public class CreateTests {
     }
 
     @Test
-    public void badCreate() throws TestException {
+    public void badCreate() throws TestException, DataAccessException {
         // get an authToken for a User
         String username = "The Rod";
         String password = "31";

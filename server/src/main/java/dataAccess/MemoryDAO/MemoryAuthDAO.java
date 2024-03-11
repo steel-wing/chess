@@ -15,7 +15,7 @@ public class MemoryAuthDAO implements AuthDAO {
     public AuthData getAuth(String authToken) throws DataAccessException {
         AuthData found = AUTH.get(authToken);
         if (found == null) {
-            throw new DataAccessException("No such AuthToken");
+            throw new DataAccessException("no such AuthToken");
         }
         return found;
     }
@@ -29,7 +29,7 @@ public class MemoryAuthDAO implements AuthDAO {
 
     public void deleteAuth(String authToken) throws DataAccessException{
         if (AUTH.get(authToken) == null) {
-            throw new DataAccessException("No such AuthToken");
+            throw new DataAccessException("no such AuthToken");
         }
         AUTH.remove(authToken);
     }

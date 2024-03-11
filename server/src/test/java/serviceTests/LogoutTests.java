@@ -24,7 +24,7 @@ public class LogoutTests {
         UDAO.clear();
     }
 
-    public AuthData login() {
+    public AuthData login() throws DataAccessException {
         // log a User into the database
         UserDAO UDAO = new MemoryUserDAO();
         String username = "one";
