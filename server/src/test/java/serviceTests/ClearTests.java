@@ -2,10 +2,10 @@ package serviceTests;
 
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseDAO.DatabaseUserDAO;
 import dataAccess.GameDAO;
 import dataAccess.MemoryDAO.MemoryAuthDAO;
 import dataAccess.MemoryDAO.MemoryGameDAO;
-import dataAccess.MemoryDAO.MemoryUserDAO;
 import dataAccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
@@ -15,10 +15,10 @@ import passoffTests.testClasses.TestException;
 
 public class ClearTests {
     @AfterEach
-    public void clear() {
+    public void clear() throws DataAccessException {
         AuthDAO ADAO = new MemoryAuthDAO();
         GameDAO GDAO = new MemoryGameDAO();
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         ADAO.clear();
         GDAO.clear();
         UDAO.clear();
@@ -27,7 +27,7 @@ public class ClearTests {
     public void testClear() throws TestException, DataAccessException {
         // build our DAOs
         AuthDAO ADAO = new MemoryAuthDAO();
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         GameDAO GDAO = new MemoryGameDAO();
 
         // construct some data

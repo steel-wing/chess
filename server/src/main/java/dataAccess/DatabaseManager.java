@@ -28,10 +28,56 @@ public class DatabaseManager {
                 var port = Integer.parseInt(props.getProperty("db.port"));
                 connectionUrl = String.format("jdbc:mysql://%s:%d", host, port);
             }
-        } catch (Exception ex) {
-            throw new RuntimeException("unable to process db.properties. " + ex.getMessage());
+        } catch (Exception exception) {
+            throw new RuntimeException("unable to process db.properties. " + exception.getMessage());
         }
     }
+
+    /**
+     * stolen from petshop, creates a database and establishes a connection to it using the functions below
+     * @throws DataAccessException in the event of... issues
+     */
+    public static void configureDatabase() throws DataAccessException {
+        // see below
+        createDatabase();
+        // establish a connection with good practice
+        try (var connect = DatabaseManager.getConnection()) {
+            for (var statement : createStatements) {
+                try (var preparedStatement = connect.prepareStatement(statement)) {
+                    preparedStatement.executeUpdate();
+                }
+            }
+        // if there are complications, handle them
+        } catch (SQLException exception) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", exception.getMessage()));
+        }
+    }
+
+    private static final String[] createStatements = {
+            // creates three databases, matching the maps we made in the memoryDAO implementation
+            // AUTH: table of authToken (primary) to username
+            """
+            CREATE TABLE IF NOT EXISTS AUTH (
+              `authToken` varchar(256) NOT NULL,
+              `username` varchar(256) NOT NULL,
+              PRIMARY KEY (`authToken`)
+            )
+            """,
+            // GAME: table of gameID (primary) to gameData
+            """
+            CREATE TABLE IF NOT EXISTS GAME (
+              `gameID` int NOT NULL,
+              `gameData` TEXT DEFAULT NULL,
+              PRIMARY KEY (`gameID`)
+            )""",
+            // USER: table of id (primary) to username to userData
+            """
+            CREATE TABLE IF NOT EXISTS USER (
+              `username` varchar(256) NOT NULL,
+              `userData` TEXT DEFAULT NULL,
+              PRIMARY KEY (`username`)
+            )"""
+    };
 
     /**
      * Creates the database if it does not already exist.
@@ -39,13 +85,14 @@ public class DatabaseManager {
     static void createDatabase() throws DataAccessException {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
-            var conn = DriverManager.getConnection(connectionUrl, user, password);
-            try (var preparedStatement = conn.prepareStatement(statement)) {
+            var connect = DriverManager.getConnection(connectionUrl, user, password);
+            try (var preparedStatement = connect.prepareStatement(statement)) {
                 preparedStatement.executeUpdate();
             }
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+        } catch (SQLException exception) {
+            throw new DataAccessException(exception.getMessage());
         }
+        System.out.println("database " + databaseName + " created");
     }
 
     /**
@@ -60,13 +107,13 @@ public class DatabaseManager {
      * }
      * </code>
      */
-    static Connection getConnection() throws DataAccessException {
+    public static Connection getConnection() throws DataAccessException {
         try {
-            var conn = DriverManager.getConnection(connectionUrl, user, password);
-            conn.setCatalog(databaseName);
-            return conn;
-        } catch (SQLException e) {
-            throw new DataAccessException(e.getMessage());
+            var connect = DriverManager.getConnection(connectionUrl, user, password);
+            connect.setCatalog(databaseName);
+            return connect;
+        } catch (SQLException exception) {
+            throw new DataAccessException(exception.getMessage());
         }
     }
 }

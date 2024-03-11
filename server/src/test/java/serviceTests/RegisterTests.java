@@ -1,8 +1,12 @@
 package serviceTests;
 
-import dataAccess.*;
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseDAO.DatabaseUserDAO;
+import dataAccess.ErrorException;
 import dataAccess.MemoryDAO.MemoryAuthDAO;
 import dataAccess.MemoryDAO.MemoryUserDAO;
+import dataAccess.UserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -12,9 +16,9 @@ import service.RegisterService;
 
 public class RegisterTests {
     @AfterEach
-    public void clear() {
+    public void clear() throws DataAccessException {
         AuthDAO ADAO = new MemoryAuthDAO();
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         ADAO.clear();
         UDAO.clear();
     }

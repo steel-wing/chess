@@ -11,5 +11,5 @@ public interface UserDAO {
     UserData createUser(String username, UserData data) throws DataAccessException;
 
     /** Clears the entire USER database */
-    void clear();
+    void clear() throws DataAccessException;
 }

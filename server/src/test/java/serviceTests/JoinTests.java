@@ -1,6 +1,7 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.DatabaseDAO.DatabaseUserDAO;
 import dataAccess.MemoryDAO.MemoryAuthDAO;
 import dataAccess.MemoryDAO.MemoryGameDAO;
 import dataAccess.MemoryDAO.MemoryUserDAO;
@@ -15,10 +16,10 @@ import service.JoinService;
 
 public class JoinTests {
     @AfterEach
-    public void clear() {
+    public void clear() throws DataAccessException {
         AuthDAO ADAO = new MemoryAuthDAO();
         GameDAO GDAO = new MemoryGameDAO();
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         ADAO.clear();
         GDAO.clear();
         UDAO.clear();
