@@ -1,7 +1,10 @@
 package service;
 
-import dataAccess.*;
-import model.*;
+import dataAccess.DataAccessException;
+import dataAccess.ErrorException;
+import model.AuthData;
+import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import request.LoginRequest;
 import server.Server;
 
@@ -26,8 +29,11 @@ public class LoginService {
         // get corresponding User data
         UserData user = Server.userDAO.getUser(username);
 
-        // return null if the password is incorrect
-        if (!user.password().equals(password)) {
+        // get the password hasher
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        // return null if the password salted hash is incorrect
+        if (!encoder.matches(username + password, user.password())) {
             throw new ErrorException("password incorrect");
         }
 

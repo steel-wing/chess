@@ -1,8 +1,10 @@
 package service;
 
-import dataAccess.*;
+import dataAccess.DataAccessException;
+import dataAccess.ErrorException;
 import model.AuthData;
 import model.UserData;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import request.RegisterRequest;
 import server.Server;
 
@@ -18,12 +20,17 @@ public class RegisterService {
         String username = req.username();
         String password = req.password();
         String email = req.email();
-        UserData user = new UserData(username, password, email);
 
         // check the input
         if (username == null || password == null || email == null) {
             throw new ErrorException("null value");
         }
+
+        // get the password salted hash
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String sPassword = encoder.encode(username + password);
+
+        UserData user = new UserData(username, sPassword, email);
 
         // verify that the User doesn't already exist
         UserData found;
