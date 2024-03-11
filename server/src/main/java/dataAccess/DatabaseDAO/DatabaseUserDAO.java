@@ -19,7 +19,7 @@ public class DatabaseUserDAO implements UserDAO {
         try (var conn = DatabaseManager.getConnection();
             // get the table of usernames -> passwords
             var preparedStatement = conn.prepareStatement(selectQuery)) {
-            preparedStatement.setString(0, username);
+            preparedStatement.setString(1, username);
 
             // run through all results and see if one of them is the User
             try (var table = preparedStatement.executeQuery()) {
@@ -37,17 +37,17 @@ public class DatabaseUserDAO implements UserDAO {
     }
 
     public UserData createUser(String username, UserData data) throws DataAccessException {
-        String insertQuery = "INSERT INTO USER (username, data) VALUES (?, ?)";
+        String insertQuery = "INSERT INTO USER (username, userData) VALUES (?, ?)";
 
         // go create a new line in the USER database
         try (var conn = DatabaseManager.getConnection();
             var preparedStatement = conn.prepareStatement(insertQuery)) {
 
             Gson gson = new Gson();
-            String userDataJSON = gson.toJson(data);
+            String userData = gson.toJson(data);
 
-            preparedStatement.setString(0, username);
-            preparedStatement.setString(1, userDataJSON);
+            preparedStatement.setString(1, username);
+            preparedStatement.setString(2, userData);
 
             preparedStatement.executeUpdate();
 

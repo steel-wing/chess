@@ -53,8 +53,9 @@ public class DatabaseManager {
         }
     }
 
+    // creates three databases, matching the maps we made in the memoryDAO implementation
     private static final String[] createStatements = {
-            // creates three databases, matching the maps we made in the memoryDAO implementation
+
             // AUTH: table of authToken (primary) to username
             """
             CREATE TABLE IF NOT EXISTS AUTH (
@@ -73,9 +74,10 @@ public class DatabaseManager {
             // USER: table of id (primary) to username to userData
             """
             CREATE TABLE IF NOT EXISTS USER (
+              `id` int NOT NULL AUTO_INCREMENT,
               `username` varchar(256) NOT NULL,
               `userData` TEXT DEFAULT NULL,
-              PRIMARY KEY (`username`)
+              PRIMARY KEY (`id`)
             )"""
     };
 
@@ -111,6 +113,7 @@ public class DatabaseManager {
         try {
             var connect = DriverManager.getConnection(connectionUrl, user, password);
             connect.setCatalog(databaseName);
+            System.out.println(connect);
             return connect;
         } catch (SQLException exception) {
             throw new DataAccessException(exception.getMessage());
