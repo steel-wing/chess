@@ -6,6 +6,7 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### server access properties ###
 server/src/main/Resources/db.properties
 
 ### Mac OS ###
