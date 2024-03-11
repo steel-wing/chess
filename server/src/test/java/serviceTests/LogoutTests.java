@@ -2,10 +2,9 @@ package serviceTests;
 
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
+import dataAccess.DatabaseDAO.DatabaseAuthDAO;
 import dataAccess.DatabaseDAO.DatabaseUserDAO;
 import dataAccess.ErrorException;
-import dataAccess.MemoryDAO.MemoryAuthDAO;
-import dataAccess.MemoryDAO.MemoryUserDAO;
 import dataAccess.UserDAO;
 import model.AuthData;
 import model.UserData;
@@ -18,7 +17,7 @@ import service.LogoutService;
 public class LogoutTests {
     @AfterEach
     public void clear() throws DataAccessException {
-        AuthDAO ADAO = new MemoryAuthDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
         UserDAO UDAO = new DatabaseUserDAO();
         ADAO.clear();
         UDAO.clear();
@@ -26,12 +25,12 @@ public class LogoutTests {
 
     public AuthData login() throws DataAccessException {
         // log a User into the database
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         String username = "one";
         String password = "two";
         String email = "yes@yes";
         UserData user = new UserData(username, password, email);
-        AuthDAO ADAO = new MemoryAuthDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
         return ADAO.createAuth(user);
     }
 

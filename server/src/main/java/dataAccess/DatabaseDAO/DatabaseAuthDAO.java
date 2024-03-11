@@ -13,15 +13,15 @@ import java.util.UUID;
 public class DatabaseAuthDAO implements AuthDAO {
     public AuthData getAuth(String authToken) throws DataAccessException {
         String found = "";
-        String statement = "SELECT username FROM AUTH WHERE authToken = ?";
+        String getQuery = "SELECT username FROM AUTH WHERE authToken = ?";
 
         // establish connection
         try (var connect = DatabaseManager.getConnection()) {
             // get the select statement ready
-            try (var preparedStatement = connect.prepareStatement(statement)) {
-                preparedStatement.setString(1, authToken);
+            try (var query = connect.prepareStatement(getQuery)) {
+                query.setString(1, authToken);
                 // make comparisons: update "username" if you can
-                try (ResultSet results = preparedStatement.executeQuery()) {
+                try (ResultSet results = query.executeQuery()) {
                     if (results.next()) {
                         found = results.getString("username");
                     }
@@ -43,13 +43,13 @@ public class DatabaseAuthDAO implements AuthDAO {
         String username = user.username();
         String authToken = UUID.randomUUID().toString();
 
-        String statement = "INSERT INTO AUTH (authtoken, username) VALUES (?, ?)";
+        String insertStatement = "INSERT INTO AUTH (authtoken, username) VALUES (?, ?)";
 
         try (var connect = DatabaseManager.getConnection()) {
-            try (var preparedStatement = connect.prepareStatement(statement)) {
-                preparedStatement.setString(1, authToken);
-                preparedStatement.setString(2, username);
-                preparedStatement.executeUpdate();
+            try (var statement = connect.prepareStatement(insertStatement)) {
+                statement.setString(1, authToken);
+                statement.setString(2, username);
+                statement.executeUpdate();
             }
         } catch (SQLException | DataAccessException exception) {
             throw new DataAccessException(String.format("Unable to create authToken: %s", exception.getMessage()));
@@ -58,12 +58,12 @@ public class DatabaseAuthDAO implements AuthDAO {
     }
 
     public void deleteAuth(String authToken) throws DataAccessException {
-        String deleteStatement = "DELETE FROM AUTH WHERE authToken = ?";
+        String deleteQuery = "DELETE FROM AUTH WHERE authToken = ?";
 
         try (var connect = DatabaseManager.getConnection();
-             var preparedStatement = connect.prepareStatement(deleteStatement)) {
-            preparedStatement.setString(1, authToken);
-            preparedStatement.executeUpdate();
+             var statement = connect.prepareStatement(deleteQuery)) {
+            statement.setString(1, authToken);
+            statement.executeUpdate();
         } catch (SQLException | DataAccessException ex) {
             throw new DataAccessException(String.format("Unable to delete row by auth token: %s", ex.getMessage()));
         }
@@ -72,9 +72,9 @@ public class DatabaseAuthDAO implements AuthDAO {
     public void clear() throws DataAccessException {
         String clearRequest = "DELETE FROM AUTH";
 
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement(clearRequest)) {
-            preparedStatement.executeUpdate();
+        try (var connect = DatabaseManager.getConnection();
+             var statement = connect.prepareStatement(clearRequest)) {
+            statement.executeUpdate();
         } catch (SQLException | DataAccessException exception) {
             throw new DataAccessException(String.format("Unable to clear AUTH table: %s", exception.getMessage()));
         }

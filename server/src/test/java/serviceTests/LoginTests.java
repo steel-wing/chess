@@ -1,10 +1,9 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.DatabaseDAO.DatabaseAuthDAO;
+import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import dataAccess.DatabaseDAO.DatabaseUserDAO;
-import dataAccess.MemoryDAO.MemoryAuthDAO;
-import dataAccess.MemoryDAO.MemoryGameDAO;
-import dataAccess.MemoryDAO.MemoryUserDAO;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -16,8 +15,8 @@ import service.LoginService;
 public class LoginTests {
     @AfterEach
     public void clear() throws DataAccessException {
-        AuthDAO ADAO = new MemoryAuthDAO();
-        GameDAO GDAO = new MemoryGameDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
+        GameDAO GDAO = new DatabaseGameDAO();
         UserDAO UDAO = new DatabaseUserDAO();
         ADAO.clear();
         GDAO.clear();
@@ -33,7 +32,7 @@ public class LoginTests {
         UserData data = new UserData(username, password, email);
 
         // insert the User into the USER database
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         UDAO.createUser(username, data);
 
         // log in with the username and password
@@ -53,7 +52,7 @@ public class LoginTests {
         UserData data = new UserData(username, password, email);
 
         // insert the User into the USER database
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         UDAO.createUser(username, data);
 
         // build an unregistered User

@@ -1,7 +1,8 @@
 package serviceTests;
 
-import dataAccess.*;
-import dataAccess.MemoryDAO.MemoryGameDAO;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseDAO.DatabaseGameDAO;
+import dataAccess.GameDAO;
 import model.GameData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 public class ListTests {
     @BeforeEach
     public void loadGames() throws DataAccessException {
-        GameDAO GAME = new MemoryGameDAO();
+        GameDAO GAME = new DatabaseGameDAO();
         GAME.createGame("one");
         GAME.createGame("two");
         GAME.createGame("two");
@@ -24,14 +25,14 @@ public class ListTests {
     }
 
     @AfterEach
-    public void clear() {
-        GameDAO GDAO = new MemoryGameDAO();
+    public void clear() throws DataAccessException {
+        GameDAO GDAO = new DatabaseGameDAO();
         GDAO.clear();
     }
 
     @Test
-    public void testList() throws TestException {
-        GameDAO GDAO = new MemoryGameDAO();
+    public void testList() throws TestException, DataAccessException {
+        GameDAO GDAO = new DatabaseGameDAO();
         ArrayList<GameData> list = GDAO.listGames();
 
         // idk if this is good practice but it does work.
@@ -39,8 +40,8 @@ public class ListTests {
     }
 
     @Test
-    public void badList() throws TestException {
-        GameDAO GDAO = new MemoryGameDAO();
+    public void badList() throws TestException, DataAccessException {
+        GameDAO GDAO = new DatabaseGameDAO();
         ArrayList<GameData> list = GDAO.listGames();
 
         // even though they all have the same names, they're different.

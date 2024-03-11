@@ -2,13 +2,13 @@ package server;
 
 import dataAccess.*;
 import dataAccess.DatabaseDAO.DatabaseAuthDAO;
+import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import dataAccess.DatabaseDAO.DatabaseUserDAO;
-import dataAccess.MemoryDAO.MemoryGameDAO;
 import spark.Spark;
 
 public class Server {
     public static final AuthDAO authDAO = new DatabaseAuthDAO();
-    public static final GameDAO gameDAO = new MemoryGameDAO();
+    public static final GameDAO gameDAO = new DatabaseGameDAO();
     public static final UserDAO userDAO = new DatabaseUserDAO();
 
     public Server() {

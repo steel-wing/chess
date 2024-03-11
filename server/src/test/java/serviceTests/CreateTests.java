@@ -1,9 +1,9 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.DatabaseDAO.DatabaseAuthDAO;
+import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import dataAccess.DatabaseDAO.DatabaseUserDAO;
-import dataAccess.MemoryDAO.MemoryAuthDAO;
-import dataAccess.MemoryDAO.MemoryGameDAO;
 import model.AuthData;
 import model.GameData;
 import model.UserData;
@@ -17,8 +17,8 @@ import service.CreateService;
 public class CreateTests {
     @AfterEach
     public void clear() throws DataAccessException {
-        AuthDAO ADAO = new MemoryAuthDAO();
-        GameDAO GDAO = new MemoryGameDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
+        GameDAO GDAO = new DatabaseGameDAO();
         UserDAO UDAO = new DatabaseUserDAO();
         ADAO.clear();
         GDAO.clear();
@@ -31,12 +31,12 @@ public class CreateTests {
         String password = "848484";
         String email = "what@byu.edu";
         UserData user = new UserData(username, password, email);
-        AuthDAO ADAO = new MemoryAuthDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
         AuthData authData = ADAO.createAuth(user);
         String authToken = authData.authToken();
 
         // make a game using our User
-        GameDAO GDAO = new MemoryGameDAO();
+        GameDAO GDAO = new DatabaseGameDAO();
         CreateRequest request = new CreateRequest("GAME HAHA", authToken);
 
         // create a game and get its ID
@@ -54,7 +54,7 @@ public class CreateTests {
         String password = "31";
         String email = "jrodham@byu.edu";
         UserData user = new UserData(username, password, email);
-        AuthDAO AUTH = new MemoryAuthDAO();
+        AuthDAO AUTH = new DatabaseAuthDAO();
         AuthData authData = AUTH.createAuth(user);
         String authToken = authData.authToken();
 

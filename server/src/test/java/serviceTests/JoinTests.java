@@ -1,10 +1,9 @@
 package serviceTests;
 
 import dataAccess.*;
+import dataAccess.DatabaseDAO.DatabaseAuthDAO;
+import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import dataAccess.DatabaseDAO.DatabaseUserDAO;
-import dataAccess.MemoryDAO.MemoryAuthDAO;
-import dataAccess.MemoryDAO.MemoryGameDAO;
-import dataAccess.MemoryDAO.MemoryUserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
@@ -17,8 +16,8 @@ import service.JoinService;
 public class JoinTests {
     @AfterEach
     public void clear() throws DataAccessException {
-        AuthDAO ADAO = new MemoryAuthDAO();
-        GameDAO GDAO = new MemoryGameDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
+        GameDAO GDAO = new DatabaseGameDAO();
         UserDAO UDAO = new DatabaseUserDAO();
         ADAO.clear();
         GDAO.clear();
@@ -34,15 +33,15 @@ public class JoinTests {
         UserData data = new UserData(username, password, email);
 
         // insert the User into the USER database
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         UserData user = UDAO.createUser(username, data);
 
         // get an authToken for the User
-        AuthDAO ADAO = new MemoryAuthDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
         AuthData authData = ADAO.createAuth(user);
 
         // build a game, get it's ID
-        GameDAO GDAO = new MemoryGameDAO();
+        GameDAO GDAO = new DatabaseGameDAO();
         int gameID = GDAO.createGame("gamed fdf name").gameID();
 
         // have the user join the game as White
@@ -59,15 +58,15 @@ public class JoinTests {
         UserData data = new UserData(username, password, email);
 
         // insert the User into the USER database
-        UserDAO UDAO = new MemoryUserDAO();
+        UserDAO UDAO = new DatabaseUserDAO();
         UserData user = UDAO.createUser(username, data);
 
         // get an authToken for the User
-        AuthDAO ADAO = new MemoryAuthDAO();
+        AuthDAO ADAO = new DatabaseAuthDAO();
         AuthData authData = ADAO.createAuth(user);
 
         // build a game, get it's ID
-        GameDAO GDAO = new MemoryGameDAO();
+        GameDAO GDAO = new DatabaseGameDAO();
         int gameID = GDAO.createGame("gamename").gameID();
 
         // have the user join the game with a bad ID

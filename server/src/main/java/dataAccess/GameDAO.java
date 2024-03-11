@@ -10,14 +10,14 @@ public interface GameDAO {
     GameData createGame(String gameName) throws DataAccessException ;
 
     /** Gets the gamedata corresponding to the gameID */
-    GameData getGame(int gameID);
+    GameData getGame(int gameID) throws DataAccessException;
 
     /** Lists all games in the GAME database, numbering on one side, gameID's on the other */
-    ArrayList<GameData> listGames();
+    ArrayList<GameData> listGames() throws DataAccessException;
 
     /** Updates the gamedata corresponding to the gameID */
-    boolean updateGame(int gameID, GameData update);
+    boolean updateGame(int gameID, GameData update) throws DataAccessException;
 
     /** Clears the entire GAME database */
-    void clear();
+    void clear() throws DataAccessException;
 }

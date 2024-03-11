@@ -42,16 +42,6 @@ public class MemoryGameDAO implements GameDAO {
         return new ArrayList<>(GAME.values());
     }
 
-    /**         old implementation that generated a numbered list, following a TA's recommendation
-     *      public Map<Integer, Integer> listGames() {
-     *          TreeMap<Integer, Integer> list = new TreeMap<>();
-     *          int i = 0;
-     *          for (int gameID : GAME.keySet()) {
-     *              list.put(i, gameID);
-     *          }
-     *          return list;
-     */
-
     public boolean updateGame(int gameID, GameData update) {
         // verify that gameID exists
         if (!GAME.containsKey(gameID)){

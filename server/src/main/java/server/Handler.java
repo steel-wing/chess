@@ -29,6 +29,7 @@ public class Handler {
         // handle the lack of information exception
         if (mes.equals("no such AuthToken") ||
             mes.equals("no such User") ||
+            mes.equals("no gameName given") ||
             mes.equals("password incorrect")) {
             return errorPrinter("unauthorized", 401, res);
         }

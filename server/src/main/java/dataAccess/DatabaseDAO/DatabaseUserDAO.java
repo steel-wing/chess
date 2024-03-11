@@ -11,21 +11,21 @@ import java.sql.SQLException;
 public class DatabaseUserDAO implements UserDAO {
 
     public UserData getUser(String username) throws DataAccessException {
-        UserData userData = null;
+        UserData user = null;
 
         // select the
         String selectQuery = "SELECT * FROM USER WHERE username = ?";
 
-        try (var conn = DatabaseManager.getConnection();
+        try (var connect = DatabaseManager.getConnection();
             // get the table of usernames -> passwords
-            var preparedStatement = conn.prepareStatement(selectQuery)) {
-            preparedStatement.setString(1, username);
+            var query = connect.prepareStatement(selectQuery)) {
+            query.setString(1, username);
 
             // run through all results and see if one of them is the User
-            try (var table = preparedStatement.executeQuery()) {
+            try (var table = query.executeQuery()) {
                 if (table.next()) {
-                    String userDataJSON = table.getString("userData");
-                    userData = new Gson().fromJson(userDataJSON, UserData.class);
+                    String userData = table.getString("userData");
+                    user = new Gson().fromJson(userData, UserData.class);
                 }
             }
 
@@ -34,27 +34,26 @@ public class DatabaseUserDAO implements UserDAO {
             throw new DataAccessException(String.format("Unable to get User from username: %s", exception.getMessage()));
         }
         // we couldn't find him
-        if (userData == null) {
+        if (user == null) {
             throw new DataAccessException("no such User");
         }
 
-        return userData;
+        return user;
     }
 
     public UserData createUser(String username, UserData data) throws DataAccessException {
         String insertQuery = "INSERT INTO USER (username, userData) VALUES (?, ?)";
 
         // go create a new line in the USER database
-        try (var conn = DatabaseManager.getConnection();
-            var preparedStatement = conn.prepareStatement(insertQuery)) {
+        try (var connect = DatabaseManager.getConnection();
+            var query = connect.prepareStatement(insertQuery)) {
 
-            Gson gson = new Gson();
-            String userData = gson.toJson(data);
+            String userData = new Gson().toJson(data);
 
-            preparedStatement.setString(1, username);
-            preparedStatement.setString(2, userData);
+            query.setString(1, username);
+            query.setString(2, userData);
 
-            preparedStatement.executeUpdate();
+            query.executeUpdate();
 
         // handle errors
         } catch (SQLException | DataAccessException exception) {
@@ -66,9 +65,9 @@ public class DatabaseUserDAO implements UserDAO {
     public void clear() throws DataAccessException {
         String clearRequest = "DELETE FROM USER";
 
-        try (var conn = DatabaseManager.getConnection();
-             var preparedStatement = conn.prepareStatement(clearRequest)) {
-            preparedStatement.executeUpdate();
+        try (var connect = DatabaseManager.getConnection();
+             var statement = connect.prepareStatement(clearRequest)) {
+            statement.executeUpdate();
         } catch (SQLException | DataAccessException exception) {
             throw new DataAccessException(String.format("Unable to clear USER table: %s", exception.getMessage()));
         }
