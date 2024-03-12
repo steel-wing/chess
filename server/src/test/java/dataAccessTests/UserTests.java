@@ -79,7 +79,7 @@ public class UserTests {
 
     @Test
     public void goodClear() throws DataAccessException {
-        // load some data
+        // clear all data
         userDAO.clear();
 
         // try to pull User that can't exist
