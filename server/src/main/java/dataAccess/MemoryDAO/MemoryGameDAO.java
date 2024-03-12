@@ -14,11 +14,6 @@ public class MemoryGameDAO implements GameDAO {
     private static final Map<Integer, GameData> GAME = new HashMap<>();
 
     public GameData createGame(String gameName) throws DataAccessException {
-        // exit if gameName is null
-        if (gameName == null || gameName.isEmpty()) {
-            throw new DataAccessException("no gameName given");
-        }
-
         // cronch the UUID down into an int
         int gameID = Math.abs(UUID.randomUUID().hashCode());
 
