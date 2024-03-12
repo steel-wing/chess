@@ -3,10 +3,6 @@ package dataAccessTests;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseDAO.DatabaseAuthDAO;
-import dataAccess.DatabaseDAO.DatabaseGameDAO;
-import dataAccess.DatabaseDAO.DatabaseUserDAO;
-import dataAccess.GameDAO;
-import dataAccess.UserDAO;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.AfterEach;
@@ -19,8 +15,6 @@ import service.ClearService;
 public class AuthTests {
     // useful globals
     AuthDAO authDAO = new DatabaseAuthDAO();
-    GameDAO gameDAO = new DatabaseGameDAO();
-    UserDAO userDAO = new DatabaseUserDAO();
 
     // build a new User
     String username = "The Rod";
