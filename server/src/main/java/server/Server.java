@@ -22,6 +22,7 @@ public class Server {
 
     /** Starts the server */
     public int run(int port) {
+        // Spark really the MVP out here frfr
         Spark.port(port);
 
         Spark.staticFiles.location("web");
