@@ -17,8 +17,8 @@ public class DatabaseUserDAO implements UserDAO {
         String selectQuery = "SELECT * FROM USER WHERE username = ?";
 
         try (var connect = DatabaseManager.getConnection();
-            // get the table of usernames -> passwords
             var query = connect.prepareStatement(selectQuery)) {
+            // get the table of usernames -> passwords
             query.setString(1, username);
 
             // run through all results and see if one of them is the User
