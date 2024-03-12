@@ -8,6 +8,7 @@ import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import passoffTests.testClasses.TestException;
 import request.LoginRequest;
 import service.LoginService;
@@ -28,8 +29,10 @@ public class LoginTests {
         // build a new User
         String username = "The Rod";
         String password = "3141592653589793238462643383279502884197169";
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String sPassword = encoder.encode(username + password);
         String email = "jrodham@byu.edu";
-        UserData data = new UserData(username, password, email);
+        UserData data = new UserData(username, sPassword, email);
 
         // insert the User into the USER database
         UserDAO UDAO = new DatabaseUserDAO();
@@ -39,7 +42,7 @@ public class LoginTests {
         LoginRequest userdata = new LoginRequest(username, password);
         String foundUsername = LoginService.login(userdata).username();
 
-        // verify that the found username matches the original (i.e. we get him)
+        // verify that the found username matches the original (i.e. we got him)
         Assertions.assertEquals(username, foundUsername, "The found username isn't the one that was input");
     }
 
@@ -48,8 +51,10 @@ public class LoginTests {
         // build a new User
         String username = "The Rod";
         String password = "3141592653589793238462643383279502884197169";
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String sPassword = encoder.encode(username + password);
         String email = "jrodham@byu.edu";
-        UserData data = new UserData(username, password, email);
+        UserData data = new UserData(username, sPassword, email);
 
         // insert the User into the USER database
         UserDAO UDAO = new DatabaseUserDAO();
@@ -58,7 +63,8 @@ public class LoginTests {
         // build an unregistered User
         String badUsername = "ahahhaha";
         String badPassword = "Perry the Platapus";
-        LoginRequest userdata = new LoginRequest(badUsername, badPassword);
+        String sbadPassword = encoder.encode(badUsername + badPassword);
+        LoginRequest userdata = new LoginRequest(badUsername, sbadPassword);
 
         // verify that no user is found
         Assertions.assertThrows(DataAccessException.class, () -> LoginService.login(userdata));

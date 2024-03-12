@@ -28,7 +28,7 @@ public class DatabaseGameDAO implements GameDAO {
         // put the game and its ID into the GAME database
         GameData data = new GameData(gameID, null, null, gameName, chessGame);
 
-        String game = new Gson().toJson(chessGame);
+        String game = new Gson().toJson(data);
         String insertQuery = "INSERT INTO GAME (gameID, gameData) VALUES (?, ?)";
 
         try (var connect = DatabaseManager.getConnection();

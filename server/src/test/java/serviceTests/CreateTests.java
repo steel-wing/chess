@@ -10,6 +10,7 @@ import model.UserData;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import passoffTests.testClasses.TestException;
 import request.CreateRequest;
 import service.CreateService;
@@ -29,8 +30,10 @@ public class CreateTests {
         // get an authToken for a User
         String username = "Ttimm";
         String password = "848484";
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String sPassword = encoder.encode(username + password);
         String email = "what@byu.edu";
-        UserData user = new UserData(username, password, email);
+        UserData user = new UserData(username, sPassword, email);
         AuthDAO ADAO = new DatabaseAuthDAO();
         AuthData authData = ADAO.createAuth(user);
         String authToken = authData.authToken();
@@ -52,8 +55,10 @@ public class CreateTests {
         // get an authToken for a User
         String username = "The Rod";
         String password = "31";
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String sPassword = encoder.encode(username + password);
         String email = "jrodham@byu.edu";
-        UserData user = new UserData(username, password, email);
+        UserData user = new UserData(username, sPassword, email);
         AuthDAO AUTH = new DatabaseAuthDAO();
         AuthData authData = AUTH.createAuth(user);
         String authToken = authData.authToken();
