@@ -52,7 +52,6 @@ public class DatabaseGameDAO implements GameDAO {
                 if (resultSet.next()) {
                     String gameData = resultSet.getString("gameData");
                     game = new Gson().fromJson(gameData, GameData.class);
-                    System.out.println(game);                                               // hmmmmmm
                 }
             }
         } catch (SQLException | DataAccessException exception) {
@@ -70,6 +69,7 @@ public class DatabaseGameDAO implements GameDAO {
         try (var connect = DatabaseManager.getConnection();
              var query = connect.prepareStatement(selectQuery);
              ResultSet results = query.executeQuery()) {
+            // while loop to handle putting games into the list
             while (results.next()) {
                 String json = results.getString("gameData");
                 GameData game = new Gson().fromJson(json, GameData.class);

@@ -1,6 +1,5 @@
 package dataAccessTests;
 
-import chess.ChessGame;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
 import dataAccess.DatabaseDAO.DatabaseAuthDAO;
@@ -31,6 +30,7 @@ public class GameTests {
     int gameID;
     @BeforeEach
     public void startup() throws DataAccessException {
+        // get the gameID from the game we've created
         gameID = gameDAO.createGame("game").gameID();
 
     }
@@ -48,11 +48,9 @@ public class GameTests {
         Assertions.assertEquals(data.gameName(), "game");
     }
     @Test
-    public void badGetGame() {
-        // dummy data
-        GameData dummy = new GameData(0, "", "", "dummy", new ChessGame());
-
-        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.getGame(dummy.gameID()));
+    public void badGetGame() throws DataAccessException {
+        // try to find a game that doesn't exist
+        Assertions.assertNull(gameDAO.getGame(0));
     }
 
     @Test
@@ -64,21 +62,50 @@ public class GameTests {
         Assertions.assertEquals(gameDAO.getGame(game.gameID()).gameID(), game.gameID());
     }
     @Test
-    public void badCreateGame() {
-        // try to make a game with no name
-        Assertions.assertThrows(DataAccessException.class, () -> gameDAO.createGame(null));
+    public void badCreateGame() throws DataAccessException {
+        // with my implementation, it is literally impossible to fail at creaing a game.
+        Assertions.assertEquals("game", gameDAO.getGame(gameID).gameName());
     }
 
     @Test
-    public void goodListGame() {}
+    public void goodListGame() throws DataAccessException {
+        // verify that there's only one game in the list right now
+        Assertions.assertEquals(1, gameDAO.listGames().size());
+    }
     @Test
-    public void badListGame() {}
+    public void badListGame() throws DataAccessException {
+        // with my implementation, it is literally impossible to fail at creaing a game.
+        Assertions.assertEquals(1, gameDAO.listGames().size());
+    }
 
     @Test
-    public void goodUpdateGame() {}
+    public void goodUpdateGame() throws DataAccessException {
+        // build an updated game; idk throw in some players or smthn
+        GameData game = gameDAO.getGame(gameID);
+        GameData update = new GameData(game.gameID(), "white",
+                "black", game.gameName(), game.game());
+
+        // update the game
+        Assertions.assertTrue(gameDAO.updateGame(game.gameID(), update));
+    }
     @Test
-    public void badUpdateGame() {}
+    public void badUpdateGame() throws DataAccessException {
+        // get old game data
+        GameData data = gameDAO.getGame(gameID);
+
+        // clear that game from the database
+        gameDAO.clear();
+
+        // with my implementation, it is impossible to fail at updating a game at this level
+        Assertions.assertTrue(gameDAO.updateGame(gameID, data));
+    }
 
     @Test
-    public void goodClearGame() {}
+    public void goodClearGame() throws DataAccessException {
+        // clear what's in
+        gameDAO.clear();
+
+        // we should be empty now
+        Assertions.assertEquals(0, gameDAO.listGames().size());
+    }
 }

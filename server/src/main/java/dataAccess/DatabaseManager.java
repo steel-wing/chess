@@ -94,7 +94,6 @@ public class DatabaseManager {
         } catch (SQLException exception) {
             throw new DataAccessException(exception.getMessage());
         }
-        System.out.println("database " + databaseName + " created");
     }
 
     /**
@@ -113,7 +112,6 @@ public class DatabaseManager {
         try {
             var connect = DriverManager.getConnection(connectionUrl, user, password);
             connect.setCatalog(databaseName);
-            System.out.println(connect);
             return connect;
         } catch (SQLException exception) {
             throw new DataAccessException(exception.getMessage());
