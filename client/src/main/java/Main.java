@@ -1,9 +1,8 @@
-import chess.ChessGame;
-import chess.ChessPiece;
+import ui.PreLogin;
 
 public class Main {
     public static void main(String[] args) {
-        var piece = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
-        System.out.println("♕ 240 Chess Client: " + piece);
+        System.out.println("Welcome to the CS 240 Chess Client, by Davis Wing\n");
+        PreLogin.menuUI(args);
     }
 }
