@@ -26,6 +26,7 @@ public class KingMetaMotion {
     public static boolean kingChecker(ChessGame game, ChessGame.TeamColor teamColor, boolean checkmate, boolean castling) {
         ChessBoard board = game.getBoard();
         ChessBoard boardcopy = new ChessBoard(board);
+        boolean inCheck = true;
 
         // locate the king
         ArrayList<ChessPosition> kingPositions = game.teamPieces(teamColor, KING);
@@ -54,7 +55,7 @@ public class KingMetaMotion {
             ChessPosition lastPosition = kingPosition;
             ChessPiece lastTarget = null;
 
-            // for all moves, move the piece there
+            // for all moves, move the king there
             for (ChessMove option : kingOptions) {
                 ChessPosition targetPosition = option.getEndPosition();
                 ChessPiece targetPiece = board.getPiece(targetPosition);
@@ -64,7 +65,7 @@ public class KingMetaMotion {
                     continue;
                 }
 
-                // move the piece to its new location
+                // move the king to its new location
                 board.removePiece(lastPosition);
                 board.addPiece(targetPosition, king);
 
@@ -75,7 +76,8 @@ public class KingMetaMotion {
 
                 // if we aren't in check now, the move is valid
                 if (!game.isInCheck(teamColor)) {
-                    return false;
+                    inCheck = false;
+                    break;
                 }
 
                 // update the last place the king was
@@ -83,9 +85,10 @@ public class KingMetaMotion {
                 lastTarget = targetPiece;
             }
         }
+
         // restore the board to the way it was and return
         game.setBoard(boardcopy);
-        return true;
+        return inCheck;
     }
 
     /**

@@ -21,8 +21,8 @@ public class ChessGame {
     private ChessBoard board;
     public ChessGame() {
         turn = WHITE;
-//        board = new ChessBoard();
-//        board.resetBoard();
+        board = new ChessBoard();
+        board.resetBoard();
     }
 
     /**
@@ -183,8 +183,6 @@ public class ChessGame {
         ChessPiece.PieceType type = board.getPiece(start).getPieceType();
         ChessPiece.PieceType promo = move.getPromotionPiece();
 
-        System.out.println(ChessGamePrint.printValids(start, this));
-
         board.removePiece(start);
 
         if (promo == null) {
@@ -304,9 +302,9 @@ public class ChessGame {
      */
     public String printValids(TeamColor teamColor, ChessPosition position) {
         if (teamColor == BLACK) {
-            return ChessGamePrint.gameFlip(ChessGamePrint.printValids(position, this));
+            return ChessGamePrint.gameFlip(ChessGamePrint.printValids(teamColor, position, this));
         } else {
-            return ChessGamePrint.printValids(position, this);
+            return ChessGamePrint.printValids(teamColor, position, this);
         }
     }
 }

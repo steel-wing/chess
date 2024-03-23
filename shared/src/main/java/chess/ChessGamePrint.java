@@ -23,14 +23,23 @@ public class ChessGamePrint {
      * @param position The position from which to look for valid moves
      * @return A really pretty chessboard interpretation
      */
-    public static String printValids(ChessPosition position, ChessGame game) {
-        ChessBoard board = game.getBoard();
+    public static String printValids(ChessGame.TeamColor perspective, ChessPosition position, ChessGame game) {
+        // make a copy of the board to avoid the evil king travel bug
+        ChessBoard board = new ChessBoard(game.getBoard());
+
         String spacer = "\u2001\u2005\u200A";
         StringBuilder output = new StringBuilder();
 
-        // display selected position
-        output.append(position.toFancyString());
-        output.append("\u2001\u200A");
+        // display selected position if you're asking black
+        if (perspective == BLACK) {
+            StringBuilder pos = new StringBuilder();
+            output.append("\u200A");
+            pos.append(position.toFancyString()).reverse();
+            output.append(pos);
+            output.append("\u2001\u200A\u200A");
+        } else {
+            output.append("\u2001\u200A  ");
+        }
 
         // display column names
         for (int col = 1; col <= board.cols; col++) {
@@ -38,11 +47,16 @@ public class ChessGamePrint {
             output.append(spacer);
         }
 
-        // Black team condition
         output.append("\u2001\u200A ");
+
+        // Black team condition
         if (game.isInCheck(BLACK)) {
             output.setCharAt(output.length() - 1, '+');
         }
+        if (game.isInCheckmate(BLACK)) {
+            output.setCharAt(output.length() - 1, '#');
+        }
+
         output.append("\n");
 
         // iterate across the board and add all pieces while delimiting with "│"
@@ -60,13 +74,13 @@ public class ChessGamePrint {
             output.append("\n");
         }
 
-        // display who's turn it is
-        if (game.getTeamTurn() == BLACK) {
-            output.append('B');
-        } else {
-            output.append('W');
+        // WHITE team condition
+        output.append(" ");
+        if (game.isInCheck(WHITE)) {
+            output.setCharAt(output.length() - 1, '+');
         }
-        output.append(" \u2001\u200A");
+
+        output.append("\u2001\u200A ");
 
         // display column names
         for (int col = 1; col <= board.cols; col++) {
@@ -74,12 +88,14 @@ public class ChessGamePrint {
             output.append(spacer);
         }
 
-        // WHITE team condition
-        output.append("\u2001\u200A ");
-        if (game.isInCheck(WHITE)) {
-            output.setCharAt(output.length() - 1, '+');
+        output.append("\u200A");
+
+        // display selected position if you're asking white
+        if (perspective == WHITE) {
+            output.append(position.toFancyString());
+        } else {
+            output.append("  ");
         }
-        output.append("\n");
 
         return output.toString();
     }
@@ -171,21 +187,34 @@ public class ChessGamePrint {
      * @return The string from before but rotated 180 degrees for the other player
      */
     public static String gameFlip(String inputGame) {
-        //System.out.println(game.gameFlip(game.toString()));
-        //System.out.println(game.gameFlip(game.printValids()));
-        StringBuilder output = new StringBuilder();
-        output.append(inputGame);
-        output.reverse();
-        return output.toString();
+        StringBuilder reverse = new StringBuilder();
+        reverse.append(inputGame);
+        reverse.reverse();
+        String output = reverse.toString();
+
+        // replace the directions of directionals
+        output = output.replaceAll("╣", "y");
+        output = output.replaceAll("╠", "╣");
+        output = output.replaceAll("y", "╠");
+        return output;
     }
 
     public static String gameString(ChessGame game) {
-        ChessBoard board = game.getBoard();
-        String spacer = "\u2001\u2005\u200A";
+        // make a copy of the board to avoid the evil king travel bug
+        ChessBoard board = new ChessBoard(game.getBoard());
 
+        String spacer = "\u2001\u2005\u200A";
         StringBuilder output = new StringBuilder();
-        output.append(spacer);
-        output.append(spacer);
+
+        // display if it's Black's turn
+        if (game.getTeamTurn() == BLACK) {
+            output.append('B');
+        } else {
+            output.append(' ');
+        }
+
+        output.append("\u2001\u200A ");
+
         // display column names
         for (int col = 1; col <= board.cols; col++) {
             output.append((char)(col + '`'));
@@ -200,6 +229,7 @@ public class ChessGamePrint {
         if (game.isInCheckmate(BLACK)) {
             output.setCharAt(output.length() - 1, '#');
         }
+
         output.append("\n");
 
         // iterate across the board and add all pieces while delimiting with "│"
@@ -226,13 +256,16 @@ public class ChessGamePrint {
             output.append("\n");
         }
 
-        // display who's turn it is
-        if (game.getTeamTurn() == WHITE) {
-            output.append('W');
-        } else {
-            output.append('B');
+        // WHITE team condition
+        output.append(" ");
+        if (game.isInCheck(WHITE)) {
+            output.setCharAt(output.length() - 1, '+');
         }
-        output.append(" \u2001\u200A");
+        if (game.isInCheckmate(WHITE)) {
+            output.setCharAt(output.length() - 1, '#');
+        }
+
+        output.append("\u2001\u200A ");
 
         // display column names
         for (int col = 1; col <= board.cols; col++) {
@@ -240,15 +273,14 @@ public class ChessGamePrint {
             output.append(spacer);
         }
 
-        // WHITE team condition
-        output.append("\u2001\u200A ");
-        if (game.isInCheck(WHITE)) {
-            output.setCharAt(output.length() - 1, '+');
+        output.append("\u2001");
+
+        // display if it's White's turn
+        if (game.getTeamTurn() == WHITE) {
+            output.append('W');
+        } else {
+            output.append(' ');
         }
-        if (game.isInCheckmate(WHITE)) {
-            output.setCharAt(output.length() - 1, '#');
-        }
-        output.append("\n");
 
         return output.toString();
     }
