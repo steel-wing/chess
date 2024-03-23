@@ -1,8 +1,14 @@
-import ui.PreLogin;
+import ui.REPL;
+
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Welcome to the CS 240 Chess Client, by Davis Wing\n");
-        PreLogin.menuUI(args);
+        int serverPort = 8080;
+
+        if (args.length == 1) {
+            serverPort = Integer.parseInt(args[0]);
+        }
+
+        new REPL(serverPort).run();
     }
 }
