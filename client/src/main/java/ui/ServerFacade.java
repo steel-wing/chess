@@ -2,7 +2,13 @@ package ui;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import request.CreateRequest;
+import request.LoginRequest;
+import request.RegisterRequest;
+import result.CreateResponse;
+import result.ListResponse;
 import result.LoginResponse;
+import result.RegisterResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,18 +32,45 @@ public class ServerFacade {
 
     public LoginResponse login(String... params) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, params, LoginResponse.class);
+        LoginRequest request = new LoginRequest(params[0], params[1]);
+
+        return this.makeRequest("POST", path, request, null, LoginResponse.class);
+    }
+
+    public RegisterResponse register(String... params) throws ResponseException {
+        var path = "/user";
+        RegisterRequest request = new RegisterRequest(params[0], params[1], params[2]);
+
+        return this.makeRequest("POST", path, request, null, RegisterResponse.class);
+    }
+
+    public CreateResponse create(String gamename, String authToken) throws ResponseException {
+         var path = "/game";
+        CreateRequest request = new CreateRequest(gamename, authToken);
+
+        return this.makeRequest("POST", path, request, authToken, CreateResponse.class);
+    }
+
+    public ListResponse list(String authToken) throws ResponseException {
+        var path = "/game";
+
+        return  this.makeRequest("GET", path, null, authToken, ListResponse.class);
+    }
+
+    public void logout(String authToken) throws ResponseException {
+        var path = "/session";
+
+        this.makeRequest("DELETE", path, null, authToken, null);
     }
 
 
-
-
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws ResponseException {
+    private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI("http://localhost:" + serverPort + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+            http.setRequestProperty("authorization", authToken);
 
             writeBody(request, http);
             http.connect();

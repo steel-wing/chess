@@ -26,7 +26,7 @@ public class CreateHandler extends Handler {
             return errorHandler(exception, res);
         }
 
-        System.out.println("Game Created! ID:" + successHandler(new CreateResponse(gameID), res));
+        //System.out.println("Game Created! ID:" + successHandler(new CreateResponse(gameID), res));
         return successHandler(new CreateResponse(gameID), res);
     }
 }

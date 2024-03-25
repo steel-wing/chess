@@ -29,7 +29,7 @@ public class LoginHandler extends Handler {
         }
 
         LoginResponse loginResponse = new LoginResponse(username, authData.authToken());
-        System.out.println("Logged In! " + successHandler(loginResponse, res));
+        //System.out.println("Logged In! " + successHandler(loginResponse, res));
         return successHandler(loginResponse, res);
     }
 }

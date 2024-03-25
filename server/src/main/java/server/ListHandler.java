@@ -25,7 +25,7 @@ public class ListHandler extends Handler {
             return errorHandler(exception, res);
         }
 
-        System.out.println("List Retrieved! " + successHandler(new ListResponse(gamesList), res));
+        //System.out.println("List Retrieved! " + successHandler(new ListResponse(gamesList), res));
         return successHandler(new ListResponse(gamesList), res);
     }
 }

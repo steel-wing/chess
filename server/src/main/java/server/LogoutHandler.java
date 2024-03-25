@@ -22,7 +22,7 @@ public class LogoutHandler extends Handler {
             return errorHandler(exception, res);
         }
 
-        System.out.println("Logged Out! " + authToken);
+        //System.out.println("Logged Out! " + authToken);
         return successHandler(null, res);
     }
 }

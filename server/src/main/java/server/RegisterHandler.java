@@ -26,7 +26,7 @@ public class RegisterHandler extends Handler {
         }
 
         RegisterResponse registerResponse = new RegisterResponse(register.username(), authData.authToken());
-        System.out.println("Registered and logged in! " + successHandler(registerResponse, res));
+        //System.out.println("Registered and logged in! " + successHandler(registerResponse, res));
         return successHandler(registerResponse, res);
     }
 }
