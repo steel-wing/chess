@@ -65,6 +65,7 @@ public class Postlogin {
             try {
                 CreateResponse response = client.serverFace.create(input[0], client.authToken);
                 gamename = input[0];
+                listFlag = false;
             } catch (ResponseException exception) {
                 return "Unable to create game: " + exception.getMessage();
             }

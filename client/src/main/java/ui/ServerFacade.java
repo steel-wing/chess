@@ -77,7 +77,6 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, null, null);
     }
 
-
     private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass) throws ResponseException {
         try {
             URL url = (new URI("http://localhost:" + serverPort + path)).toURL();
@@ -94,7 +93,6 @@ public class ServerFacade {
             throw new ResponseException(500, ex.getMessage());
         }
     }
-
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
         if (request != null) {
