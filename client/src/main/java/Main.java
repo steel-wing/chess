@@ -1,4 +1,3 @@
-import server.Server;
 import ui.REPL;
 
 public class Main {
@@ -12,13 +11,13 @@ public class Main {
         }
 
         // construct and open up a new server on port 8080
-        Server server = new Server();
-        server.run(serverPort);
+//        Server server = new Server();
+//        server.run(serverPort);
 
         // open up the main menu
         new REPL(serverPort).run();
 
         // stop the server
-        server.stop();
+//        server.stop();
     }
 }
