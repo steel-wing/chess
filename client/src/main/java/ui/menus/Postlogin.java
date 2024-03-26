@@ -12,7 +12,7 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Postlogin {
-
+    // a helpful little flag for refreshing the list
     static boolean listFlag;
     public static String help() {
         return RESET + SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + """
