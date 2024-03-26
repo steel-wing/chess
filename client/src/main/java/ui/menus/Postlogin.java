@@ -12,61 +12,9 @@ import java.util.Scanner;
 import static ui.EscapeSequences.*;
 
 public class Postlogin {
-    public static String logout(ChessClient client) {
-        try {
-            client.serverface.logout(client.authToken);
-            client.state = State.LOGGEDOUT;
-        } catch (ResponseException exception) {
-            return "Unable to logout: " + exception.getMessage();
-        }
-        return "You have successfully been logged out";
-    }
 
-    public static String create(ChessClient client) throws ResponseException {
-        System.out.println(SET_TEXT_COLOR_BLUE + "Please choose a name for your game:" + RESET);
-        Scanner scanner = new Scanner(System.in);
-        String line = scanner.nextLine();
-        String[] input = line.toLowerCase().split(" ");
-
-        if (input.length == 1) {
-            try {
-                CreateResponse response = client.serverface.create(input[0], client.authToken);
-                client.gamename = input[0];
-            } catch (ResponseException exception) {
-                return "Unable to create game: " + exception.getMessage();
-            }
-            return String.format("You have created game: %s", client.gamename);
-        }
-        throw new ResponseException(400, "Format: <gamename>");
-    }
-
-    public static String list(ChessClient client) throws ResponseException {
-        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Games List:");
-
-        try {
-            // retrieve the list of games, store it, and print it out
-            ArrayList<GameData> list = client.serverface.list(client.authToken).games();
-            StringBuilder output = new StringBuilder();
-            output.append(RESET_TEXT_BOLD_FAINT);
-
-            for (int i = 1; i <= list.size(); i++) {
-                GameData game = list.get(i - 1);
-                client.gamelist.put(i - 1, game.gameID());
-                // "Game 4: boogerAIDS (W: RickSanchez, B: MortySmith)"
-                String linestring = "Game " + i + ": " + game.gameName() + " (W: " + game.whiteUsername() + ", B: " + game.blackUsername() + ")\n";
-                output.append(linestring);
-            }
-
-            // forbidden newline deletion technique
-            output.delete(output.length() - 2, output.length());
-
-            return output.toString();
-        } catch (ResponseException exception) {
-            return "Unable to access list: " + exception.getMessage();
-        }
-    }
-
-    public static String help(ChessClient client) {
+    static boolean listFlag;
+    public static String help() {
         return RESET + SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + """
         Please select one of the following options:
         [H] : Help for understanding functions and commands
@@ -75,5 +23,150 @@ public class Postlogin {
         [J] : Join an existing game of chess
         [W] : Watch an existing game of chess
         [X] : Logout and return to the Chess Game Client""";
+    }
+
+    public static String list(ChessClient client) throws ResponseException {
+        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Games List:");
+
+        try {
+            // retrieve the list of games, store it, and print it out
+            ArrayList<GameData> list = client.serverFace.list(client.authToken).games();
+            StringBuilder output = new StringBuilder();
+            output.append(RESET_TEXT_BOLD_FAINT);
+
+            // roll through and update the number list, and the gamedata registry
+            for (int i = 1; i <= list.size(); i++) {
+                GameData game = list.get(i - 1);
+                client.gameDataList.put(game.gameID(), game);
+                client.gameList.put(i, game.gameID());
+                // "Game 4: boogerAIDS (W: RickSanchez, B: MortySmith)"
+                String linestring = "Game " + i + ": " + game.gameName() + " (W: " + game.whiteUsername() + ", B: " + game.blackUsername() + ")\n";
+                output.append(linestring);
+            }
+
+            // forbidden newline deletion technique
+            output.delete(output.length() - 2, output.length());
+
+            listFlag = true;
+            return output.toString();
+        } catch (ResponseException exception) {
+            return "Unable to access list: " + exception.getMessage();
+        }
+    }
+
+    public static String create(ChessClient client) throws ResponseException {
+        System.out.println(SET_TEXT_COLOR_BLUE + "Please choose a name for your game:" + RESET);
+        Scanner scanner = new Scanner(System.in);
+        String line = scanner.nextLine();
+        String[] input = line.toLowerCase().split(" ");
+        String gamename;
+
+        if (input.length == 1) {
+            try {
+                CreateResponse response = client.serverFace.create(input[0], client.authToken);
+                gamename = input[0];
+            } catch (ResponseException exception) {
+                return "Unable to create game: " + exception.getMessage();
+            }
+            return String.format("You have created game: %s", gamename);
+        }
+        throw new ResponseException(400, "Format: <gamename>");
+    }
+
+    public static String join(ChessClient client) throws ResponseException {
+        // quick check to make sure we actually have some games listed
+        if (!listFlag) {
+            System.out.println(list(client));
+        }
+
+        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Input a game number to join:");
+        Scanner scanner = new Scanner(System.in);
+        int gameNum;
+        int gameID;
+        String gameName;
+        String teamselect;
+
+        // get the game number from the User
+        try {
+            gameNum = Integer.parseInt(scanner.nextLine());
+            gameID = client.gameList.get(gameNum);
+        } catch (Error error) {
+            throw new ResponseException(400, "You must choose a number from the Games List [L]");
+        }
+
+        // get the team type from the User
+        System.out.println("Select which team to join [W] or [B]");
+        teamselect = scanner.nextLine().toLowerCase();
+
+        if (!teamselect.equals("b") && !teamselect.equals("w")) {
+            throw new ResponseException(400, "Must be either \"W\" or \"B\"");
+        }
+
+        // attempt to actually join the game as one of the teams
+        try {
+            // switch to the team selected
+            client.team = switch (teamselect) {
+                case "w" -> "WHITE";
+                case "b" -> "BLACK";
+                default -> throw new ResponseException(400, "Unexpected value: " + teamselect);
+            };
+
+            client.serverFace.join(client.team, gameID, client.authToken);
+            client.game = client.gameDataList.get(gameID);
+            gameName = client.game.gameName();
+
+
+            client.state = State.GAMEPLAY;
+        } catch (ResponseException exception) {
+            // if we couldn't log in, make sure the team gets reset
+            client.team = "an observer";
+            return "Unable to join game: " + exception.getMessage();
+        }
+        return String.format("You have joined game: %s", gameName);
+    }
+
+    public static String observe(ChessClient client) throws ResponseException {
+        // quick check to make sure we actually have some games listed
+        if (client.gameList.isEmpty()) {
+            return "No games found; retry list command: [L]";
+        }
+
+        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Input a game number to join:");
+        Scanner scanner = new Scanner(System.in);
+        int gameNum;
+        int gameID;
+        String gameName;
+        String teamselect = null;
+
+        // get the game number from the User
+        try {
+            gameNum = Integer.parseInt(scanner.nextLine());
+            gameID = client.gameList.get(gameNum);
+        } catch (Error error) {
+            throw new ResponseException(400, "You must choose a number from the Games List [L]");
+        }
+
+        // attempt to actually join the game as one of the teams
+        try {
+            client.serverFace.join(null, gameID, client.authToken);
+            client.game = client.gameDataList.get(gameID);
+            gameName = client.game.gameName();
+
+            client.team = "observer";
+            client.state = State.GAMEPLAY;
+        } catch (ResponseException exception) {
+            return "Unable to join game: " + exception.getMessage();
+        }
+        return String.format("You have joined game: %s", gameName);
+    }
+
+    public static String logout(ChessClient client) {
+        try {
+            client.serverFace.logout(client.authToken);
+            client.state = State.LOGGEDOUT;
+        } catch (ResponseException exception) {
+            return "Unable to logout: " + exception.getMessage();
+        }
+        return "You have successfully been logged out";
     }
 }

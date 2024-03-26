@@ -72,7 +72,10 @@ public class DatabaseGameDAO implements GameDAO {
             // while loop to handle putting games into the list
             while (results.next()) {
                 String json = results.getString("gameData");
-                GameData game = new Gson().fromJson(json, GameData.class);
+                GameData big = new Gson().fromJson(json, GameData.class);
+
+                //forbidden technique to remove the actual board data from the returned list, to only send necessary data
+                GameData game = new GameData(big.gameID(), big.whiteUsername(), big.blackUsername(), big.gameName(), null);
                 games.add(game);
             }
         } catch (SQLException | DataAccessException exception) {

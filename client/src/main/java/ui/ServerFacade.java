@@ -3,6 +3,7 @@ package ui;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import request.CreateRequest;
+import request.JoinRequest;
 import request.LoginRequest;
 import request.RegisterRequest;
 import result.CreateResponse;
@@ -45,22 +46,35 @@ public class ServerFacade {
     }
 
     public CreateResponse create(String gamename, String authToken) throws ResponseException {
-         var path = "/game";
+        var path = "/game";
         CreateRequest request = new CreateRequest(gamename, authToken);
 
         return this.makeRequest("POST", path, request, authToken, CreateResponse.class);
     }
 
+    public void join(String playerColor, int gameID, String authToken) throws ResponseException {
+        var path = "/game";
+        JoinRequest request = new JoinRequest(playerColor, gameID, authToken);
+
+        this.makeRequest("PUT", path, request, authToken, null);
+    }
+
     public ListResponse list(String authToken) throws ResponseException {
         var path = "/game";
 
-        return  this.makeRequest("GET", path, null, authToken, ListResponse.class);
+        return this.makeRequest("GET", path, null, authToken, ListResponse.class);
     }
 
     public void logout(String authToken) throws ResponseException {
         var path = "/session";
 
         this.makeRequest("DELETE", path, null, authToken, null);
+    }
+
+    public void clear() throws ResponseException {
+        var path = "/db";
+
+        this.makeRequest("DELETE", path, null, null, null);
     }
 
 

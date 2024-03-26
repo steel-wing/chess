@@ -31,7 +31,6 @@ public class MemoryGameDAO implements GameDAO {
         return GAME.get(gameID);
     }
 
-
     public ArrayList<GameData> listGames() {
         // forbidden type conversions to allow for sorting
         return new ArrayList<>(GAME.values());
@@ -49,5 +48,4 @@ public class MemoryGameDAO implements GameDAO {
     public void clear() {
         GAME.clear();
     }
-
 }

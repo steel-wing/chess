@@ -32,7 +32,7 @@ public class JoinHandler extends Handler {
             return errorHandler(new ErrorException("unable to log in"), res);
         }
 
-        System.out.println("Game Joined! ID:" + gameID);
+        // System.out.println("Game Joined! ID:" + gameID);
         return successHandler(null, res);
     }
 }
