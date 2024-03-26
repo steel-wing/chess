@@ -14,7 +14,7 @@ public class ClearHandler extends Handler {
         } catch (DataAccessException exception) {
             return errorHandler(exception, res);
         }
-        System.out.println("Databases Cleared!");
+        //System.out.println("Databases Cleared!");
         return successHandler(null, res);
     }
 }
