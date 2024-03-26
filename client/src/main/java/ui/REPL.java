@@ -27,7 +27,7 @@ public class REPL {
             String joinType = switch (client.team) {
                 case "WHITE" -> "the White Team";
                 case "BLACK" -> "the Black Team";
-                default -> " an observer";
+                default -> "an observer";
             };
 
             // handle extending salutations when relevant

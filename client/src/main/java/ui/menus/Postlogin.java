@@ -45,7 +45,7 @@ public class Postlogin {
             }
 
             // forbidden newline deletion technique
-            output.delete(output.length() - 2, output.length());
+            output.delete(output.length() - 1, output.length());
 
             listFlag = true;
             return output.toString();
@@ -70,7 +70,7 @@ public class Postlogin {
             }
             return String.format("You have created game: %s", gamename);
         }
-        throw new ResponseException(400, "Format: <gamename>");
+        throw new ResponseException(400, "Format: <gamename>\n");
     }
 
     public static String join(ChessClient client) throws ResponseException {
@@ -81,17 +81,21 @@ public class Postlogin {
 
         System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Input a game number to join:");
         Scanner scanner = new Scanner(System.in);
-        int gameNum;
-        int gameID;
         String gameName;
         String teamselect;
 
         // get the game number from the User
+        String input = scanner.nextLine();
+        int gameNum;
+
         try {
-            gameNum = Integer.parseInt(scanner.nextLine());
-            gameID = client.gameList.get(gameNum);
-        } catch (Error error) {
-            throw new ResponseException(400, "You must choose a number from the Games List [L]");
+            gameNum = Integer.parseInt(input);
+        } catch (Error | Exception exception) {
+            throw new ResponseException(400, "Must be a listed game number");
+        }
+
+        if (gameNum < 1 || gameNum > client.gameList.size()) {
+            throw new ResponseException(400, "Must be a listed game number");
         }
 
         // get the team type from the User
@@ -104,20 +108,22 @@ public class Postlogin {
 
         // attempt to actually join the game as one of the teams
         try {
+            int gameID = client.gameList.get(gameNum);
+
             // switch to the team selected
             client.team = switch (teamselect) {
                 case "w" -> "WHITE";
                 case "b" -> "BLACK";
-                default -> throw new ResponseException(400, "Unexpected value: " + teamselect);
+                default -> throw new ResponseException(400, "Unexpected value: " + teamselect + "\n");
             };
 
             client.serverFace.join(client.team, gameID, client.authToken);
             client.game = client.gameDataList.get(gameID);
             gameName = client.game.gameName();
-
+            listFlag = false;
 
             client.state = State.GAMEPLAY;
-        } catch (ResponseException exception) {
+        } catch (Error | ResponseException exception) {
             // if we couldn't log in, make sure the team gets reset
             client.team = "an observer";
             return "Unable to join game: " + exception.getMessage();
@@ -127,32 +133,38 @@ public class Postlogin {
 
     public static String observe(ChessClient client) throws ResponseException {
         // quick check to make sure we actually have some games listed
-        if (client.gameList.isEmpty()) {
-            return "No games found; retry list command: [L]";
+        if (!listFlag) {
+            System.out.println(list(client));
         }
 
         System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Input a game number to join:");
         Scanner scanner = new Scanner(System.in);
-        int gameNum;
-        int gameID;
         String gameName;
         String teamselect = null;
 
         // get the game number from the User
+        String input = scanner.nextLine();
+        int gameNum;
+
         try {
-            gameNum = Integer.parseInt(scanner.nextLine());
-            gameID = client.gameList.get(gameNum);
-        } catch (Error error) {
-            throw new ResponseException(400, "You must choose a number from the Games List [L]");
+            gameNum = Integer.parseInt(input);
+        } catch (Error | Exception exception) {
+            throw new ResponseException(400, "Must be a listed game number");
+        }
+
+        if (gameNum < 1 || gameNum > client.gameList.size()) {
+            throw new ResponseException(400, "Must be a listed game number");
         }
 
         // attempt to actually join the game as one of the teams
         try {
+            int gameID = client.gameList.get(gameNum);
             client.serverFace.join(null, gameID, client.authToken);
             client.game = client.gameDataList.get(gameID);
             gameName = client.game.gameName();
+            listFlag = false;
 
-            client.team = "observer";
+            client.team = "an observer";
             client.state = State.GAMEPLAY;
         } catch (ResponseException exception) {
             return "Unable to join game: " + exception.getMessage();
@@ -164,6 +176,7 @@ public class Postlogin {
         try {
             client.serverFace.logout(client.authToken);
             client.state = State.LOGGEDOUT;
+            listFlag = false;
         } catch (ResponseException exception) {
             return "Unable to logout: " + exception.getMessage();
         }

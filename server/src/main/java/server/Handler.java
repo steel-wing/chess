@@ -46,7 +46,7 @@ public class Handler {
 
 
     private static Object errorPrinter (String explanation, int status, Response res) {
-        System.out.println("Error: [" + status + "], " + explanation);
+        // System.out.println("Error: [" + status + "], " + explanation);
         var body = new Gson().toJson(Map.of("message", String.format("Error: %s", explanation)));
         res.type("application/json");
         res.status(status);
