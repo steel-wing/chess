@@ -32,7 +32,7 @@ public class ChessBoard {
             for (int col = 1; col <= 8; col++) {
                 ChessPiece piece = original.getPiece(new ChessPosition(row, col));
                 if (piece != null) {
-                    this.addPiece(new ChessPosition(row, col), new ChessPiece(piece.getTeamColor(), piece.getPieceType()));
+                    this.addPiece(new ChessPosition(row, col), piece);
                 }
             }
         }
