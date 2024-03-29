@@ -33,16 +33,16 @@ public class REPL {
             // handle extending salutations when relevant
             if (oldstate != client.state) {
                 String welcomeString = switch (client.state) {
-                    case LOGGEDOUT -> ERASE_SCREEN + "Welcome to the CS 240 Chess Client, by Davis Wing\n" + Prelogin.help();
-                    case LOGGEDIN -> ERASE_SCREEN + "Welcome " + client.username + " \n" + Postlogin.help();
-                    case GAMEPLAY -> ERASE_SCREEN + "Joined Game \"" + client.game.gameName() + "\" as " + joinType + "\n" + Gameplay.display(client);
+                    case LOGGEDOUT -> "Welcome to the CS 240 Chess Client, by Davis Wing\n" + Prelogin.help();
+                    case LOGGEDIN -> "Welcome " + client.username + " \n" + Postlogin.help();
+                    case GAMEPLAY -> "Joined Game \"" + client.game.gameName() + "\" as " + joinType + "\n" + Gameplay.display(client);
                 };
                 System.out.println(welcomeString);
                 oldstate = client.state;
             }
 
             // print out the prompt for the next action and listen
-            System.out.print(SET_TEXT_COLOR_WHITE +  ">>> " + RESET + "\u001b[0m");
+            System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET + "\u001b[0m");
             String line = scanner.nextLine();
 
             // switch between menus

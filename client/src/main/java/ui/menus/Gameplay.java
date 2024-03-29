@@ -22,7 +22,7 @@ public class Gameplay {
         GameData old = client.game;
         client.game = new GameData(old.gameID(), old.whiteUsername(), old.blackUsername(), old.gameName(), new ChessGame());
 
-        return client.game.game().toString(ChessGame.TeamColor.WHITE) + "\n" +
+        return RESET_TEXT_BOLD_FAINT + SET_TEXT_COLOR_WHITE + client.game.game().toString(ChessGame.TeamColor.WHITE) + "\n" +
                client.game.game().toString(ChessGame.TeamColor.BLACK);
     }
 
