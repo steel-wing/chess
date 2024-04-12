@@ -13,11 +13,12 @@ public class Gameplay {
         return RESET + SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + """
         Please select one of the following options:
         [H] : Help for understanding functions and commands
-        [D] : Display the current game of Chess
+        [R] : Redraw the current game of Chess
+        [M] : Make a move
         [X] : Exit and return to the Chess Game Menu""";
     }
 
-    public static String display(ChessClient client) {
+    public static String redraw(ChessClient client) {
         // upload a chessgame to the gameData saved in the client
         GameData old = client.game;
         client.game = new GameData(old.gameID(), old.whiteUsername(), old.blackUsername(), old.gameName(), new ChessGame());

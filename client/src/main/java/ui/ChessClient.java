@@ -70,7 +70,7 @@ public class ChessClient {
     public String gameplay(String input) {
         return switch (input.toLowerCase()) {
             default -> Gameplay.help();
-            case "d" -> Gameplay.display(this);
+            case "d" -> Gameplay.redraw(this);
             case "x" -> Gameplay.exit(this);
         };
     }

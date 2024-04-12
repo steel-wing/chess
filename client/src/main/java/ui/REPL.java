@@ -35,14 +35,14 @@ public class REPL {
                 String welcomeString = switch (client.state) {
                     case LOGGEDOUT -> "Welcome to the CS 240 Chess Client, by Davis Wing\n" + Prelogin.help();
                     case LOGGEDIN -> "Welcome " + client.username + " \n" + Postlogin.help();
-                    case GAMEPLAY -> "Joined Game \"" + client.game.gameName() + "\" as " + joinType + "\n" + Gameplay.display(client);
+                    case GAMEPLAY -> "Joined Game \"" + client.game.gameName() + "\" as " + joinType + "\n" + Gameplay.redraw(client);
                 };
                 System.out.println(welcomeString);
                 oldstate = client.state;
             }
 
             // print out the prompt for the next action and listen
-            System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET + "\u001b[0m");
+            System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET);
             String line = scanner.nextLine();
 
             // switch between menus
