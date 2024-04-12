@@ -35,8 +35,7 @@ public class WebSocketHandler {
     private void joinplayer (JoinGame command, Session session) throws IOException {
         String authToken = command.getAuthString();
         connections.add(authToken, session);
-        AuthData auth = getAuth(authToken);
-        String message = auth.username() + " has joined the game as the " + command.getPlayerColor() + " team.";
+        String message = getUsername(authToken) + " has joined the game as the " + command.getPlayerColor() + " team.";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, notification);
     }
@@ -44,23 +43,23 @@ public class WebSocketHandler {
     private void joinobserver (JoinObserver command, Session session) throws IOException {
         String authToken = command.getAuthString();
         connections.add(authToken, session);
-        AuthData auth = getAuth(authToken);
-        String message = auth.username() + " is now observing the game.";
+        String message = getUsername(authToken) + " is now observing the game.";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, notification);
     }
 
     private void makemove (MakeMove command) throws IOException {
         String authToken = command.getAuthString();
-        AuthData auth = getAuth(authToken);
         ChessMove move = command.getMove();
         String message;
 
+        // little extra detail for handling if there's a pawn promotion
         if (move.getPromotionPiece() != null) {
-            message = auth.username() + " has made promotion: " + move.getStartPosition().toFancyString()
+            message = getUsername(authToken) + " has made promotion: " + move.getStartPosition().toFancyString()
             + " to " + move.getEndPosition().toFancyString();
         } else {
-            message = auth.username() + " has made move: " + move.getStartPosition() + " to " + move.getEndPosition();
+            message = getUsername(authToken) + " has made move: " + move.getStartPosition().toFancyString()
+            + " to " + move.getEndPosition().toFancyString();
         }
 
         Notification notification = new Notification(message);
@@ -70,8 +69,7 @@ public class WebSocketHandler {
     private void leave(Leave command) throws IOException {
         String authToken = command.getAuthString();
         connections.remove(authToken);
-        AuthData auth = getAuth(authToken);
-        String message = auth.username() + " has left the game.";
+        String message = getUsername(authToken) + " has left the game.";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, notification);
     }
@@ -79,13 +77,18 @@ public class WebSocketHandler {
     private void resign(Resign command) throws IOException {
         String authToken = command.getAuthString();
         connections.remove(authToken);
-        AuthData auth = getAuth(authToken);
-        String message = auth.username() + " has resigned from the game. GG everyone";
+        String message = getUsername(authToken) + " has resigned from the game.";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, notification);
     }
 
-    private AuthData getAuth(String authToken) throws IOException {
+    /**
+     * Helpful function for getting usernames from authTokens
+     * @param authToken the authToken in question
+     * @return The requested username
+     * @throws IOException In case of trouble
+     */
+    private String getUsername(String authToken) throws IOException {
         AuthDAO authDAO = new DatabaseAuthDAO();
         AuthData auth;
         try {
@@ -93,6 +96,6 @@ public class WebSocketHandler {
         } catch (DataAccessException exception) {
             throw new IOException(exception.getMessage());
         }
-        return auth;
+        return auth.username();
     }
 }
