@@ -1,15 +1,16 @@
 package websocket;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
-import exception.ResponseException;
+import dataAccess.AuthDAO;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseDAO.DatabaseAuthDAO;
+import model.AuthData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-//import server.Server;
-//import webSocketMessages.Action;
-//import webSocketMessages.Notification;
-import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 
@@ -21,42 +22,77 @@ public class WebSocketHandler {
 
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException {
-        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
-        switch (action.getCommandType()) {
-            case JOIN_PLAYER -> joinplayer(action.getAuthString(), session);
-            case JOIN_OBSERVER -> joinobserver(action.getAuthString(), session);
-            case LEAVE -> exit(action.getAuthString());
+        UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        switch (command.getCommandType()) {
+            case JOIN_PLAYER -> joinplayer((JoinGame) command, session);
+            case JOIN_OBSERVER -> joinobserver((JoinObserver) command, session);
+            case MAKE_MOVE -> makemove((MakeMove) command);
+            case LEAVE -> leave((Leave) command);
+            case RESIGN -> resign((Resign) command);
         }
     }
 
-    private void joinplayer (String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcast(visitorName, notification);
+    private void joinplayer (JoinGame command, Session session) throws IOException {
+        String authToken = command.getAuthString();
+        connections.add(authToken, session);
+        AuthData auth = getAuth(authToken);
+        String message = auth.username() + " has joined the game as the " + command.getPlayerColor() + " team.";
+        Notification notification = new Notification(message);
+        connections.broadcast(authToken, notification);
     }
 
-    private void joinobserver (String visitorName, Session session) throws IOException {
-        connections.add(visitorName, session);
-        var message = String.format("%s is in the shop", visitorName);
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME);
-        connections.broadcast(visitorName, notification);
+    private void joinobserver (JoinObserver command, Session session) throws IOException {
+        String authToken = command.getAuthString();
+        connections.add(authToken, session);
+        AuthData auth = getAuth(authToken);
+        String message = auth.username() + " is now observing the game.";
+        Notification notification = new Notification(message);
+        connections.broadcast(authToken, notification);
     }
 
-    private void exit(String visitorName) throws IOException {
-        connections.remove(visitorName);
-        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
+    private void makemove (MakeMove command) throws IOException {
+        String authToken = command.getAuthString();
+        AuthData auth = getAuth(authToken);
+        ChessMove move = command.getMove();
+        String message;
+
+        if (move.getPromotionPiece() != null) {
+            message = auth.username() + " has made promotion: " + move.getStartPosition().toFancyString()
+            + " to " + move.getEndPosition().toFancyString();
+        } else {
+            message = auth.username() + " has made move: " + move.getStartPosition() + " to " + move.getEndPosition();
+        }
+
+        Notification notification = new Notification(message);
+        connections.broadcast(authToken, notification);
     }
 
-    public void makeNoise(String petName, String sound) throws ResponseException {
+    private void leave(Leave command) throws IOException {
+        String authToken = command.getAuthString();
+        connections.remove(authToken);
+        AuthData auth = getAuth(authToken);
+        String message = auth.username() + " has left the game.";
+        Notification notification = new Notification(message);
+        connections.broadcast(authToken, notification);
+    }
+
+    private void resign(Resign command) throws IOException {
+        String authToken = command.getAuthString();
+        connections.remove(authToken);
+        AuthData auth = getAuth(authToken);
+        String message = auth.username() + " has resigned from the game. GG everyone";
+        Notification notification = new Notification(message);
+        connections.broadcast(authToken, notification);
+    }
+
+    private AuthData getAuth(String authToken) throws IOException {
+        AuthDAO authDAO = new DatabaseAuthDAO();
+        AuthData auth;
         try {
-            var message = String.format("%s says %s", petName, sound);
-//            var notification = new Notification(Notification.Type.NOISE, message);
-//            connections.broadcast("", notification);
-        } catch (Exception ex) {
-            throw new ResponseException(500, ex.getMessage());
+            auth = authDAO.getAuth(authToken);
+        } catch (DataAccessException exception) {
+            throw new IOException(exception.getMessage());
         }
+        return auth;
     }
 }
