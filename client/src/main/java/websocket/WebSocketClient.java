@@ -11,6 +11,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+// Client -> REPL -> ChessClient -> WebSocketClient -> Internet ->
+//  Internet -> Server -> WebSocketHandler -> ConnectionManager -> Client -> REPL
+
 /**
  * This class handles sending outgoing websocket messages to the server.
  * Whenever a client wishes to communicate with the server, this is the one that gets called first
@@ -20,7 +23,9 @@ public class WebSocketClient extends Endpoint {
     Session session;
     MessageHandler messageHandler;
 
-    public WebSocketClient(String url, MessageHandler messageHandler) throws ResponseException {
+    public WebSocketClient(int port, MessageHandler messageHandler) throws ResponseException {
+        String url = "http://localhost:" + port;
+
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
@@ -60,23 +65,6 @@ public class WebSocketClient extends Endpoint {
     public void send(String message) throws IOException {
         this.session.getBasicRemote().sendText(message);
     }
-
-    /////////////////////
-    // SERVER MESSAGES //
-    /////////////////////
-
-//    public void loadGame(String authToken, Integer gameID, String teamColor) throws ResponseException {
-//        try {
-//            UserGameCommand command = new LoadGame(authToken, gameID, teamColor);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-//        } catch (IOException exception) {
-//            throw new ResponseException(500, exception.getMessage());
-//        }
-//    }
-
-    ///////////////////
-    // USER COMMANDS //
-    ///////////////////
 
     // joins a game as a player
     public void joinplayer (String authToken, Integer gameID, String teamColor) throws ResponseException {
@@ -121,7 +109,7 @@ public class WebSocketClient extends Endpoint {
     // exits the actual game: the user is no longer representing the team, and the game is lost
     public void leave (String authToken, Integer gameID) throws ResponseException {
         try {
-            UserGameCommand command = new Resign(authToken, gameID);
+            UserGameCommand command = new Leave(authToken, gameID);
             send(new Gson().toJson(command));
             this.session.close();
         } catch (IOException exception) {

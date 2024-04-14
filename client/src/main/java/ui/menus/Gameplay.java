@@ -37,7 +37,7 @@ public class Gameplay {
 
         ChessPosition start = new ChessPosition(1, 1);
 
-        // throw error if cannot move
+        // throw error if cannot move (invalid, not your turn)
 
         // get piece to be moved
 

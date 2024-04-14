@@ -13,7 +13,7 @@ public class Connection {
         this.session = session;
     }
 
-    public void send(String msg) throws IOException {
-        session.getRemote().sendString(msg);
+    public void send(String message) throws IOException {
+        session.getRemote().sendString(message);
     }
 }

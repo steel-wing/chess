@@ -24,7 +24,7 @@ public class ChessClient {
     public Map<Integer, GameData> gameDataList = new HashMap<>();
     public final ServerFacade serverFace;
     public State state;
-    private final MessageHandler messageHandler;
+    public final MessageHandler messageHandler;
     public WebSocketClient webSocketClient;
 
     public ChessClient(int serverPort, MessageHandler messageHandler) {
@@ -77,6 +77,8 @@ public class ChessClient {
      * @return The output of whatever function was accessed
      */
     public String gameplay(String input) {
+        // messageHandler stuff?
+
         try {
             return switch (input.toLowerCase()) {
                 default -> Gameplay.help();

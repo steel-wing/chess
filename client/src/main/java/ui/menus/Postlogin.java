@@ -5,6 +5,7 @@ import model.GameData;
 import result.CreateResponse;
 import ui.ChessClient;
 import ui.State;
+import websocket.WebSocketClient;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -123,6 +124,9 @@ public class Postlogin {
             gameName = client.game.gameName();
             listFlag = false;
 
+            // connect to the WebSocket
+            client.webSocketClient = new WebSocketClient(8080, client.messageHandler);
+
             // send the WebSocket data
             client.webSocketClient.joinplayer(client.authToken, client.game.gameID(), client.team);
 
@@ -163,12 +167,15 @@ public class Postlogin {
         // attempt to actually join the game as one of the teams
         try {
             int gameID = client.gameList.get(gameNum);
+            client.team = "an observer";
+
             client.serverFace.join(null, gameID, client.authToken);
             client.game = client.gameDataList.get(gameID);
             gameName = client.game.gameName();
             listFlag = false;
 
-            client.team = "an observer";
+            // connect to the WebSocket
+            client.webSocketClient = new WebSocketClient(8080, client.messageHandler);
 
             // send the WebSocket data
             client.webSocketClient.joinobserver(client.authToken, client.game.gameID());
@@ -182,6 +189,7 @@ public class Postlogin {
 
     public static String logout(ChessClient client) {
         try {
+            client.webSocketClient.leave(client.authToken, client.game.gameID());
             client.serverFace.logout(client.authToken);
             client.state = State.LOGGEDOUT;
             listFlag = false;
