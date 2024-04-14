@@ -4,10 +4,7 @@ import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinObserver;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.MakeMove;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -15,8 +12,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 /**
- * This class handles sending websocket messages to the server.
- * Whenever a client wishes to communicate with all the others, this is the one that gets called
+ * This class handles sending outgoing websocket messages to the server.
+ * Whenever a client wishes to communicate with the server, this is the one that gets called first
  */
 //need to extend Endpoint for websocket to work properly
 public class WebSocketClient extends Endpoint {
@@ -81,6 +78,7 @@ public class WebSocketClient extends Endpoint {
     // USER COMMANDS //
     ///////////////////
 
+    // joins a game as a player
     public void joinplayer (String authToken, Integer gameID, String teamColor) throws ResponseException {
         try {
             UserGameCommand command = new JoinPlayer(authToken, gameID, teamColor);
@@ -90,6 +88,7 @@ public class WebSocketClient extends Endpoint {
         }
     }
 
+    // joins the specified game as an observer
     public void joinobserver (String authToken, Integer gameID) throws ResponseException {
         try {
             UserGameCommand command = new JoinObserver(authToken, gameID);
@@ -99,6 +98,7 @@ public class WebSocketClient extends Endpoint {
         }
     }
 
+    // asks the server to make a move
     public void makemove (String authToken, Integer gameID, ChessMove move) throws ResponseException {
         try {
             UserGameCommand command = new MakeMove(authToken, gameID, move);
@@ -108,27 +108,25 @@ public class WebSocketClient extends Endpoint {
         }
     }
 
+    // resigns: the game is lost, but no one leaves
+    public void resign (String authToken, Integer gameID) throws ResponseException {
+        try {
+            UserGameCommand command = new Resign(authToken, gameID);
+            send(new Gson().toJson(command));
+        } catch (IOException exception) {
+            throw new ResponseException(500, exception.getMessage());
+        }
+    }
 
-//    public void enterPetShop(String authToken) throws ResponseException {
-//        try {
-//            var action = new UserGameCommand(authToken);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//        } catch (IOException ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
-//
-//    public void leavePetShop(String authToken) throws ResponseException {
-//        try {
-//            var action = new UserGameCommand(authToken);
-//            // hmmm we'll need to figure this out.
-//            //Action.CommandType = LEAVE;
-//            this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//            this.session.close();
-//        } catch (IOException ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
-
+    // exits the actual game: the user is no longer representing the team, and the game is lost
+    public void leave (String authToken, Integer gameID) throws ResponseException {
+        try {
+            UserGameCommand command = new Resign(authToken, gameID);
+            send(new Gson().toJson(command));
+            this.session.close();
+        } catch (IOException exception) {
+            throw new ResponseException(500, exception.getMessage());
+        }
+    }
 }
 
