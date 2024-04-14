@@ -104,7 +104,7 @@ public class Postlogin {
         teamselect = scanner.nextLine().toLowerCase();
 
         if (!teamselect.equals("b") && !teamselect.equals("w")) {
-            throw new ResponseException(400, "Must be either \"W\" or \"B\"");
+            throw new ResponseException(400, "Must be: \"W\" or \"B\"");
         }
 
         // attempt to actually join the game as one of the teams
@@ -122,6 +122,9 @@ public class Postlogin {
             client.game = client.gameDataList.get(gameID);
             gameName = client.game.gameName();
             listFlag = false;
+
+            // send the WebSocket data
+            client.webSocketClient.joinplayer(client.authToken, client.game.gameID(), client.team);
 
             client.state = State.GAMEPLAY;
         } catch (Error | ResponseException exception) {
@@ -166,6 +169,10 @@ public class Postlogin {
             listFlag = false;
 
             client.team = "an observer";
+
+            // send the WebSocket data
+            client.webSocketClient.joinobserver(client.authToken, client.game.gameID());
+
             client.state = State.GAMEPLAY;
         } catch (ResponseException exception) {
             return "Unable to join game: " + exception.getMessage();

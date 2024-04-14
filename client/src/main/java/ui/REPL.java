@@ -3,12 +3,14 @@ package ui;
 import ui.menus.Gameplay;
 import ui.menus.Postlogin;
 import ui.menus.Prelogin;
+import webSocketMessages.serverMessages.ServerMessage;
+import websocket.MessageHandler;
 
 import java.util.Scanner;
 
 import static ui.EscapeSequences.*;
 
-public class REPL {
+public class REPL implements MessageHandler {
     private final ChessClient client;
     private State oldstate = null;
 
@@ -60,5 +62,18 @@ public class REPL {
                 System.out.print(exception.getMessage());
             }
         }
+    }
+
+    // this is what handles the different incoming ws messages from the server,
+    // since the repl acts as a messagehandler
+    @Override
+    public void notify(ServerMessage message) {
+//        switch (message.getServerMessageType()) {
+//            case LOAD_GAME -> client.
+//        }
+//
+//
+//        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + message.getMessage());
+//        System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET);
     }
 }

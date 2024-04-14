@@ -5,22 +5,31 @@ import model.GameData;
 import ui.menus.Gameplay;
 import ui.menus.Postlogin;
 import ui.menus.Prelogin;
+import websocket.MessageHandler;
+import websocket.WebSocketClient;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class represents an individual who is interacting with the chess server.
+ * It handles all the interactions that they can have, and prints all of the interfaces they see.
+ */
 public class ChessClient {
-    public String username = null;
-    public String authToken = null;
+    public String username;
+    public String authToken;
     public GameData game;
     public String team = "an observer";
     public Map<Integer, Integer> gameList = new HashMap<>();
     public Map<Integer, GameData> gameDataList = new HashMap<>();
     public final ServerFacade serverFace;
     public State state;
+    private final MessageHandler messageHandler;
+    public WebSocketClient webSocketClient;
 
-    public ChessClient(int serverPort, REPL repl) {
+    public ChessClient(int serverPort, MessageHandler messageHandler) {
         serverFace = new ServerFacade(serverPort);
+        this.messageHandler = messageHandler;
         state = State.LOGGEDOUT;
     }
 

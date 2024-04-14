@@ -5,11 +5,13 @@ import dataAccess.DatabaseDAO.DatabaseAuthDAO;
 import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import dataAccess.DatabaseDAO.DatabaseUserDAO;
 import spark.Spark;
+import websocket.WebSocketHandler;
 
 public class Server {
     public static final AuthDAO authDAO = new DatabaseAuthDAO();
     public static final GameDAO gameDAO = new DatabaseGameDAO();
     public static final UserDAO userDAO = new DatabaseUserDAO();
+    public static final WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public Server() {
         // establish SQL connection for storage
@@ -35,6 +37,7 @@ public class Server {
         Spark.get("/game", ListHandler::list);
         Spark.post("/game", CreateHandler::create);
         Spark.put("/game", JoinHandler::join);
+        Spark.webSocket("/connect", webSocketHandler);
 
         Spark.awaitInitialization();
         return Spark.port();

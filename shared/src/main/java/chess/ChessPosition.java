@@ -17,7 +17,7 @@ public class ChessPosition {
         this.col = col;
     }
 
-    public ChessPosition(String square){
+    public ChessPosition(String square) {
         this.row = square.charAt(1) - '0';
         this.col = square.charAt(0) - '`';
     }
