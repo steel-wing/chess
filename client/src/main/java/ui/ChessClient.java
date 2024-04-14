@@ -64,7 +64,7 @@ public class ChessClient {
                 case "c" -> Postlogin.create(this);
                 case "j" -> Postlogin.join(this);
                 case "w" -> Postlogin.observe(this);
-                case "x" -> Postlogin.logout(this);
+                case "x", "quit" -> Postlogin.logout(this);
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
@@ -77,10 +77,17 @@ public class ChessClient {
      * @return The output of whatever function was accessed
      */
     public String gameplay(String input) {
-        return switch (input.toLowerCase()) {
-            default -> Gameplay.help();
-            case "d" -> Gameplay.redraw(this);
-            case "x" -> Gameplay.exit(this);
-        };
+        try {
+            return switch (input.toLowerCase()) {
+                default -> Gameplay.help();
+                case "p" -> Gameplay.redraw(this);
+                case "m" -> Gameplay.makeMove(this);
+                case "s" -> Gameplay.validMoves(this);
+                case "r" -> Gameplay.resign(this);
+                case "x", "quit" -> Gameplay.exit(this);
+            };
+        } catch (ResponseException ex) {
+            return ex.getMessage();
+        }
     }
 }
