@@ -11,8 +11,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
+// Client -> REPL -> ChessClient -> WebSocketClient -> Internet
+// Internet -> Server -> WebSocketHandler -> ConnectionManager -> Client -> REPL
+
 /**
- * This class handles
+ * This class handles sending information to the clients
  */
 public class ConnectionManager {
     // this lets us keep track of who is in/observing which games
@@ -36,7 +39,7 @@ public class ConnectionManager {
     /**
      * Handles the broadcasting of WebSocket interactions from the server to the players
      * Only sends information to those within a game, by virtue of the gameID parameter
-     * @param excludeAuthToken who not to send it to
+     * @param excludeAuthToken the root client
      * @param gameID the game where everyone is
      * @param message what is to be sent
      * @throws IOException in case of emergency
@@ -51,6 +54,12 @@ public class ConnectionManager {
             case LOAD_GAME -> loadGame((LoadGame) message);
             case ERROR -> error((ServerError) message);
         };
+
+        // if it's an error, redirect it to the root client and return
+        if (type == ServerMessage.ServerMessageType.ERROR) {
+            target(excludeAuthToken, gameID, message);
+            return;
+        }
 
         for (Connection connection : connections.values()) {
             // some fancy logic to ensure that no websockets that have been closed are notified
@@ -72,7 +81,9 @@ public class ConnectionManager {
 
     /**
      * Sends a message to the specified authToken
-     * @param authToken The authToken of the person to be notified
+     * @param authToken The root client
+     * @param gameID The game in question
+     * @param message The message to be sent
      * @throws IOException in case of trouble
      */
     public void target(String authToken, Integer gameID, ServerMessage message) throws IOException {
@@ -84,9 +95,9 @@ public class ConnectionManager {
             case LOAD_GAME -> loadGame((LoadGame) message);
             case ERROR -> error((ServerError) message);
         };
+
         // send the message
         Connection connection = connections.get(authToken);
-
         if (connection.session.isOpen()) {
             connection.send(outgoing);
         } else {
@@ -98,11 +109,12 @@ public class ConnectionManager {
 
     /**
      * Tells everyone in a game what's going on
+     * @param authToken The root client
      * @param gameID The game to be notified
      * @param message The message to be sent
      * @throws IOException in case of trouble
      */
-    public void slashAll(Integer gameID, ServerMessage message) throws IOException {
+    public void slashAll(String authToken, Integer gameID, ServerMessage message) throws IOException {
         ArrayList<Connection> removeList = new ArrayList<>();
         ServerMessage.ServerMessageType type = message.getServerMessageType();
 
@@ -112,6 +124,12 @@ public class ConnectionManager {
             case LOAD_GAME -> loadGame((LoadGame) message);
             case ERROR -> error((ServerError) message);
         };
+
+        // if it's an error, redirect it to the root client and return
+        if (type == ServerMessage.ServerMessageType.ERROR) {
+            target(authToken, gameID, message);
+            return;
+        }
 
         for (Connection connection : connections.values()) {
             // some fancy logic to ensure that no websockets that have been closed are notified

@@ -11,12 +11,14 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-// Client -> REPL -> ChessClient -> WebSocketClient -> Internet ->
-//  Internet -> Server -> WebSocketHandler -> ConnectionManager -> Client -> REPL
+// Client -> REPL -> ChessClient -> WebSocketClient -> Internet
+// Internet -> Server -> WebSocketHandler -> ConnectionManager -> Client -> REPL
 
 /**
  * This class handles sending outgoing websocket messages to the server.
- * Whenever a client wishes to communicate with the server, this is the one that gets called first
+ * Whenever a client wishes to communicate with the server, this is the one that gets called first.
+ * It takes the context and sends commands through WebSocket to the Server, which in turn
+ * sends them to the WebSocketHandler
  */
 //need to extend Endpoint for websocket to work properly
 public class WebSocketClient extends Endpoint {

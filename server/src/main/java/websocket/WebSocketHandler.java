@@ -17,8 +17,10 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.userCommands.*;
-
 import java.io.IOException;
+
+// Client -> REPL -> ChessClient -> WebSocketClient -> Internet
+// Internet -> Server -> WebSocketHandler -> ConnectionManager -> Client -> REPL
 
 /**
  * This class handles incoming websocket messages to the server.
@@ -112,7 +114,7 @@ public class WebSocketHandler {
 
         // send a load game to all clients
         LoadGame loadGame = new LoadGame(old);
-        connections.slashAll(gameID, loadGame);
+        connections.slashAll(authToken, gameID, loadGame);
 
         // send a notification to all other clients that the root client has made a move
         Notification notification = new Notification(message);
@@ -121,19 +123,19 @@ public class WebSocketHandler {
         // if the move resulted in check or mate, send a notification as well
         if (!whitecheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE)) {
             Notification wcheck = new Notification("White is now in check");
-            connections.slashAll(gameID, wcheck);
+            connections.slashAll(authToken, gameID, wcheck);
         }
         if (!blackcheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK)) {
             Notification bcheck = new Notification("Black is now in check");
-            connections.slashAll(gameID, bcheck);
+            connections.slashAll(authToken, gameID, bcheck);
         }
         if (gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
             Notification wmate = new Notification("White is in checkmate. Black wins!");
-            connections.slashAll(gameID, wmate);
+            connections.slashAll(authToken, gameID, wmate);
         }
         if (gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
             Notification bmate = new Notification("Black is in checkmate. White wins!");
-            connections.slashAll(gameID, bmate);
+            connections.slashAll(authToken, gameID, bmate);
         }
     }
 
