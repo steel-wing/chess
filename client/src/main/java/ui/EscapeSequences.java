@@ -64,12 +64,13 @@ public class EscapeSequences {
     public static final String RESET = RESET_TEXT_BLINKING + RESET_TEXT_ITALIC
              + RESET_TEXT_UNDERLINE + RESET_TEXT_BOLD_FAINT + SET_TEXT_COLOR_WHITE + RESET_BG_COLOR;
 
-    public String setTextColor(int r, int g, int b) {
-        return "\u001B[38;2;%d;%d;%dm".formatted(r, g, b);
-    }
-    public String setBackgroundColor(int r, int g, int b) {
-        return "\u001B[48;2;%d;%d;%dm".formatted(r, g, b);
-    }
+//    public String setTextColor(int r, int g, int b) {
+//        return "\u001B[38;2;%d;%d;%dm".formatted(r, g, b);
+//    }
 
-    public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }
+//    public String setBackgroundColor(int r, int g, int b) {
+//        return "\u001B[48;2;%d;%d;%dm".formatted(r, g, b);
+//    }
+
+//    public static String moveCursorToLocation(int x, int y) { return UNICODE_ESCAPE + "[" + y + ";" + x + "H"; }
 }
