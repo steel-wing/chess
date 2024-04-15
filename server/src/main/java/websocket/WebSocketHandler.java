@@ -14,10 +14,15 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import webSocketMessages.serverMessages.*;
+import webSocketMessages.serverMessages.Error;
+import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 
 // Client -> REPL -> ChessClient -> WebSocketClient -> Internet
 // Internet -> Server -> WebSocketHandler -> ConnectionManager -> Client -> REPL
@@ -48,14 +53,44 @@ public class WebSocketHandler {
         }
     }
 
-    private void joinplayer (JoinPlayer command, Session session) throws IOException, DataAccessException {
+    private void joinplayer (JoinPlayer command, Session session) throws IOException{
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
+        String team = command.getPlayerColor();
+        String username = getUsername(authToken);
+        GameDAO gameDAO = new DatabaseGameDAO();
+        GameData game = null;
+
         connections.add(authToken, gameID, session);
 
+        try {game = gameDAO.getGame(gameID);} catch (DataAccessException ignored) {}
+
+        if (game == null) {
+            connections.target(authToken, gameID, new Error("Error: Bad GameID"));
+            return;
+        }
+
+        if(team.equals("WHITE") && game.whiteUsername() != null && !game.whiteUsername().equals(username)) {
+            connections.target(authToken, gameID, new Error("Error: White team already taken"));
+            return;
+        }
+
+        if ((team.equals("BLACK") && game.blackUsername() != null && !game.blackUsername().equals(username))) {
+            connections.target(authToken, gameID, new Error("Error: Black team already taken"));
+            return;
+        }
+
+        if (team.equals("BLACK") && game.blackUsername() == null || team.equals("WHITE") && game.whiteUsername() == null) {
+            connections.target(authToken, gameID, new Error("Error: Empty team accessed"));
+            return;
+        }
+
+        if (username == null) {
+            connections.target(authToken, gameID, new Error("Error: Username not recognized"));
+            return;
+        }
+
         // send LOAD_GAME message to root client
-        GameDAO gameDAO = new DatabaseGameDAO();
-        GameData game = gameDAO.getGame(gameID);
         LoadGame loadGame = new LoadGame(game);
         connections.target(authToken, gameID, loadGame);
 
@@ -68,11 +103,25 @@ public class WebSocketHandler {
     private void joinobserver (JoinObserver command, Session session) throws IOException, DataAccessException {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
+        String username = getUsername(authToken);
+        GameDAO gameDAO = new DatabaseGameDAO();
+        GameData game = null;
+
         connections.add(authToken, gameID, session);
 
+        try {game = gameDAO.getGame(gameID);} catch (DataAccessException ignored) {}
+
+        if (game == null) {
+            connections.target(authToken, gameID, new Error("Error: Bad GameID"));
+            return;
+        }
+
+        if (username == null) {
+            connections.target(authToken, gameID, new Error("Error: Username not recognized"));
+            return;
+        }
+
         // send LOAD_GAME message to root client
-        GameDAO gameDAO = new DatabaseGameDAO();
-        GameData game = gameDAO.getGame(gameID);
         LoadGame loadGame = new LoadGame(game);
         connections.target(authToken, gameID, loadGame);
 
@@ -86,7 +135,9 @@ public class WebSocketHandler {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
         ChessMove move = command.getMove();
+        String username = getUsername(authToken);
         String message;
+        GameData game = null;
 
         // little extra detail for handling if there's a pawn promotion
         if (move.getPromotionPiece() != null) {
@@ -99,41 +150,66 @@ public class WebSocketHandler {
 
         // get the game to be updated
         GameDAO gameDAO = new DatabaseGameDAO();
-        GameData old = gameDAO.getGame(gameID);
+        try {game = gameDAO.getGame(gameID);} catch (DataAccessException ignored) {}
 
-        // move validity check
-        if (!old.game().validMoves(move.getStartPosition()).contains(move)) {
-            throw new IOException("Invalid Move Requested");
+        if (game == null) {
+            connections.target(authToken, gameID, new Error("Error: Bad GameID"));
+            return;
+        }
+
+        if (username == null) {
+            connections.target(authToken, gameID, new Error("Error: Username not recognized"));
+            return;
+        }
+
+        if ((game.blackUsername() != null && !username.equals(game.blackUsername())) &&
+            (game.whiteUsername() != null && !username.equals(game.whiteUsername()))) {
+            connections.target(authToken, gameID, new Error("Error: Invalid user request"));
+            return;
+        }
+
+        ChessGame.TeamColor turn = username.equals(game.whiteUsername()) ? WHITE : BLACK;
+
+        if (!game.game().validMoves(move.getStartPosition()).contains(move) ||
+            !game.game().getTeamTurn().equals(turn)) {
+            connections.target(authToken, gameID, new Error("Error: Invalid Move Requested"));
+            return;
+        }
+
+        if (game.game().getWinner() != null) {
+            connections.target(authToken, gameID, new Error("Error: Game is over: no more moves"));
+            return;
         }
 
         // get the checks before the move is made
-        boolean whitecheck = gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE);
-        boolean blackcheck = gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK);
+        boolean whitecheck = gameDAO.getGame(gameID).game().isInCheck(WHITE);
+        boolean blackcheck = gameDAO.getGame(gameID).game().isInCheck(BLACK);
 
         // make the move
         try {
-            old.game().makeMove(move);
+            game.game().makeMove(move);
         } catch (InvalidMoveException exception) {
-            throw new DataAccessException("Move could not be made");
+            connections.target(authToken, gameID, new Error("Error: Move could not be made"));
+            return;
         }
 
         // handle all of the horrible updating and handling of notifications
-        whitecheck = !whitecheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE);
-        blackcheck = !blackcheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK);
-        boolean blackwins = gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE);
-        boolean whitewins = gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.BLACK);
+        whitecheck = !whitecheck && gameDAO.getGame(gameID).game().isInCheck(WHITE);
+        blackcheck = !blackcheck && gameDAO.getGame(gameID).game().isInCheck(BLACK);
+        boolean blackwins = gameDAO.getGame(gameID).game().isInCheckmate(WHITE);
+        boolean whitewins = gameDAO.getGame(gameID).game().isInCheckmate(BLACK);
 
         if (blackwins) {
-            old.game().setWinner(old.blackUsername());
+            game.game().setWinner(game.blackUsername());
         }
         if (whitewins) {
-            old.game().setWinner(old.whiteUsername());
+            game.game().setWinner(game.whiteUsername());
         }
 
-        gameDAO.updateGame(gameID, new GameData(gameID, old.whiteUsername(), old.blackUsername(), old.gameName(), old.game()));
+        gameDAO.updateGame(gameID, new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
 
         // send a LOAD_GAME to all clients
-        LoadGame loadGame = new LoadGame(old);
+        LoadGame loadGame = new LoadGame(game);
         connections.slashAll(authToken, gameID, loadGame);
 
         // send a NOTIFICATION to all other clients that the root client has made a move
@@ -142,19 +218,19 @@ public class WebSocketHandler {
 
         // if the move resulted in check or mate, send a NOTIFICATION to all as well
         if (whitecheck) {
-            Notification wcheck = new Notification(old.whiteUsername() + " is in check");
+            Notification wcheck = new Notification(game.whiteUsername() + " is in check");
             connections.slashAll(authToken, gameID, wcheck);
         }
         if (blackcheck) {
-            Notification bcheck = new Notification(old.blackUsername() + " is in check");
+            Notification bcheck = new Notification(game.blackUsername() + " is in check");
             connections.slashAll(authToken, gameID, bcheck);
         }
         if (blackwins) {
-            Notification wmate = new Notification(old.whiteUsername() + " is in checkmate. " + old.blackUsername() + " wins!");
+            Notification wmate = new Notification(game.whiteUsername() + " is in checkmate. " + game.blackUsername() + " wins!");
             connections.slashAll(authToken, gameID, wmate);
         }
         if (whitewins) {
-            Notification bmate = new Notification(old.blackUsername() + " is in checkmate. " + old.whiteUsername() + " wins!");
+            Notification bmate = new Notification(game.blackUsername() + " is in checkmate. " + game.whiteUsername() + " wins!");
             connections.slashAll(authToken, gameID, bmate);
         }
     }
@@ -193,17 +269,35 @@ public class WebSocketHandler {
         String username = getUsername(authToken);
 
         GameDAO gameDAO = new DatabaseGameDAO();
-        GameData old = gameDAO.getGame(gameID);
+        GameData game = gameDAO.getGame(gameID);
 
-        // get the opponent's name and set them as the winner
-        if (username.equals(old.whiteUsername())) {
-            old.game().setWinner(old.blackUsername());
-        } else {
-            old.game().setWinner(old.blackUsername());
+        if (username == null) {
+            connections.target(authToken, gameID, new Error("Error: Username not found"));
+            return;
         }
 
+        if (!username.equals(game.blackUsername()) && !username.equals(game.whiteUsername())) {
+            connections.target(authToken, gameID, new Error("Error: Not a player"));
+            return;
+        }
+
+        if (game.game().getWinner() != null) {
+            connections.target(authToken, gameID, new Error("Error: Game is over"));
+            return;
+        }
+
+        // get the opponent's name and set them as the winner
+        if (username.equals(game.whiteUsername())) {
+            game.game().setWinner(game.blackUsername());
+        } else {
+            game.game().setWinner(game.blackUsername());
+        }
+
+        // update the change to the game in the database
+        gameDAO.updateGame(gameID, game);
+
         // send a NOTIFICATION to everyone that the root client has resigned
-        String message = username + " has resigned from the game." + old.game().getWinner() + " wins!";
+        String message = username + " has resigned from the game." + game.game().getWinner() + " wins!";
         Notification notification = new Notification(message);
         connections.slashAll(authToken, gameID, notification);
     }
@@ -214,13 +308,13 @@ public class WebSocketHandler {
      * @return The requested username
      * @throws IOException In case of trouble
      */
-    private String getUsername(String authToken) throws IOException {
+    private String getUsername(String authToken) {
         AuthDAO authDAO = new DatabaseAuthDAO();
         AuthData auth;
         try {
             auth = authDAO.getAuth(authToken);
         } catch (DataAccessException exception) {
-            throw new IOException(exception.getMessage());
+            return null;
         }
         return auth.username();
     }

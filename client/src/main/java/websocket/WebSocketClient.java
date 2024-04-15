@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.serverMessages.ServerError;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
@@ -49,7 +49,7 @@ public class WebSocketClient extends Endpoint {
                     switch (message.getServerMessageType()) {
                         case NOTIFICATION -> message = new Gson().fromJson(incoming, Notification.class);
                         case LOAD_GAME -> message = new Gson().fromJson(incoming, LoadGame.class);
-                        case ERROR -> message = new Gson().fromJson(incoming, ServerError.class);
+                        case ERROR -> message = new Gson().fromJson(incoming, Error.class);
                     }
                     messageHandler.notify(message);
                 }

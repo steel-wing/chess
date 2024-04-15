@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import ui.menus.Postlogin;
 import ui.menus.Prelogin;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
@@ -85,9 +86,15 @@ public class REPL implements MessageHandler {
             out = "\n" + RESET + SET_TEXT_COLOR_WHITE + loadGame.getGame().game().toString(team);
         }
 
+        // handles printing errors (in case that was needed?)
+        else if (message.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
+            Error error = (Error) message;
+            out = "\n" + error.getErrorMessage();
+        }
+
         // handles whatever else I've missed
         else {
-            out = message.toString();
+            out = "\n" + message;
         }
 
         // print out what we found
