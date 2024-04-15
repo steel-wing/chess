@@ -139,15 +139,6 @@ public class WebSocketHandler {
         String message;
         GameData game = null;
 
-        // little extra detail for handling if there's a pawn promotion
-        if (move.getPromotionPiece() != null) {
-            message = getUsername(authToken) + " has made promotion: " + move.getStartPosition().toFancyString()
-            + " to " + move.getEndPosition().toFancyString();
-        } else {
-            message = getUsername(authToken) + " has made move: " + move.getStartPosition().toFancyString()
-            + " to " + move.getEndPosition().toFancyString();
-        }
-
         // get the game to be updated
         GameDAO gameDAO = new DatabaseGameDAO();
         try {game = gameDAO.getGame(gameID);} catch (DataAccessException ignored) {}
@@ -182,37 +173,39 @@ public class WebSocketHandler {
         }
 
         // get the checks before the move is made
-        boolean whitecheck = gameDAO.getGame(gameID).game().isInCheck(WHITE);
-        boolean blackcheck = gameDAO.getGame(gameID).game().isInCheck(BLACK);
+        boolean whitecheck = game.game().isInCheck(WHITE);
+        boolean blackcheck = game.game().isInCheck(BLACK);
 
         // make the move
         try {
             game.game().makeMove(move);
-        } catch (InvalidMoveException exception) {
+        } catch (InvalidMoveException ignored) {
             connections.target(authToken, gameID, new Error("Error: Move could not be made"));
             return;
         }
 
-        // handle all of the horrible updating and handling of notifications
-        whitecheck = !whitecheck && gameDAO.getGame(gameID).game().isInCheck(WHITE);
-        blackcheck = !blackcheck && gameDAO.getGame(gameID).game().isInCheck(BLACK);
-        boolean blackwins = gameDAO.getGame(gameID).game().isInCheckmate(WHITE);
-        boolean whitewins = gameDAO.getGame(gameID).game().isInCheckmate(BLACK);
-
+        whitecheck = !whitecheck && game.game().isInCheck(WHITE);
+        blackcheck = !blackcheck && game.game().isInCheck(BLACK);
+        boolean blackwins = game.game().isInCheckmate(WHITE);
+        boolean whitewins = game.game().isInCheckmate(BLACK);
+        boolean stalemate = game.game().isInStalemate(WHITE) || game.game().isInStalemate(BLACK);
         if (blackwins) {
             game.game().setWinner(game.blackUsername());
         }
         if (whitewins) {
             game.game().setWinner(game.whiteUsername());
         }
-
-        gameDAO.updateGame(gameID, new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
+        if (stalemate) {
+            game.game().setWinner("STALEMATE");
+        }
 
         // send a LOAD_GAME to all clients
+        gameDAO.updateGame(gameID, new GameData(gameID, game.whiteUsername(), game.blackUsername(), game.gameName(), game.game()));
         LoadGame loadGame = new LoadGame(game);
         connections.slashAll(authToken, gameID, loadGame);
 
         // send a NOTIFICATION to all other clients that the root client has made a move
+        message = getUsername(authToken) + ": " + move.getStartPosition().toFancyString() + " -> " + move.getEndPosition().toFancyString();
         Notification notification = new Notification(message);
         connections.broadcast(authToken, gameID, notification);
 
@@ -233,6 +226,7 @@ public class WebSocketHandler {
             Notification bmate = new Notification(game.blackUsername() + " is in checkmate. " + game.whiteUsername() + " wins!");
             connections.slashAll(authToken, gameID, bmate);
         }
+
     }
 
     private void leave(Leave command) throws IOException, DataAccessException {
