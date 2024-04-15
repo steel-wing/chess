@@ -100,7 +100,7 @@ public class WebSocketHandler {
         connections.broadcast(authToken, gameID, notification);
     }
 
-    private void joinobserver (JoinObserver command, Session session) throws IOException, DataAccessException {
+    private void joinobserver (JoinObserver command, Session session) throws IOException{
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
         String username = getUsername(authToken);
@@ -306,7 +306,6 @@ public class WebSocketHandler {
      * Helpful function for getting usernames from authTokens
      * @param authToken the authToken in question
      * @return The requested username
-     * @throws IOException In case of trouble
      */
     private String getUsername(String authToken) {
         AuthDAO authDAO = new DatabaseAuthDAO();
