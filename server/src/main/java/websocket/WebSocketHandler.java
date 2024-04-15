@@ -178,12 +178,18 @@ public class WebSocketHandler {
         connections.remove(authToken, gameID);
     }
 
-    private void resign(Resign command) throws IOException {
+    private void resign(Resign command) throws IOException, DataAccessException {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
+        String username = getUsername(authToken);
+
+        GameDAO gameDAO = new DatabaseGameDAO();
+        GameData old = gameDAO.getGame(gameID);
+
+        old.game().setResigned(username);
 
         // send a NOTIFICATION to everyone that the root client has resigned
-        String message = getUsername(authToken) + " has resigned from the game.";
+        String message = username + " has resigned from the game.";
         Notification notification = new Notification(message);
         connections.slashAll(authToken, gameID, notification);
     }

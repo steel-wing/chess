@@ -16,11 +16,14 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 // Client -> REPL -> ChessClient -> WebSocketClient -> Internet
-// Internet -> Server -> WebSocketHandler -> ConnectionManager -> Client -> REPL
+// Internet -> Server -> WebSocketHandler -> ConnectionManager -> Internet
+// Internet -> WebSocketClient -> REPL -> Client
 
 /**
- * This class handles sending outgoing websocket messages to the server.
- * Whenever a client wishes to communicate with the server, this is the one that gets called first.
+ * This class handles websocket interactions with the client
+ * It handles sending outgoing websocket messages to the server, and incoming websocket messages to the client
+ * Whenever a client wishes to communicate with the server, this is the one that gets called first
+ * Whenever the server does a broadcast, this is the class that gets called first
  * It takes the context and sends commands through WebSocket to the Server, which in turn
  * sends them to the WebSocketHandler
  */
@@ -30,8 +33,6 @@ public class WebSocketClient extends Endpoint {
     MessageHandler messageHandler;
 
     public WebSocketClient(String url, MessageHandler messageHandler) throws ResponseException {
-        System.out.println("HIT");
-
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
@@ -40,7 +41,7 @@ public class WebSocketClient extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            // watch out for this one on the debug
+            // this was so painful to debug
             this.session.addMessageHandler(new javax.websocket.MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String incoming) {

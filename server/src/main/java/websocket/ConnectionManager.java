@@ -51,6 +51,7 @@ public class ConnectionManager {
             return;
         }
 
+        // send the info out to all who should see it
         for (Connection connection : connections.values()) {
             // some fancy logic to ensure that no websockets that have been closed are notified
             if (connection.session.isOpen()) {
@@ -123,26 +124,6 @@ public class ConnectionManager {
             connections.remove(connection.authToken);
         }
     }
-
-//    /**
-//     * These are the messages to be broadcast to clients. They are not requests, but Strings or GameData.
-//     */
-//
-//    // sends the plain text notification as written in WebSocketHandler (which is calling this class)
-//    private String notification(Notification notification) {
-//        return notification.getMessage();
-//    }
-//
-//    // sends the plain text error as given by whatever is calling this.
-//    private String error(ServerError error) {
-//        return error.getErrorMessage();
-//    }
-//
-//    // sends a GameData object in JSON
-//    private String loadGame(LoadGame loadgame) {
-//        return new Gson().toJson(loadgame.getGame());
-//    }
-
 }
 
 

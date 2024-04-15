@@ -71,14 +71,10 @@ public class REPL implements MessageHandler {
     @Override
     public void notify(ServerMessage message) {
         String out;
-
-        System.out.println("RECIEVING");
-
         // handles the case where we're just recieving a notification
         if (message.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
             Notification notification = (Notification) message;
-            out = notification.getMessage();
-            System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET);
+            out = "\n" + notification.getMessage();
         }
 
         // handles the case where we're recieving some new GameData
@@ -86,7 +82,7 @@ public class REPL implements MessageHandler {
             LoadGame loadGame = (LoadGame) message;
             client.game = loadGame.getGame();
             ChessGame.TeamColor team = client.team.equals("BLACK") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
-            out = loadGame.getGame().game().toString(team);
+            out = "\n" + RESET + SET_TEXT_COLOR_WHITE + loadGame.getGame().game().toString(team);
         }
 
         // handles whatever else I've missed
@@ -96,5 +92,6 @@ public class REPL implements MessageHandler {
 
         // print out what we found
         System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + out);
+        System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET);
     }
 }
