@@ -42,7 +42,11 @@ public class Gameplay {
             return "Cannot move, the game is over";
         }
 
-        if (client.team.equals("an observer") || client.game.game().getTeamTurn() != team(client)) {
+        if (client.team.equals("an observer")) {
+            throw new ResponseException(400, "You are an observer");
+        }
+
+        if (client.game.game().getTeamTurn() != team(client)) {
             throw new ResponseException(400, "It is not your turn");
         }
 
