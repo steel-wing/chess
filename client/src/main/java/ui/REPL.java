@@ -1,8 +1,10 @@
 package ui;
 
-import ui.menus.Gameplay;
+import chess.ChessGame;
 import ui.menus.Postlogin;
 import ui.menus.Prelogin;
+import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
 import websocket.MessageHandler;
 
@@ -14,8 +16,8 @@ public class REPL implements MessageHandler {
     private final ChessClient client;
     private State oldstate = null;
 
-    public REPL(int serverPort) {
-        client = new ChessClient(serverPort, this);
+    public REPL(String serverUrl) {
+        client = new ChessClient(serverUrl, this);
     }
 
     public void run() {
@@ -37,7 +39,7 @@ public class REPL implements MessageHandler {
                 String welcomeString = switch (client.state) {
                     case LOGGEDOUT -> "Welcome to the CS 240 Chess Client, by Davis Wing\n" + Prelogin.help();
                     case LOGGEDIN -> "Welcome " + client.username + " \n" + Postlogin.help();
-                    case GAMEPLAY -> "Joined Game \"" + client.game.gameName() + "\" as " + joinType + "\n" + Gameplay.redraw(client);
+                    case GAMEPLAY -> "Joined Game \"" + client.game.gameName() + "\" as " + joinType + "\n";
                 };
                 System.out.println(welcomeString);
                 oldstate = client.state;
@@ -68,12 +70,31 @@ public class REPL implements MessageHandler {
     // since the repl acts as a messagehandler
     @Override
     public void notify(ServerMessage message) {
-//        switch (message.getServerMessageType()) {
-//            case LOAD_GAME -> client.
-//        }
-//
-//
-//        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + message.getMessage());
-//        System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET);
+        String out;
+
+        System.out.println("RECIEVING");
+
+        // handles the case where we're just recieving a notification
+        if (message.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION) {
+            Notification notification = (Notification) message;
+            out = notification.getMessage();
+            System.out.print(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + ">>> " + RESET);
+        }
+
+        // handles the case where we're recieving some new GameData
+        else if (message.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME) {
+            LoadGame loadGame = (LoadGame) message;
+            client.game = loadGame.getGame();
+            ChessGame.TeamColor team = client.team.equals("BLACK") ? ChessGame.TeamColor.BLACK : ChessGame.TeamColor.WHITE;
+            out = loadGame.getGame().game().toString(team);
+        }
+
+        // handles whatever else I've missed
+        else {
+            out = message.toString();
+        }
+
+        // print out what we found
+        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + out);
     }
 }

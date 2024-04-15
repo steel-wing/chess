@@ -1,24 +1,28 @@
-import server.Server;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import ui.REPL;
 
 public class Main {
-    public static void main(String[] args) {
-        // default port
-        int serverPort = 8080;
+    public static void main(String[] args) throws DataAccessException {
+
+        new DatabaseGameDAO().clear();
+
+        // default url
+        var serverUrl = "http://localhost:8080";
 
         // handle alternative port numbers, if provided
         if (args.length == 1) {
-            serverPort = Integer.parseInt(args[0]);
+            serverUrl = args[0];
         }
 
         // construct and open up a new server on port 8080
-        Server server = new Server();
-        server.run(serverPort);
+//        Server server = new Server();
+//        server.run(serverPort);
 
         // open up the main menu
-        new REPL(serverPort).run();
+        new REPL(serverUrl).run();
 
         // stop the server
-        server.stop();
+//        server.stop();
     }
 }

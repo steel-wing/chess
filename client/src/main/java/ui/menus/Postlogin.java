@@ -46,7 +46,11 @@ public class Postlogin {
             }
 
             // forbidden newline deletion technique
-            output.delete(output.length() - 1, output.length());
+            if (!list.isEmpty()) {
+                output.delete(output.length() - 1, output.length());
+            } else {
+                output.append("There are no available games");
+            }
 
             listFlag = true;
             return output.toString();
@@ -125,7 +129,7 @@ public class Postlogin {
             listFlag = false;
 
             // connect to the WebSocket
-            client.webSocketClient = new WebSocketClient(8080, client.messageHandler);
+            client.webSocketClient = new WebSocketClient(client.serverUrl, client.messageHandler);
 
             // send the WebSocket data
             client.webSocketClient.joinplayer(client.authToken, client.game.gameID(), client.team);
@@ -175,7 +179,7 @@ public class Postlogin {
             listFlag = false;
 
             // connect to the WebSocket
-            client.webSocketClient = new WebSocketClient(8080, client.messageHandler);
+            client.webSocketClient = new WebSocketClient(client.serverUrl, client.messageHandler);
 
             // send the WebSocket data
             client.webSocketClient.joinobserver(client.authToken, client.game.gameID());

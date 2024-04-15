@@ -14,9 +14,9 @@ import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
-import webSocketMessages.serverMessages.LoadGame;
-import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.*;
 import webSocketMessages.userCommands.*;
+
 import java.io.IOException;
 
 // Client -> REPL -> ChessClient -> WebSocketClient -> Internet
@@ -36,14 +36,17 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException, DataAccessException {
         // extract the command from the JSON
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
+        System.out.println(command);
+        System.out.println(command.getCommandType());
 
         // delegate who gets the command based on what type it is
+        // this was tricky: you have to deserialize once to get the class type, then deserialize directly into that class
         switch (command.getCommandType()) {
-            case JOIN_PLAYER -> joinplayer((JoinPlayer) command, session);
-            case JOIN_OBSERVER -> joinobserver((JoinObserver) command, session);
-            case MAKE_MOVE -> makemove((MakeMove) command);
-            case LEAVE -> leave((Leave) command);
-            case RESIGN -> resign((Resign) command);
+            case JOIN_PLAYER -> joinplayer(new Gson().fromJson(message, JoinPlayer.class), session);
+            case JOIN_OBSERVER -> joinobserver(new Gson().fromJson(message, JoinObserver.class), session);
+            case MAKE_MOVE -> makemove(new Gson().fromJson(message, MakeMove.class));
+            case LEAVE -> leave(new Gson().fromJson(message, Leave.class));
+            case RESIGN -> resign(new Gson().fromJson(message, Resign.class));
         }
     }
 
@@ -56,7 +59,7 @@ public class WebSocketHandler {
         GameDAO gameDAO = new DatabaseGameDAO();
         GameData game = gameDAO.getGame(gameID);
         LoadGame loadGame = new LoadGame(game);
-        connections.broadcast(authToken, gameID, loadGame);
+        connections.target(authToken, gameID, loadGame);
 
         // send NOTIFICATION to all other clients
         String message = getUsername(authToken) + " has joined the game as the " + command.getPlayerColor() + " team.";
@@ -69,11 +72,13 @@ public class WebSocketHandler {
         Integer gameID = command.getGameID();
         connections.add(authToken, gameID, session);
 
+        // send LOAD_GAME message to root client
         GameDAO gameDAO = new DatabaseGameDAO();
         GameData game = gameDAO.getGame(gameID);
         LoadGame loadGame = new LoadGame(game);
-        connections.broadcast(authToken, gameID, loadGame);
+        connections.target(authToken, gameID, loadGame);
 
+        // send NOTIFICATION to all other clients
         String message = getUsername(authToken) + " is now observing the game.";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, gameID, notification);
@@ -85,7 +90,6 @@ public class WebSocketHandler {
         ChessMove move = command.getMove();
         String message;
 
-
         // little extra detail for handling if there's a pawn promotion
         if (move.getPromotionPiece() != null) {
             message = getUsername(authToken) + " has made promotion: " + move.getStartPosition().toFancyString()
@@ -95,13 +99,20 @@ public class WebSocketHandler {
             + " to " + move.getEndPosition().toFancyString();
         }
 
-        // actually go in and update the game
+        // get the game to be updated
         GameDAO gameDAO = new DatabaseGameDAO();
         GameData old = gameDAO.getGame(gameID);
 
+        // move validity check
+        if (!old.game().validMoves(move.getStartPosition()).contains(move)) {
+            throw new IOException("Invalid Move Requested");
+        }
+
+        // get the checks before the move is made
         boolean whitecheck = gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE);
         boolean blackcheck = gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK);
 
+        // make the move
         try {
             System.out.println("debug");
             System.out.println(old.game().getBoard());
@@ -112,15 +123,15 @@ public class WebSocketHandler {
         }
         gameDAO.updateGame(gameID, new GameData(gameID, old.whiteUsername(), old.blackUsername(), old.gameName(), old.game()));
 
-        // send a load game to all clients
+        // send a LOAD_GAME to all clients
         LoadGame loadGame = new LoadGame(old);
         connections.slashAll(authToken, gameID, loadGame);
 
-        // send a notification to all other clients that the root client has made a move
+        // send a NOTIFICATION to all other clients that the root client has made a move
         Notification notification = new Notification(message);
         connections.broadcast(authToken, gameID, notification);
 
-        // if the move resulted in check or mate, send a notification as well
+        // if the move resulted in check or mate, send a NOTIFICATION to all as well
         if (!whitecheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE)) {
             Notification wcheck = new Notification("White is now in check");
             connections.slashAll(authToken, gameID, wcheck);
@@ -139,11 +150,28 @@ public class WebSocketHandler {
         }
     }
 
-    private void leave(Leave command) throws IOException {
+    private void leave(Leave command) throws IOException, DataAccessException {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
 
-        // notify all other clients that the root client has left
+        // get the username corresponding to this User
+        AuthDAO authDAO = new DatabaseAuthDAO();
+        String username = authDAO.getAuth(authToken).username();
+
+        // remove the client from the game
+        GameDAO gameDAO = new DatabaseGameDAO();
+        GameData old = gameDAO.getGame(gameID);
+        // we only remove their username if they were a player
+        GameData current = old;
+        if (username.equals(old.whiteUsername())) {
+            current = new GameData(old.gameID(), null, old.blackUsername(), old.gameName(), old.game());
+        }
+        if (username.equals(old.blackUsername())) {
+            current = new GameData(old.gameID(), old.whiteUsername(), null, old.gameName(), old.game());
+        }
+        gameDAO.updateGame(old.gameID(), current);
+
+        // send a NOTIFICATION to all other clients that the root client has left
         String message = getUsername(authToken) + " has left the game.";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, gameID, notification);
@@ -154,11 +182,10 @@ public class WebSocketHandler {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
 
-        // notify everyone that the root client has resigned
+        // send a NOTIFICATION to everyone that the root client has resigned
         String message = getUsername(authToken) + " has resigned from the game.";
         Notification notification = new Notification(message);
-        connections.broadcast(authToken, gameID, notification);
-        connections.target(authToken, gameID, notification);
+        connections.slashAll(authToken, gameID, notification);
     }
 
     /**

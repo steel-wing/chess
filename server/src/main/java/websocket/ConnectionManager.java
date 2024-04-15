@@ -2,9 +2,6 @@ package websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import webSocketMessages.serverMessages.LoadGame;
-import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.serverMessages.ServerError;
 import webSocketMessages.serverMessages.ServerMessage;
 
 import java.io.IOException;
@@ -23,12 +20,13 @@ public class ConnectionManager {
     public final ConcurrentHashMap<Integer, ArrayList<String>> gameTable = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
+    // loads a new connection under the authToken for this person,
+    // and loads that authToken under the gameID for this game
     public void add(String authToken, Integer gameID, Session session) {
         var connection = new Connection(authToken, session);
         connections.put(authToken, connection);
         gameTable.computeIfAbsent(gameID, table -> new ArrayList<>());
         gameTable.get(gameID).add(authToken);
-
     }
 
     public void remove(String authToken, Integer gameID) {
@@ -46,17 +44,9 @@ public class ConnectionManager {
      */
     public void broadcast(String excludeAuthToken, Integer gameID, ServerMessage message) throws IOException {
         ArrayList<Connection> removeList = new ArrayList<>();
-        ServerMessage.ServerMessageType type = message.getServerMessageType();
-
-        // handle the stringification of the message here
-        String outgoing = switch (type) {
-            case NOTIFICATION -> notification((Notification) message);
-            case LOAD_GAME -> loadGame((LoadGame) message);
-            case ERROR -> error((ServerError) message);
-        };
 
         // if it's an error, redirect it to the root client and return
-        if (type == ServerMessage.ServerMessageType.ERROR) {
+        if (message.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             target(excludeAuthToken, gameID, message);
             return;
         }
@@ -65,8 +55,8 @@ public class ConnectionManager {
             // some fancy logic to ensure that no websockets that have been closed are notified
             if (connection.session.isOpen()) {
                 // some fancy logic to ensure that only those who are in the game are notified
-                if (!connection.authToken.equals(excludeAuthToken) && gameTable.get(gameID).contains(excludeAuthToken)) {
-                    connection.send(outgoing);
+                if (!connection.authToken.equals(excludeAuthToken) && gameTable.get(gameID).contains(connection.authToken)) {
+                    connection.send(new Gson().toJson(message));
                 }
             } else {
                 removeList.add(connection);
@@ -89,17 +79,10 @@ public class ConnectionManager {
     public void target(String authToken, Integer gameID, ServerMessage message) throws IOException {
         ServerMessage.ServerMessageType type = message.getServerMessageType();
 
-        // handle the stringification of the message here
-        String outgoing = switch (type) {
-            case NOTIFICATION -> notification((Notification) message);
-            case LOAD_GAME -> loadGame((LoadGame) message);
-            case ERROR -> error((ServerError) message);
-        };
-
         // send the message
         Connection connection = connections.get(authToken);
         if (connection.session.isOpen()) {
-            connection.send(outgoing);
+            connection.send(new Gson().toJson(message));
         } else {
             // if they are no longer connected, remove them
             connections.remove(connection.authToken);
@@ -116,17 +99,9 @@ public class ConnectionManager {
      */
     public void slashAll(String authToken, Integer gameID, ServerMessage message) throws IOException {
         ArrayList<Connection> removeList = new ArrayList<>();
-        ServerMessage.ServerMessageType type = message.getServerMessageType();
-
-        // handle the stringification of the message here
-        String outgoing = switch (type) {
-            case NOTIFICATION -> notification((Notification) message);
-            case LOAD_GAME -> loadGame((LoadGame) message);
-            case ERROR -> error((ServerError) message);
-        };
 
         // if it's an error, redirect it to the root client and return
-        if (type == ServerMessage.ServerMessageType.ERROR) {
+        if (message.getServerMessageType() == ServerMessage.ServerMessageType.ERROR) {
             target(authToken, gameID, message);
             return;
         }
@@ -134,7 +109,10 @@ public class ConnectionManager {
         for (Connection connection : connections.values()) {
             // some fancy logic to ensure that no websockets that have been closed are notified
             if (connection.session.isOpen()) {
-                connection.send(outgoing);
+                // some fancy logic to ensure that only those who are in the game are notified
+                if (gameTable.get(gameID).contains(connection.authToken)) {
+                    connection.send(new Gson().toJson(message));
+                }
             } else {
                 removeList.add(connection);
             }
@@ -146,24 +124,24 @@ public class ConnectionManager {
         }
     }
 
-    /**
-     * These are the messages to be broadcast to clients. They are not requests, but Strings or GameData.
-     */
-
-    // sends the plain text notification as written in WebSocketHandler (which is calling this class)
-    private String notification(Notification notification) {
-        return notification.getMessage();
-    }
-
-    // sends the plain text error as given by whatever is calling this.
-    private String error(ServerError error) {
-        return error.getErrorMessage();
-    }
-
-    // sends a GameData object in JSON
-    private String loadGame(LoadGame loadgame) {
-        return new Gson().toJson(loadgame.getGame());
-    }
+//    /**
+//     * These are the messages to be broadcast to clients. They are not requests, but Strings or GameData.
+//     */
+//
+//    // sends the plain text notification as written in WebSocketHandler (which is calling this class)
+//    private String notification(Notification notification) {
+//        return notification.getMessage();
+//    }
+//
+//    // sends the plain text error as given by whatever is calling this.
+//    private String error(ServerError error) {
+//        return error.getErrorMessage();
+//    }
+//
+//    // sends a GameData object in JSON
+//    private String loadGame(LoadGame loadgame) {
+//        return new Gson().toJson(loadgame.getGame());
+//    }
 
 }
 

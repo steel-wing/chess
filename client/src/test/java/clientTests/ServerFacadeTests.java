@@ -32,7 +32,7 @@ public class ServerFacadeTests {
 
     @BeforeEach
     void clear() {
-        face = new ServerFacade(port);
+        face = new ServerFacade("http://localhost:" + port);
         try {
             face.clear();
         } catch (ResponseException ignored){}

@@ -1,8 +1,12 @@
 package websocket;
 
+
 import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import webSocketMessages.serverMessages.LoadGame;
+import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.ServerError;
 import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
@@ -25,8 +29,8 @@ public class WebSocketClient extends Endpoint {
     Session session;
     MessageHandler messageHandler;
 
-    public WebSocketClient(int port, MessageHandler messageHandler) throws ResponseException {
-        String url = "http://localhost:" + port;
+    public WebSocketClient(String url, MessageHandler messageHandler) throws ResponseException {
+        System.out.println("HIT");
 
         try {
             url = url.replace("http", "ws");
@@ -36,11 +40,16 @@ public class WebSocketClient extends Endpoint {
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            //set message handler
+            // watch out for this one on the debug
             this.session.addMessageHandler(new javax.websocket.MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String incoming) {
                     ServerMessage message = new Gson().fromJson(incoming, ServerMessage.class);
+                    switch (message.getServerMessageType()) {
+                        case NOTIFICATION -> message = new Gson().fromJson(incoming, Notification.class);
+                        case LOAD_GAME -> message = new Gson().fromJson(incoming, LoadGame.class);
+                        case ERROR -> message = new Gson().fromJson(incoming, ServerError.class);
+                    }
                     messageHandler.notify(message);
                 }
             });

@@ -27,12 +27,20 @@ public class Gameplay {
 
     public static String redraw(ChessClient client) {
         ChessGame.TeamColor team = team(client);
-
-        return RESET_TEXT_BOLD_FAINT + SET_TEXT_COLOR_WHITE + client.game.game().toString(team) + "\n" +
-               client.game.game().toString(ChessGame.TeamColor.BLACK);
+        System.out.println(client.game.game());
+        return RESET_TEXT_BOLD_FAINT + SET_TEXT_COLOR_WHITE + client.game.game().toString(team);
     }
 
     public static String makeMove(ChessClient client) throws ResponseException {
+        // handle all of the end cases
+        if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
+            client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
+            client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
+            client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
+            !client.game.game().getResigned().isEmpty()) {
+            return "Cannot move, game is over";
+        }
+
         // ask for starting location
 
         ChessPosition start = new ChessPosition(1, 1);
@@ -78,13 +86,16 @@ public class Gameplay {
         return client.game.game().printValids(team, position);
     }
 
-    public static String resign(ChessClient client) {
-        // yeah we'll put stuff here soon
+    public static String resign(ChessClient client) throws ResponseException {
+        client.webSocketClient.resign(client.authToken, client.game.gameID());
+        // we have to make the game be won by the other team, and lost by the person who called this
+
 
         return "You have resigned from the game";
     }
 
-    public static String exit(ChessClient client) {
+    public static String exit(ChessClient client) throws ResponseException {
+        client.webSocketClient.leave(client.authToken, client.game.gameID());
         client.game = null;
         client.team = "as observer";
         client.state = State.LOGGEDIN;

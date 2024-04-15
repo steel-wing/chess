@@ -19,10 +19,27 @@ import static chess.ChessPiece.PieceType.PAWN;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
+    private String resigned;
     public ChessGame() {
         turn = WHITE;
         board = new ChessBoard();
         board.resetBoard();
+    }
+
+    /**
+     * Stupid addition to make sure that we can do resignation
+     * @param username Who resigned first
+     */
+    public void setResigned(String username) {
+        resigned = username;
+    }
+
+    /**
+     * Stupid stupid
+     * @return who is resigned
+     */
+    public String getResigned() {
+        return resigned;
     }
 
     /**

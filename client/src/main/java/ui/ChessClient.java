@@ -23,12 +23,14 @@ public class ChessClient {
     public Map<Integer, Integer> gameList = new HashMap<>();
     public Map<Integer, GameData> gameDataList = new HashMap<>();
     public final ServerFacade serverFace;
+    public final String serverUrl;
     public State state;
     public final MessageHandler messageHandler;
     public WebSocketClient webSocketClient;
 
-    public ChessClient(int serverPort, MessageHandler messageHandler) {
-        serverFace = new ServerFacade(serverPort);
+    public ChessClient(String serverUrl, MessageHandler messageHandler) {
+        this.serverUrl = serverUrl;
+        serverFace = new ServerFacade(serverUrl);
         this.messageHandler = messageHandler;
         state = State.LOGGEDOUT;
     }

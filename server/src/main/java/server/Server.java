@@ -11,7 +11,7 @@ public class Server {
     public static final AuthDAO authDAO = new DatabaseAuthDAO();
     public static final GameDAO gameDAO = new DatabaseGameDAO();
     public static final UserDAO userDAO = new DatabaseUserDAO();
-    public static final WebSocketHandler webSocketHandler = new WebSocketHandler();
+    public final WebSocketHandler webSocketHandler;
 
     public Server() {
         // establish SQL connection for storage
@@ -20,6 +20,7 @@ public class Server {
         } catch (DataAccessException exception){
             System.out.println("Exception on creating database manager: " + exception);
         }
+        this.webSocketHandler = new WebSocketHandler();
     }
 
     /** Starts the server */
@@ -29,6 +30,8 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.webSocket("/connect", webSocketHandler);
+
         // Endpoint registration and error handling
         Spark.delete("/db", ClearHandler::clear);
         Spark.post("/user", RegisterHandler::register);
@@ -37,7 +40,6 @@ public class Server {
         Spark.get("/game", ListHandler::list);
         Spark.post("/game", CreateHandler::create);
         Spark.put("/game", JoinHandler::join);
-        Spark.webSocket("/connect", webSocketHandler);
 
         Spark.awaitInitialization();
         return Spark.port();

@@ -25,10 +25,10 @@ import java.net.URL;
  */
 public class ServerFacade {
 
-    private final int serverPort;
+    private final String serverUrl;
 
-    public ServerFacade(int port) {
-        serverPort = port;
+    public ServerFacade(String url) {
+        serverUrl = url;
     }
 
     public LoginResponse login(String... params) throws ResponseException {
@@ -79,7 +79,7 @@ public class ServerFacade {
 
     private <T> T makeRequest(String method, String path, Object request, String authToken, Class<T> responseClass) throws ResponseException {
         try {
-            URL url = (new URI("http://localhost:" + serverPort + path)).toURL();
+            URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
