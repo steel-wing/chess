@@ -111,8 +111,11 @@ public class WebSocketClient extends Endpoint {
     // resigns: the game is lost, but no one leaves
     public void resign (String authToken, Integer gameID) throws ResponseException {
         try {
-            UserGameCommand action = new Resign(authToken, gameID);
-            send(new Gson().toJson(action));
+            int data = 5;
+            UserGameCommand command = new Resign(authToken, gameID);
+            int two = 1;
+            send(new Gson().toJson(command));
+            int sum = data + two;
         } catch (IOException exception) {
             throw new ResponseException(500, exception.getMessage());
         }
