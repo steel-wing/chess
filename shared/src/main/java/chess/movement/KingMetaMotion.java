@@ -19,7 +19,7 @@ public class KingMetaMotion {
      * while complying with the method standards provided
      *
      * @param teamColor self-explanatory
-     * @param checkmate determines whether we're looking for checkmate or stalemate
+     * @param checkmate determines whether we're looking for checkmate
      * @param castling determines if we're checking if we can castle
      * @return True IFF the requested move CANNOT be completed
      */
@@ -35,7 +35,7 @@ public class KingMetaMotion {
             return false;
         }
 
-        // handle the absolutely insane case of their being multiple kinds
+        // handle the absolutely insane case of their being multiple kings
         // if there were, a check/stalemate only on both will qualify
         for (ChessPosition kingPosition : kingPositions) {
             ChessPiece king = board.getPiece(kingPosition);
