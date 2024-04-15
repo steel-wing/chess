@@ -41,12 +41,7 @@ public class Postlogin {
                 client.gameDataList.put(game.gameID(), game);
                 client.gameList.put(i, game.gameID());
                 // "Game 4: boogerAIDS (W: RickSanchez, B: MortySmith)"
-                String linestring;
-                if (game.game().getWinner() != null) {
-                    linestring = "Game " + i + ": " + game.gameName() + " (" + game.game().getWinner() + ")\n";
-                } else {
-                    linestring = "Game " + i + ": " + game.gameName() + " (W: " + game.whiteUsername() + ", B: " + game.blackUsername() + ")\n";
-                }
+                String linestring = "Game " + i + ": " + game.gameName() + " (W: " + game.whiteUsername() + ", B: " + game.blackUsername() + ")\n";
                 output.append(linestring);
             }
 
@@ -127,8 +122,6 @@ public class Postlogin {
                 case "b" -> "BLACK";
                 default -> throw new ResponseException(400, "Unexpected value: " + teamselect + "\n");
             };
-
-            System.out.println(client.team);
 
             client.serverFace.join(client.team, gameID, client.authToken);
             client.game = client.gameDataList.get(gameID);

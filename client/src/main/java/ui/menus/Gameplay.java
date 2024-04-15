@@ -4,6 +4,8 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
+import dataAccess.DataAccessException;
+import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import exception.ResponseException;
 import ui.ChessClient;
 import ui.State;
@@ -26,13 +28,15 @@ public class Gameplay {
         [X] : Exit and return to the Chess Game Menu""";
     }
 
-    public static String redraw(ChessClient client) {
+    public static String redraw(ChessClient client) throws ResponseException {
+        updateGame(client);
         ChessGame.TeamColor team = team(client);
-        System.out.println(client.game.game());
         return RESET_TEXT_BOLD_FAINT + SET_TEXT_COLOR_WHITE + client.game.game().toString(team);
     }
 
     public static String makeMove(ChessClient client) throws ResponseException {
+        updateGame(client);
+
         // handle all of the end cases
         if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
             client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
@@ -111,6 +115,7 @@ public class Gameplay {
     }
 
     public static String validMoves(ChessClient client) throws ResponseException{
+        updateGame(client);
         // handle all of the end cases
         if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
@@ -131,9 +136,8 @@ public class Gameplay {
         }
 
         ChessGame.TeamColor team = team(client);
-        if (client.game.game().getBoard().getPiece(position) == null ||
-            client.game.game().getBoard().getPiece(position).getTeamColor() != team) {
-            throw new ResponseException(400, "Position is not possessed by your team");
+        if (client.game.game().getBoard().getPiece(position) == null) {
+            throw new ResponseException(400, "There are no pieces there");
         }
 
         System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Valid Moves:");
@@ -141,6 +145,7 @@ public class Gameplay {
     }
 
     public static String resign(ChessClient client) throws ResponseException {
+        updateGame(client);
         // handle all of the end cases
         if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
@@ -149,6 +154,11 @@ public class Gameplay {
                 client.game.game().getWinner() != null) {
             return "Cannot resign, the game is over";
         }
+
+        if (client.team.equals("an observer")) {
+            throw new ResponseException(400, "You are an observer");
+        }
+
         // we have to make the game be won by the other team, and lost by the person who called this
         client.webSocketClient.resign(client.authToken, client.game.gameID());
         return "You have resigned from the game";
@@ -160,6 +170,14 @@ public class Gameplay {
         client.team = "as observer";
         client.state = State.LOGGEDIN;
         return "You have successfully exited the game";
+    }
+
+    private static void updateGame(ChessClient client) throws ResponseException {
+        try {
+            client.game = new DatabaseGameDAO().getGame(client.game.gameID());
+        } catch (DataAccessException exception) {
+            throw new ResponseException(500, exception.getMessage());
+        }
     }
 
     private static ChessGame.TeamColor team(ChessClient client) {

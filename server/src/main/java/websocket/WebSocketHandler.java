@@ -94,8 +94,10 @@ public class WebSocketHandler {
         LoadGame loadGame = new LoadGame(game);
         connections.target(authToken, gameID, loadGame);
 
+        String teamstring = command.getPlayerColor().equals("WHITE") ? "White" : "Black";
+
         // send NOTIFICATION to all other clients
-        String message = getUsername(authToken) + " has joined the game as the " + command.getPlayerColor() + " team.";
+        String message = getUsername(authToken) + " has joined the game as the " + teamstring + " team.";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, gameID, notification);
     }
@@ -226,7 +228,6 @@ public class WebSocketHandler {
             Notification bmate = new Notification(game.blackUsername() + " is in checkmate. " + game.whiteUsername() + " wins!");
             connections.slashAll(authToken, gameID, bmate);
         }
-
     }
 
     private void leave(Leave command) throws IOException, DataAccessException {
@@ -286,7 +287,6 @@ public class WebSocketHandler {
         } else {
             game.game().setWinner(game.blackUsername());
         }
-
         // update the change to the game in the database
         gameDAO.updateGame(gameID, game);
 
