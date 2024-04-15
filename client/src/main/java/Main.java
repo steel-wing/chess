@@ -2,8 +2,6 @@ import ui.REPL;
 
 public class Main {
     public static void main(String[] args) {
-
-
         // default url
         var serverUrl = "http://localhost:8080";
 

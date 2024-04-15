@@ -36,8 +36,6 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException, DataAccessException {
         // extract the command from the JSON
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
-        System.out.println(command);
-        System.out.println(command.getCommandType());
 
         // delegate who gets the command based on what type it is
         // this was tricky: you have to deserialize once to get the class type, then deserialize directly into that class
@@ -114,10 +112,7 @@ public class WebSocketHandler {
 
         // make the move
         try {
-            System.out.println("debug");
-            System.out.println(old.game().getBoard());
             old.game().makeMove(move);
-            System.out.println(old.game().getBoard());
         } catch (InvalidMoveException exception) {
             throw new DataAccessException("Move could not be made");
         }

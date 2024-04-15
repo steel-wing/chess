@@ -38,7 +38,7 @@ public class Gameplay {
             client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
             client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
             client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
-            !client.game.game().getWinner().isEmpty()) {
+            client.game.game().getWinner() != null) {
             return "Cannot move, the game is over";
         }
 
@@ -112,7 +112,7 @@ public class Gameplay {
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
-                !client.game.game().getWinner().isEmpty()) {
+                client.game.game().getWinner() != null) {
             return "No available moves, the game is over";
         }
 
@@ -127,7 +127,8 @@ public class Gameplay {
         }
 
         ChessGame.TeamColor team = team(client);
-        if (client.game.game().getBoard().getPiece(position).getTeamColor() != team) {
+        if (client.game.game().getBoard().getPiece(position) == null ||
+            client.game.game().getBoard().getPiece(position).getTeamColor() != team) {
             throw new ResponseException(400, "Position is not possessed by your team");
         }
 
@@ -141,7 +142,7 @@ public class Gameplay {
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
-                !client.game.game().getWinner().isEmpty()) {
+                client.game.game().getWinner() != null) {
             return "Cannot resign, the game is over";
         }
         // we have to make the game be won by the other team, and lost by the person who called this
