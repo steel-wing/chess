@@ -291,7 +291,7 @@ public class WebSocketHandler {
         gameDAO.updateGame(gameID, game);
 
         // send a NOTIFICATION to everyone that the root client has resigned
-        String message = username + " has resigned from the game." + game.game().getWinner() + " wins!";
+        String message = username + " has resigned from the game. " + game.game().getWinner() + " wins!";
         Notification notification = new Notification(message);
         connections.slashAll(authToken, gameID, notification);
     }

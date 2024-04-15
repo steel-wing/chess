@@ -161,7 +161,7 @@ public class Gameplay {
     private static ChessGame.TeamColor team(ChessClient client) {
         // get the team color
         ChessGame.TeamColor team;
-        if (client.team.equals("Black")) {
+        if (client.team.equals("BLACK")) {
             team = ChessGame.TeamColor.BLACK;
         } else {
             team = ChessGame.TeamColor.WHITE;
