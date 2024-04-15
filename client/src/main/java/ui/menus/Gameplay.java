@@ -42,7 +42,7 @@ public class Gameplay {
             return "Cannot move, the game is over";
         }
 
-        if (client.game.game().getTeamTurn() != team(client)) {
+        if (client.team.equals("an observer") || client.game.game().getTeamTurn() != team(client)) {
             throw new ResponseException(400, "It is not your turn");
         }
 
@@ -133,7 +133,7 @@ public class Gameplay {
         }
 
         System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Valid Moves:");
-        return client.game.game().printValids(team, position);
+        return RESET_TEXT_BOLD_FAINT + SET_TEXT_COLOR_WHITE + client.game.game().printValids(team, position) ;
     }
 
     public static String resign(ChessClient client) throws ResponseException {
