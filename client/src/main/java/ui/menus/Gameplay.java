@@ -10,6 +10,7 @@ import ui.State;
 
 import java.util.Scanner;
 
+import static chess.ChessPiece.PieceType.*;
 import static ui.EscapeSequences.*;
 
 public class Gameplay {
@@ -38,24 +39,63 @@ public class Gameplay {
             client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
             client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
             !client.game.game().getResigned().isEmpty()) {
-            return "Cannot move, game is over";
+            return "Cannot move, the game is over";
+        }
+
+        if (client.game.game().getTeamTurn() != team(client)) {
+            throw new ResponseException(400, "It is not your turn");
         }
 
         // ask for starting location
+        System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Make your move: <start> <end>");
+        Scanner scanner = new Scanner(System.in);
 
-        ChessPosition start = new ChessPosition(1, 1);
+        // get the starting position
+        String line = scanner.nextLine();
+        String[] inputs = line.toLowerCase().split(" ");
 
-        // throw error if cannot move (invalid, not your turn)
+        if (inputs.length != 2) {
+            throw new ResponseException(400, "Chess Notation: \"A1\" to \"H8\"");
+        }
+
+        ChessPosition start = new ChessPosition(inputs[0]);
+        ChessPosition end = new ChessPosition(inputs[1]);
+
+        if (start.getRow() > 8 || start.getRow() < 1 || start.getColumn() > 8 || start.getColumn() < 1) {
+            throw new ResponseException(400, "Chess Notation: \"A1\" or \"H8\"");
+        }
+
+        ChessGame.TeamColor team = team(client);
+        if (client.game.game().getBoard().getPiece(start).getTeamColor() != team) {
+            throw new ResponseException(400, "Start position is not possessed by your team");
+        }
 
         // get piece to be moved
+        ChessPiece piece = client.game.game().getBoard().getPiece(start);
 
-        // ask where they want to put it
+        // verify that the end position is legal
+        if (end.getRow() > 8 || end.getRow() < 1 || end.getColumn() > 8 || end.getColumn() < 1) {
+            throw new ResponseException(400, "Chess Notation: \"A1\" or \"H8\"");
+        }
 
-        ChessPosition end = new ChessPosition(1, 1);
+        if (!client.game.game().validMoves(start).contains(new ChessMove(start, end, null))) {
+            throw new ResponseException(400, "Invalid move requested");
+        }
 
-        // if pawn promotion, ask what they want it to be
-
-        ChessPiece.PieceType promo = ChessPiece.PieceType.QUEEN;
+        // handle pawn promotion
+        ChessPiece.PieceType promo = null;
+        if (piece.getPieceType() == PAWN && (end.getRow() == 1 || end.getRow() == 8)) {
+            // ask what they want it to be
+            System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Pawn Promotion: [R] [N] [B] [Q] ?");
+            String input = scanner.nextLine().toLowerCase();
+            promo = switch (input) {
+                case "r" -> ROOK;
+                case "n" -> KNIGHT;
+                case "b" -> BISHOP;
+                case "q" -> QUEEN;
+                default -> throw new ResponseException(400, "Not an option");
+            };
+        }
 
         // make the move
         ChessMove move = new ChessMove(start, end, promo);
@@ -67,6 +107,15 @@ public class Gameplay {
     }
 
     public static String validMoves(ChessClient client) throws ResponseException{
+        // handle all of the end cases
+        if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
+                client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
+                client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
+                !client.game.game().getResigned().isEmpty()) {
+            return "No available moves, the game is over";
+        }
+
         System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Select a square that you would like to observe:");
         Scanner scanner = new Scanner(System.in);
 
@@ -87,10 +136,16 @@ public class Gameplay {
     }
 
     public static String resign(ChessClient client) throws ResponseException {
-        client.webSocketClient.resign(client.authToken, client.game.gameID());
+        // handle all of the end cases
+        if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
+                client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
+                client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
+                client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
+                !client.game.game().getResigned().isEmpty()) {
+            return "Cannot resign, the game is over";
+        }
         // we have to make the game be won by the other team, and lost by the person who called this
-
-
+        client.webSocketClient.resign(client.authToken, client.game.gameID());
         return "You have resigned from the game";
     }
 

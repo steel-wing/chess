@@ -123,6 +123,8 @@ public class Postlogin {
                 default -> throw new ResponseException(400, "Unexpected value: " + teamselect + "\n");
             };
 
+            System.out.println(client.team);
+
             client.serverFace.join(client.team, gameID, client.authToken);
             client.game = client.gameDataList.get(gameID);
             gameName = client.game.gameName();
@@ -193,7 +195,6 @@ public class Postlogin {
 
     public static String logout(ChessClient client) {
         try {
-            client.webSocketClient.leave(client.authToken, client.game.gameID());
             client.serverFace.logout(client.authToken);
             client.state = State.LOGGEDOUT;
             listFlag = false;

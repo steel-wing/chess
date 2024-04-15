@@ -45,9 +45,9 @@ public class ChessMove {
     @Override
     public String toString() {
         if (getPromotionPiece() == null) {
-            return getEndPosition().toString();
+            return getEndPosition().toFancyString();
         } else {
-            return getEndPosition().toString() + " -> " + ChessBoard.TypetoChar.get(getPromotionPiece());
+            return getEndPosition().toFancyString() + " -> " + ChessBoard.TypetoChar.get(getPromotionPiece());
         }
     }
     @Override
