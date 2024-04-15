@@ -19,7 +19,7 @@ import static chess.ChessPiece.PieceType.PAWN;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
-    private String resigned;
+    private String winner;
     public ChessGame() {
         turn = WHITE;
         board = new ChessBoard();
@@ -30,16 +30,16 @@ public class ChessGame {
      * Stupid addition to make sure that we can do resignation
      * @param username Who resigned first
      */
-    public void setResigned(String username) {
-        resigned = username;
+    public void setWinner(String username) {
+        winner = username;
     }
 
     /**
      * Stupid stupid
      * @return who is resigned
      */
-    public String getResigned() {
-        return resigned;
+    public String getWinner() {
+        return winner;
     }
 
     /**

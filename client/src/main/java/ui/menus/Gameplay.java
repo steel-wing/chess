@@ -38,7 +38,7 @@ public class Gameplay {
             client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
             client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
             client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
-            !client.game.game().getResigned().isEmpty()) {
+            !client.game.game().getWinner().isEmpty()) {
             return "Cannot move, the game is over";
         }
 
@@ -100,7 +100,7 @@ public class Gameplay {
         // make the move
         ChessMove move = new ChessMove(start, end, promo);
 
-        // update everyone else about the move
+        // update everyone else about the move, include details
         client.webSocketClient.makemove(client.authToken, client.game.gameID(), move);
 
         return "You have made move: " + move;
@@ -112,7 +112,7 @@ public class Gameplay {
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
-                !client.game.game().getResigned().isEmpty()) {
+                !client.game.game().getWinner().isEmpty()) {
             return "No available moves, the game is over";
         }
 
@@ -141,7 +141,7 @@ public class Gameplay {
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
-                !client.game.game().getResigned().isEmpty()) {
+                !client.game.game().getWinner().isEmpty()) {
             return "Cannot resign, the game is over";
         }
         // we have to make the game be won by the other team, and lost by the person who called this

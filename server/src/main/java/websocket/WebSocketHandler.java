@@ -121,6 +121,20 @@ public class WebSocketHandler {
         } catch (InvalidMoveException exception) {
             throw new DataAccessException("Move could not be made");
         }
+
+        // handle all of the horrible updating and handling of notifications
+        whitecheck = !whitecheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE);
+        blackcheck = !blackcheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK);
+        boolean blackwins = gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE);
+        boolean whitewins = gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.BLACK);
+
+        if (blackwins) {
+            old.game().setWinner(old.blackUsername());
+        }
+        if (whitewins) {
+            old.game().setWinner(old.whiteUsername());
+        }
+
         gameDAO.updateGame(gameID, new GameData(gameID, old.whiteUsername(), old.blackUsername(), old.gameName(), old.game()));
 
         // send a LOAD_GAME to all clients
@@ -132,19 +146,19 @@ public class WebSocketHandler {
         connections.broadcast(authToken, gameID, notification);
 
         // if the move resulted in check or mate, send a NOTIFICATION to all as well
-        if (!whitecheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.WHITE)) {
+        if (whitecheck) {
             Notification wcheck = new Notification("White is now in check");
             connections.slashAll(authToken, gameID, wcheck);
         }
-        if (!blackcheck && gameDAO.getGame(gameID).game().isInCheck(ChessGame.TeamColor.BLACK)) {
+        if (blackcheck) {
             Notification bcheck = new Notification("Black is now in check");
             connections.slashAll(authToken, gameID, bcheck);
         }
-        if (gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+        if (blackwins) {
             Notification wmate = new Notification("White is in checkmate. Black wins!");
             connections.slashAll(authToken, gameID, wmate);
         }
-        if (gameDAO.getGame(gameID).game().isInCheckmate(ChessGame.TeamColor.WHITE)) {
+        if (whitewins) {
             Notification bmate = new Notification("Black is in checkmate. White wins!");
             connections.slashAll(authToken, gameID, bmate);
         }
@@ -186,7 +200,12 @@ public class WebSocketHandler {
         GameDAO gameDAO = new DatabaseGameDAO();
         GameData old = gameDAO.getGame(gameID);
 
-        old.game().setResigned(username);
+        // get the opponent's name and set them as the winner
+        if (username.equals(old.whiteUsername())) {
+            old.game().setWinner(old.blackUsername());
+        } else {
+            old.game().setWinner(old.blackUsername());
+        }
 
         // send a NOTIFICATION to everyone that the root client has resigned
         String message = username + " has resigned from the game.";
