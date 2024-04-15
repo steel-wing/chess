@@ -297,7 +297,6 @@ public class ChessGame {
     public boolean isInStalemate(TeamColor teamColor) {
         for (ChessPosition pos : teamPieces(teamColor, null)) {
             if (!validMoves(pos).isEmpty()) {
-                System.out.println(board.getPiece(pos).pieceMoves(board, pos));
                 return false;
             }
         }
