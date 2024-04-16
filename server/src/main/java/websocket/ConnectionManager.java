@@ -15,9 +15,10 @@ import java.util.concurrent.ConcurrentHashMap;
  * This class handles sending information to the clients
  */
 public class ConnectionManager {
-    // this lets us keep track of who is in/observing which games
-    // It's a table of GameIDs to lists of authTokens
+    // table of gameIDs to list of authTokens
     public final ConcurrentHashMap<Integer, ArrayList<String>> gameTable = new ConcurrentHashMap<>();
+
+    // table of authTokens to connections
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
     // loads a new connection under the authToken for this person,
@@ -29,6 +30,7 @@ public class ConnectionManager {
         gameTable.get(gameID).add(authToken);
     }
 
+    // removes a connection and that person's place in their game
     public void remove(String authToken, Integer gameID) {
         connections.remove(authToken);
         gameTable.get(gameID).remove(authToken);

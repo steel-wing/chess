@@ -16,6 +16,7 @@ public class ListTests {
     @BeforeEach
     public void loadGames() throws DataAccessException {
         GameDAO GAME = new DatabaseGameDAO();
+        GAME.clear();
         GAME.createGame("one");
         GAME.createGame("two");
         GAME.createGame("two");

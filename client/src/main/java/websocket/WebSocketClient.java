@@ -20,12 +20,11 @@ import java.net.URISyntaxException;
 // Internet -> WebSocketClient -> REPL -> Client
 
 /**
- * This class handles websocket interactions with the client
+ * This class handles ALL websocket interactions with the client
  * It handles sending outgoing websocket messages to the server, and incoming websocket messages to the client
- * Whenever a client wishes to communicate with the server, this is the one that gets called first
- * Whenever the server does a broadcast, this is the class that gets called first
- * It takes the context and sends commands through WebSocket to the Server, which in turn
- * sends them to the WebSocketHandler
+ * Whenever a client wishes to communicate with the server, one of the command functions is called
+ * Whenever the server does a broadcast, the WebSocketClient is what catches and parses the message
+ * It takes the context and sends the ServerMessages to the clients through their REPLs (messageHandler)
  */
 //need to extend Endpoint for websocket to work properly
 public class WebSocketClient extends Endpoint {
@@ -34,17 +33,21 @@ public class WebSocketClient extends Endpoint {
 
     public WebSocketClient(String url, MessageHandler messageHandler) throws ResponseException {
         try {
+            // establish the endpoint we're listening to
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/connect");
             this.messageHandler = messageHandler;
 
+            // I don't know what this is doing. Looks like it's building our connection
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
 
-            // this was so painful to debug
+            // insane black magic hander method. I don't really understand this either. Looks like it's overriding a single
+            // function from some crazy WebSocket MessageHandler class
             this.session.addMessageHandler(new javax.websocket.MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String incoming) {
+                    // parse the incoming message into what it is, and send it to the client
                     ServerMessage message = new Gson().fromJson(incoming, ServerMessage.class);
                     switch (message.getServerMessageType()) {
                         case NOTIFICATION -> message = new Gson().fromJson(incoming, Notification.class);
@@ -111,11 +114,8 @@ public class WebSocketClient extends Endpoint {
     // resigns: the game is lost, but no one leaves
     public void resign (String authToken, Integer gameID) throws ResponseException {
         try {
-            int data = 5;
             UserGameCommand command = new Resign(authToken, gameID);
-            int two = 1;
             send(new Gson().toJson(command));
-            int sum = data + two;
         } catch (IOException exception) {
             throw new ResponseException(500, exception.getMessage());
         }

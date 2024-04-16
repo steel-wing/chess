@@ -37,13 +37,20 @@ public class WebSocketHandler {
     // this lets us access the list of all current WebSocket connections
     private final ConnectionManager connections = new ConnectionManager();
 
+    /**
+     * Handles incoming commands from the
+     * @param session The WebSocket session we currently find ourselves in
+     * @param message The command sent from the client to us, the server
+     * @throws IOException in case of WebSocket connection issues
+     * @throws DataAccessException in case of data access issues
+     */
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException, DataAccessException {
         // extract the command from the JSON
         UserGameCommand command = new Gson().fromJson(message, UserGameCommand.class);
 
         // delegate who gets the command based on what type it is
-        // this was tricky: you have to deserialize once to get the class type, then deserialize directly into that class
+        // this was a little tricky: you have to deserialize once to get the class type, then deserialize directly into that class
         switch (command.getCommandType()) {
             case JOIN_PLAYER -> joinplayer(new Gson().fromJson(message, JoinPlayer.class), session);
             case JOIN_OBSERVER -> joinobserver(new Gson().fromJson(message, JoinObserver.class), session);
@@ -53,6 +60,12 @@ public class WebSocketHandler {
         }
     }
 
+    /**
+     * Handles a user entering the gamplay loop as an player
+     * @param command command the join command
+     * @param session session the WebSocket session (connection) to which we'll be adding the user
+     * @throws IOException in case of connection issues
+     */
     private void joinplayer (JoinPlayer command, Session session) throws IOException{
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
@@ -102,6 +115,12 @@ public class WebSocketHandler {
         connections.broadcast(authToken, gameID, notification);
     }
 
+    /**
+     * Handles a user entering the gamplay loop as an observer
+     * @param command the join command
+     * @param session the WebSocket session (connection) to which we'll be adding the user
+     * @throws IOException in case of connection issues
+     */
     private void joinobserver (JoinObserver command, Session session) throws IOException{
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
@@ -133,16 +152,22 @@ public class WebSocketHandler {
         connections.broadcast(authToken, gameID, notification);
     }
 
+    /**
+     * Handles a client making a move. Ensures proper context and all that jazz
+     * @param command the make move command sent from the Gameplay loop
+     * @throws IOException in case of connection issues
+     * @throws DataAccessException in case of data access issues
+     */
     private void makemove (MakeMove command) throws IOException, DataAccessException {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
         ChessMove move = command.getMove();
         String username = getUsername(authToken);
-        String message;
+        GameDAO gameDAO = new DatabaseGameDAO();
         GameData game = null;
+        String message;
 
         // get the game to be updated
-        GameDAO gameDAO = new DatabaseGameDAO();
         try {game = gameDAO.getGame(gameID);} catch (DataAccessException ignored) {}
 
         if (game == null) {
@@ -178,7 +203,7 @@ public class WebSocketHandler {
         boolean whitecheck = game.game().isInCheck(WHITE);
         boolean blackcheck = game.game().isInCheck(BLACK);
 
-        // make the move
+        // actually make the move
         try {
             game.game().makeMove(move);
         } catch (InvalidMoveException ignored) {
@@ -186,11 +211,13 @@ public class WebSocketHandler {
             return;
         }
 
+        // more boolean checks for all the possible end states
         whitecheck = !whitecheck && game.game().isInCheck(WHITE);
         blackcheck = !blackcheck && game.game().isInCheck(BLACK);
         boolean blackwins = game.game().isInCheckmate(WHITE);
         boolean whitewins = game.game().isInCheckmate(BLACK);
         boolean stalemate = game.game().isInStalemate(WHITE) || game.game().isInStalemate(BLACK);
+
         if (blackwins) {
             game.game().setWinner(game.blackUsername());
         }
@@ -230,39 +257,53 @@ public class WebSocketHandler {
         }
     }
 
+    /**
+     * Handles a client leaving the Gameplay loop
+     * @param command the leave command sent from the Gameplay loop
+     * @throws IOException in case of connection issues
+     * @throws DataAccessException in case of data access issues
+     */
     private void leave(Leave command) throws IOException, DataAccessException {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
+        String username = getUsername(authToken);
+        GameDAO gameDAO = new DatabaseGameDAO();
+        GameData game = gameDAO.getGame(gameID);
 
-        // get the username corresponding to this User
-        AuthDAO authDAO = new DatabaseAuthDAO();
-        String username = authDAO.getAuth(authToken).username();
+        if (username == null) {
+            connections.target(authToken, gameID, new Error("Error: Username not found"));
+            return;
+        }
+
+        // we only remove their username if they were a player
+        GameData current = game;
+        if (username.equals(game.whiteUsername())) {
+            current = new GameData(game.gameID(), null, game.blackUsername(), game.gameName(), game.game());
+        }
+        if (username.equals(game.blackUsername())) {
+            current = new GameData(game.gameID(), game.whiteUsername(), null, game.gameName(), game.game());
+        }
 
         // remove the client from the game
-        GameDAO gameDAO = new DatabaseGameDAO();
-        GameData old = gameDAO.getGame(gameID);
-        // we only remove their username if they were a player
-        GameData current = old;
-        if (username.equals(old.whiteUsername())) {
-            current = new GameData(old.gameID(), null, old.blackUsername(), old.gameName(), old.game());
-        }
-        if (username.equals(old.blackUsername())) {
-            current = new GameData(old.gameID(), old.whiteUsername(), null, old.gameName(), old.game());
-        }
-        gameDAO.updateGame(old.gameID(), current);
+        gameDAO.updateGame(game.gameID(), current);
 
         // send a NOTIFICATION to all other clients that the root client has left
-        String message = getUsername(authToken) + " has left the game.";
+        String message = getUsername(authToken) + " has left the game";
         Notification notification = new Notification(message);
         connections.broadcast(authToken, gameID, notification);
         connections.remove(authToken, gameID);
     }
 
+    /**
+     * Handles resignation commands from the client. Ensures that context makes sense
+     * @param command the resignation command sent from the Gameplay loop
+     * @throws IOException in case of connection issues
+     * @throws DataAccessException in case of data access issues
+     */
     private void resign(Resign command) throws IOException, DataAccessException {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
         String username = getUsername(authToken);
-
         GameDAO gameDAO = new DatabaseGameDAO();
         GameData game = gameDAO.getGame(gameID);
 
@@ -285,7 +326,7 @@ public class WebSocketHandler {
         if (username.equals(game.whiteUsername())) {
             game.game().setWinner(game.blackUsername());
         } else {
-            game.game().setWinner(game.blackUsername());
+            game.game().setWinner(game.whiteUsername());
         }
         // update the change to the game in the database
         gameDAO.updateGame(gameID, game);

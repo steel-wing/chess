@@ -38,7 +38,7 @@ public class Gameplay {
         updateGame(client);
 
         // handle all of the end cases
-        if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
+        if (client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
             client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
             client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
             client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
@@ -117,7 +117,7 @@ public class Gameplay {
     public static String validMoves(ChessClient client) throws ResponseException{
         updateGame(client);
         // handle all of the end cases
-        if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
+        if (client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
@@ -147,7 +147,7 @@ public class Gameplay {
     public static String resign(ChessClient client) throws ResponseException {
         updateGame(client);
         // handle all of the end cases
-        if(client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
+        if (client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInCheckmate(ChessGame.TeamColor.BLACK) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.WHITE) ||
                 client.game.game().isInStalemate(ChessGame.TeamColor.BLACK) ||
@@ -159,7 +159,6 @@ public class Gameplay {
             throw new ResponseException(400, "You are an observer");
         }
 
-        // we have to make the game be won by the other team, and lost by the person who called this
         client.webSocketClient.resign(client.authToken, client.game.gameID());
         return "You have resigned from the game";
     }

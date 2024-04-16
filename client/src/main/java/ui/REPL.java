@@ -39,7 +39,7 @@ public class REPL implements MessageHandler {
             if (oldstate != client.state) {
                 String welcomeString = switch (client.state) {
                     case LOGGEDOUT -> "Welcome to the CS 240 Chess Client, by Davis Wing\n" + Prelogin.help();
-                    case LOGGEDIN -> "Welcome " + client.username + " \n" + Postlogin.help();
+                    case LOGGEDIN -> "Welcome, " + client.username + " \n" + Postlogin.help();
                     case GAMEPLAY -> "Joined Game \"" + client.game.gameName() + "\" as " + joinType + "\n";
                 };
                 System.out.println(welcomeString);
@@ -94,7 +94,7 @@ public class REPL implements MessageHandler {
 
         // handles whatever else I've missed
         else {
-            out = "\n" + message;
+            out = "\n" + message + "\n";
         }
 
         // print out what we found
