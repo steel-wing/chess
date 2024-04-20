@@ -22,26 +22,18 @@ public class Handler {
         String mes = exception.getMessage();
 
         // handle empty signatures
-        if (mes.equals("null value")) {
-            return errorPrinter("bad request", 400, res);
-        }
+        return switch (mes) {
+            case "null value" -> errorPrinter("bad request", 400, res);
 
-        // handle the lack of information exception
-        if (mes.equals("no such AuthToken") ||
-            mes.equals("no such User") ||
-            mes.equals("no gameName given") ||
-            mes.equals("password incorrect")) {
-            return errorPrinter("unauthorized", 401, res);
-        }
+            // handle the lack of information exception
+            case "no such AuthToken", "no such User", "no gameName given", "password incorrect" -> errorPrinter("unauthorized", 401, res);
 
-        // handle the already registered exception
-        if (mes.equals("User already registered") ||
-            mes.equals("team already taken")) {
-            return errorPrinter("forbidden", 403, res);
-        }
+            // handle the already registered exception
+            case "User already registered", "team already taken" -> errorPrinter("forbidden", 403, res);
 
-        // handle any other exceptions
-        return errorPrinter(mes,500, res);
+            // handle any other exceptions
+            default -> errorPrinter(mes, 500, res);
+        };
     }
 
 
