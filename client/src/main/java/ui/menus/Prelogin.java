@@ -24,7 +24,7 @@ public class Prelogin {
         System.out.println(SET_TEXT_COLOR_BLUE + "Please input your username and your password (space separated):" + RESET);
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine();
-        String[] inputs = line.toLowerCase().split(" ");
+        String[] inputs = line.split(" ");
 
         if (inputs.length == 2) {
             try {
@@ -46,11 +46,14 @@ public class Prelogin {
         System.out.println(SET_TEXT_COLOR_BLUE + "Please enter your username, password, and email address (space separated):" + RESET);
         Scanner scanner = new Scanner(System.in);
         String line = scanner.nextLine();
-        String[] inputs = line.toLowerCase().split(" ");
+        String[] inputs = line.split(" ");
 
         if (inputs.length == 3) {
             try {
                 RegisterResponse response = client.serverFace.register(inputs);
+                if (response.username().equals("STALEMATE")) {
+                    throw new ResponseException(400, "Username cannot be keyword");
+                }
 
                 client.username = response.username();
                 client.authToken = response.authToken();
