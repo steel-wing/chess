@@ -10,6 +10,8 @@ import static chess.ChessPiece.PieceType.*;
 public class ChessGamePrint {
 
     private static final String UNICODE_ESCAPE = "\u001b";
+    private static final String SET_TEXT_COLOR = UNICODE_ESCAPE + "[38;5;";
+    public static final String SET_TEXT_COLOR_WHITE = SET_TEXT_COLOR + "15m";
     private static final String SET_BG_COLOR = UNICODE_ESCAPE + "[48;5;";
     public static final String SET_BG_COLOR_BLACK = SET_BG_COLOR + "0m";
     public static final String SET_BG_COLOR_DARK_GREY = SET_BG_COLOR + "237m";
@@ -36,6 +38,7 @@ public class ChessGamePrint {
 
         String spacer = "\u2001\u2005\u200A";
         StringBuilder output = new StringBuilder();
+        output.append(SET_TEXT_COLOR_WHITE);
 
         // display selected position if you're asking black
         if (perspective == BLACK) {
@@ -198,6 +201,7 @@ public class ChessGamePrint {
 
         String spacer = "\u2001\u2005\u200A";
         StringBuilder output = new StringBuilder();
+        output.append(SET_TEXT_COLOR_WHITE);
 
         // display if it's Black's turn
         if (game.getTeamTurn() == BLACK) {
@@ -290,6 +294,7 @@ public class ChessGamePrint {
      */
     private static String colorFlip(String input, int row, int col) {
         StringBuilder output = new StringBuilder();
+        output.append(SET_TEXT_COLOR_WHITE);
 
         // change the color if it should be changed
         if ((row + col) % 2 == 0) {
@@ -307,6 +312,7 @@ public class ChessGamePrint {
             output.append(SET_BG_COLOR_DARK_GREY + RESET_BG_COLOR);
         }
 
+        output.append(SET_TEXT_COLOR_WHITE);
         return output.toString();
     }
 
@@ -325,11 +331,13 @@ public class ChessGamePrint {
         output = output.replaceAll("y", "╠");
 
         // replace the reversed color commands
-        output = output.replaceAll("m0\\[\\u001Bm732;5;84\\[\\u001B", "\u001B[48;5;237m");  // reset -> grey
-        output = output.replaceAll("m0\\[\\u001Bm0;5;84\\[\\u001B", "\u001B[48;5;0m");      // reset -> black
+        output = output.replaceAll("m0\\[\\u001Bm732;5;84\\[\\u001B", SET_BG_COLOR_DARK_GREY);  // reset -> grey
+        output = output.replaceAll("m0\\[\\u001Bm0;5;84\\[\\u001B", SET_BG_COLOR_BLACK);        // reset -> black
 
-        output = output.replaceAll("m732;5;84\\[\\u001B", "\u001B[0m");                     // grey -> reset
-        output = output.replaceAll("m0;5;84\\[\\u001B", "\u001B[0m");                       // black -> reset
+        output = output.replaceAll("m732;5;84\\[\\u001B", RESET_BG_COLOR);                      // grey -> reset
+        output = output.replaceAll("m0;5;84\\[\\u001B", RESET_BG_COLOR);                        // black -> reset
+
+        output = output.replaceAll("m51;5;83\\[\\u001B", SET_TEXT_COLOR_WHITE);                        // text color
 
         return output;
     }
