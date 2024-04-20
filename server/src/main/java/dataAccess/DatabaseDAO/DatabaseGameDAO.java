@@ -75,7 +75,10 @@ public class DatabaseGameDAO implements GameDAO {
                 GameData big = new Gson().fromJson(json, GameData.class);
 
                 //forbidden technique to remove the actual board data from the returned list, to only send necessary data
-                GameData game = new GameData(big.gameID(), big.whiteUsername(), big.blackUsername(), big.gameName(), null);
+                ChessGame small = new ChessGame();
+                small.setWinner(big.game().getWinner());
+                small.setBoard(null);
+                GameData game = new GameData(big.gameID(), big.whiteUsername(), big.blackUsername(), big.gameName(), small);
                 games.add(game);
             }
         } catch (SQLException | DataAccessException exception) {

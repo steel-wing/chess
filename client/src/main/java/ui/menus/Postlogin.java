@@ -40,8 +40,14 @@ public class Postlogin {
                 GameData game = list.get(i - 1);
                 client.gameDataList.put(game.gameID(), game);
                 client.gameList.put(i, game.gameID());
+
+                String winner = "";
+                if (game.game().getWinner() != null) {
+                    winner = " -> " + game.game().getWinner();
+                }
+
                 // "Game 4: boogerAIDS (W: RickSanchez, B: MortySmith)"
-                String linestring = "Game " + i + ": " + game.gameName() + " (W: " + game.whiteUsername() + ", B: " + game.blackUsername() + ")\n";
+                String linestring = "Game " + i + ": " + game.gameName() + " (W: " + game.whiteUsername() + ", B: " + game.blackUsername() + ")" + winner +"\n";
                 output.append(linestring);
             }
 
