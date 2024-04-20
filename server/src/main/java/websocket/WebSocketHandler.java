@@ -255,6 +255,10 @@ public class WebSocketHandler {
             Notification bmate = new Notification(game.blackUsername() + " is in checkmate. " + game.whiteUsername() + " wins!");
             connections.slashAll(authToken, gameID, bmate);
         }
+        if (stalemate) {
+            Notification stale = new Notification("The game has ended in a stalemate!");
+            connections.slashAll(authToken, gameID, stale);
+        }
     }
 
     /**
