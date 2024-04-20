@@ -86,10 +86,6 @@ public class Gameplay {
             throw new ResponseException(400, "Chess Notation: \"A1\" or \"H8\"");
         }
 
-        if (!client.game.game().validMoves(start).contains(new ChessMove(start, end, null))) {
-            throw new ResponseException(400, "Invalid move requested");
-        }
-
         // handle pawn promotion
         ChessPiece.PieceType promo = null;
         if (piece.getPieceType() == PAWN && (end.getRow() == 1 || end.getRow() == 8)) {
@@ -103,6 +99,10 @@ public class Gameplay {
                 case "q" -> QUEEN;
                 default -> throw new ResponseException(400, "Not an option");
             };
+        }
+
+        if (!client.game.game().validMoves(start).contains(new ChessMove(start, end, promo))) {
+            throw new ResponseException(400, "Invalid move requested");
         }
 
         // make the move
