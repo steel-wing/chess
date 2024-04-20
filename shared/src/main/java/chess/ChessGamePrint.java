@@ -8,6 +8,13 @@ import static chess.ChessGame.TeamColor.WHITE;
 import static chess.ChessPiece.PieceType.*;
 
 public class ChessGamePrint {
+
+    private static final String UNICODE_ESCAPE = "\u001b";
+    private static final String SET_BG_COLOR = UNICODE_ESCAPE + "[48;5;";
+    public static final String SET_BG_COLOR_BLACK = SET_BG_COLOR + "0m";
+    public static final String SET_BG_COLOR_DARK_GREY = SET_BG_COLOR + "237m";
+    public static final String RESET_BG_COLOR = "\u001B[0m";
+
     final static Map<ChessPiece.PieceType, Character> TypetoGlyph = Map.of(
             PAWN, '♙',
             KNIGHT, '♘',
@@ -131,9 +138,11 @@ public class ChessGamePrint {
             if (output.charAt(output.length() - 1) == '│') {
                 output.setCharAt(output.length() - 1, '║');
             }
+
             Character type = TypetoGlyph.get(piece.getPieceType());
             type = piece.getTeamColor() == WHITE ? (char) (type + 6) : type;
-            output.append(type);
+            output.append(colorFlip(type.toString(), row, col));
+
             output.append("║");
             return;
         }
@@ -149,13 +158,15 @@ public class ChessGamePrint {
             // finish the selector
             if (piece == null){
                 // add an empty space
-                output.append(spacer);
+                output.append(colorFlip(spacer, row, col));
+
                 output.append('╣');
             } else {
                 // add a piece
                 Character type = TypetoGlyph.get(piece.getPieceType());
                 type = piece.getTeamColor() == WHITE ? (char) (type + 6) : type;
-                output.append(type);
+                output.append(colorFlip(type.toString(), row, col));
+
                 output.append("╣");
             }
         } else {
@@ -168,35 +179,17 @@ public class ChessGamePrint {
             }
             if (piece == null){
                 // add an empty space
-                output.append(spacer);
+                output.append(colorFlip(spacer, row, col));
                 output.append("│");
             } else {
                 // add a piece
                 Character type = TypetoGlyph.get(piece.getPieceType());
                 type = piece.getTeamColor() == WHITE ? (char) (type + 6) : type;
-                output.append(type);
+                output.append(colorFlip(type.toString(), row, col));
+
                 output.append("│");
             }
         }
-    }
-
-    /**
-     * A simple little function for rotating a gameboard
-     *
-     * @param inputGame an input game (from White's perspective
-     * @return The string from before but rotated 180 degrees for the other player
-     */
-    public static String gameFlip(String inputGame) {
-        StringBuilder reverse = new StringBuilder();
-        reverse.append(inputGame);
-        reverse.reverse();
-        String output = reverse.toString();
-
-        // replace the directions of directionals
-        output = output.replaceAll("╣", "y");
-        output = output.replaceAll("╠", "╣");
-        output = output.replaceAll("y", "╠");
-        return output;
     }
 
     public static String gameString(ChessGame game) {
@@ -238,15 +231,18 @@ public class ChessGamePrint {
             output.append(" │");
             for (int col = 1; col <= board.cols; col++) {
                 ChessPiece piece = board.getPiece(new ChessPosition(row, col));
+
                 if (piece == null){
-                    output.append(spacer);
+                    output.append(colorFlip(spacer, row, col));
+
                     output.append("│");
                     continue;
                 }
                 // white pieces are white
                 Character type = TypetoGlyph.get(piece.getPieceType());
                 type = piece.getTeamColor() == WHITE ? (char)(type + 6) : type;
-                output.append(type);
+                output.append(colorFlip(type.toString(), row, col));
+
                 output.append("│");
             }
 
@@ -283,5 +279,58 @@ public class ChessGamePrint {
         }
 
         return output.toString();
+    }
+
+    /**
+     * Helpful little function that handles the swapping of background colors on either side of some inserted string
+     * @param input The string to be added to something
+     * @param row The row of context
+     * @param col The col of context
+     * @return The correctly background-flipped strin
+     */
+    private static String colorFlip(String input, int row, int col) {
+        StringBuilder output = new StringBuilder();
+
+        // change the color if it should be changed
+        if ((row + col) % 2 == 0) {
+            output.append(SET_BG_COLOR_BLACK);
+        } else {
+            output.append(SET_BG_COLOR_DARK_GREY);
+        }
+
+        output.append(input);
+
+        // change it back, adding in color tags for later flipping
+        if ((row + col) % 2 == 0) {
+            output.append(SET_BG_COLOR_BLACK + RESET_BG_COLOR);
+        } else {
+            output.append(SET_BG_COLOR_DARK_GREY + RESET_BG_COLOR);
+        }
+
+        return output.toString();
+    }
+
+    /**
+     * A simple little function for rotating a gameboard
+     *
+     * @param inputGame an input game (from White's perspective
+     * @return The string from before but rotated 180 degrees for the other player
+     */
+    public static String gameFlip(String inputGame) {
+        String output = new StringBuilder(inputGame).reverse().toString();
+
+        // replace the directions of directionals
+        output = output.replaceAll("╣", "y");
+        output = output.replaceAll("╠", "╣");
+        output = output.replaceAll("y", "╠");
+
+        // replace the reversed color commands
+        output = output.replaceAll("m0\\[\\u001Bm732;5;84\\[\\u001B", "\u001B[48;5;237m");  // reset -> grey
+        output = output.replaceAll("m0\\[\\u001Bm0;5;84\\[\\u001B", "\u001B[48;5;0m");      // reset -> black
+
+        output = output.replaceAll("m732;5;84\\[\\u001B", "\u001B[0m");                     // grey -> reset
+        output = output.replaceAll("m0;5;84\\[\\u001B", "\u001B[0m");                       // black -> reset
+
+        return output;
     }
 }
