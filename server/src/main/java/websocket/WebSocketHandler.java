@@ -6,9 +6,9 @@ import chess.InvalidMoveException;
 import com.google.gson.Gson;
 import dataAccess.AuthDAO;
 import dataAccess.DataAccessException;
-import dataAccess.DatabaseDAO.DatabaseAuthDAO;
-import dataAccess.DatabaseDAO.DatabaseGameDAO;
 import dataAccess.GameDAO;
+import dataAccess.MemoryDAO.MemoryAuthDAO;
+import dataAccess.MemoryDAO.MemoryGameDAO;
 import model.AuthData;
 import model.GameData;
 import org.eclipse.jetty.websocket.api.Session;
@@ -71,7 +71,7 @@ public class WebSocketHandler {
         Integer gameID = command.getGameID();
         String team = command.getPlayerColor();
         String username = getUsername(authToken);
-        GameDAO gameDAO = new DatabaseGameDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
         GameData game = null;
 
         connections.add(authToken, gameID, session);
@@ -125,7 +125,7 @@ public class WebSocketHandler {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
         String username = getUsername(authToken);
-        GameDAO gameDAO = new DatabaseGameDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
         GameData game = null;
 
         connections.add(authToken, gameID, session);
@@ -163,7 +163,7 @@ public class WebSocketHandler {
         Integer gameID = command.getGameID();
         ChessMove move = command.getMove();
         String username = getUsername(authToken);
-        GameDAO gameDAO = new DatabaseGameDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
         GameData game = null;
         String message;
 
@@ -271,7 +271,7 @@ public class WebSocketHandler {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
         String username = getUsername(authToken);
-        GameDAO gameDAO = new DatabaseGameDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
         GameData game = gameDAO.getGame(gameID);
 
         if (username == null) {
@@ -308,7 +308,7 @@ public class WebSocketHandler {
         String authToken = command.getAuthString();
         Integer gameID = command.getGameID();
         String username = getUsername(authToken);
-        GameDAO gameDAO = new DatabaseGameDAO();
+        GameDAO gameDAO = new MemoryGameDAO();
         GameData game = gameDAO.getGame(gameID);
 
         if (username == null) {
@@ -347,7 +347,7 @@ public class WebSocketHandler {
      * @return The requested username
      */
     private String getUsername(String authToken) {
-        AuthDAO authDAO = new DatabaseAuthDAO();
+        AuthDAO authDAO = new MemoryAuthDAO();
         AuthData auth;
         try {
             auth = authDAO.getAuth(authToken);

@@ -79,8 +79,6 @@ public class ChessClient {
      * @return The output of whatever function was accessed
      */
     public String gameplay(String input) {
-        // messageHandler stuff?
-
         try {
             return switch (input.toLowerCase()) {
                 default -> Gameplay.help();

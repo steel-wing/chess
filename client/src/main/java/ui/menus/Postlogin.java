@@ -55,7 +55,10 @@ public class Postlogin {
             if (!list.isEmpty()) {
                 output.delete(output.length() - 1, output.length());
             } else {
+                output = new StringBuilder();
                 output.append("There are no available games");
+                listFlag = false;
+                return output.toString();
             }
 
             listFlag = true;
@@ -89,6 +92,10 @@ public class Postlogin {
         // quick check to make sure we actually have some games listed
         if (!listFlag) {
             System.out.println(list(client));
+        }
+
+        if (!listFlag) {
+            return "Please create a new game of chess";
         }
 
         System.out.println(SET_TEXT_COLOR_WHITE + SET_TEXT_BOLD + "Input a game number to join:");

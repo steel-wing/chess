@@ -74,7 +74,7 @@ public class DatabaseGameDAO implements GameDAO {
                 String json = results.getString("gameData");
                 GameData big = new Gson().fromJson(json, GameData.class);
 
-                //forbidden technique to remove the actual board data from the returned list, to only send necessary data
+                // forbidden technique to remove the actual board data from the returned list, to only send necessary data
                 ChessGame small = new ChessGame();
                 small.setWinner(big.game().getWinner());
                 small.setBoard(null);

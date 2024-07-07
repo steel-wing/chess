@@ -4,8 +4,7 @@ import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
-import dataAccess.DataAccessException;
-import dataAccess.DatabaseDAO.DatabaseGameDAO;
+import dataAccess.MemoryDAO.MemoryGameDAO;
 import exception.ResponseException;
 import ui.ChessClient;
 import ui.State;
@@ -35,7 +34,7 @@ public class Gameplay {
     }
 
     public static String makeMove(ChessClient client) throws ResponseException {
-        updateGame(client);
+        //updateGame(client);
 
         // handle all of the end cases
         if (client.game.game().isInCheckmate(ChessGame.TeamColor.WHITE) ||
@@ -171,12 +170,12 @@ public class Gameplay {
         return "You have successfully exited the game";
     }
 
-    private static void updateGame(ChessClient client) throws ResponseException {
-        try {
-            client.game = new DatabaseGameDAO().getGame(client.game.gameID());
-        } catch (DataAccessException exception) {
-            throw new ResponseException(500, exception.getMessage());
-        }
+    private static void updateGame(ChessClient client)  { // throws ResponseException
+//        try {
+            client.game = new MemoryGameDAO().getGame(client.game.gameID());
+//        } catch (DataAccessException exception) {
+//            throw new ResponseException(500, exception.getMessage());
+//        }
     }
 
     private static ChessGame.TeamColor team(ChessClient client) {
