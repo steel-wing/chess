@@ -24,7 +24,7 @@ The project has been outfitted to be run in IntelliJ, and if SQL is installed on
 
 ## Maven Support
 
-You can use the following commands to build, test, package, and run your code.
+You can use the following commands to build, test, package, and run the code.
 
 | Command                    | Description                                     |
 | -------------------------- | ----------------------------------------------- |
