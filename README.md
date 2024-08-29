@@ -10,6 +10,7 @@ Both players can see the board from their own perspective, and can highlight any
 As the game progresses, the board keeps track of whose turn it is, whether or not a team is in check or checkmate, and prevents players from accidentally moving a chess piece where official rules do not allow.
 
 ![command-line chess](https://github.com/user-attachments/assets/a99bd7ee-de1c-4997-b8d5-df5b390f05c6)
+
 Here is an example of Black's turn, selecting a knight on e4 and being shown all options.
 
 ## What It Is
