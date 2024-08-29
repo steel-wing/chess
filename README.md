@@ -2,6 +2,14 @@
 
 This is a project in software design, client/server architecture, networking using HTTP and WebSocket, database persistence, unit testing, serialization, and security.
 
+All rules of chess are fully implemented (with the exception of the triple-repetition-stalemate rule. I figured that casual players wouldn't need to worry about that one), and players are able to create, join, and observe games stored in the database.
+
+## How It Looks
+
+Both players can see the board from their own perspective, and can highlight any piece on the board to look at its legal moves.
+
+![command-line chess](https://github.com/user-attachments/assets/a99bd7ee-de1c-4997-b8d5-df5b390f05c6)
+
 ## What It Is
 
 This application implements a multiplayer chess server and a command line chess client.
