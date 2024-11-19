@@ -2,7 +2,7 @@
 
 This is a project in software design, client/server architecture, networking using HTTP and WebSocket, database persistence, unit testing, serialization, and security.
 
-All rules of chess are fully implemented (with the exception of the triple-repetition-stalemate rule. I figured that casual players wouldn't need to worry about that one), and players are able to create, join, and observe games stored in the database.
+All rules of chess are fully implemented (with the exception of the triple-repetition-stalemate rule. I figured that casual players wouldn't need to worry about that one), and players are able to register accounts, login/logout, and then create, join, and observe games stored in the database.
 
 ## How It Looks
 
